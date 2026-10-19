@@ -1,6 +1,6 @@
 import { query, execute } from "../db/query";
 import { slugify } from "../validation/slug";
-import { validateBookInput } from "../validation/book";
+import { validateBookInput, validateBookUpdateInput } from "../validation/book";
 import { normalizePage } from "./pagination";
 import { mapRow, KOLOM_BUKU } from "./types";
 import type { Book, BookStatus, Page, WriteResult } from "./types";
@@ -229,38 +229,53 @@ async function idBarisBaru(insertId: number, slug: string): Promise<string> {
 }
 
 /**
- * Memperbarui buku yang ada. Slug tidak ikut berubah: alamat halaman
- * yang sudah tersebar tidak boleh mati hanya karena judulnya disunting.
+ * Memperbarui buku yang ada, termasuk slug-nya.
+ *
+ * Slug ikut diperbarui karena brief §8 mengizinkan admin memperbaiki alamat
+ * halaman ("slug otomatis dari judul namun dapat diperbaiki; validasi unik")
+ * dan menuntut slug lama ikut diinvalidasi bila berubah. Pemanggil yang
+ * bertanggung jawab menyimpan slug lama untuk merevalidasi alamat itu.
+ *
+ * Slug kosong ditolak di validator, bukan diisi ulang dari judul: alamat
+ * halaman tidak boleh berubah diam-diam saat admin hanya menyunting penulis.
  */
 export async function updateBook(id: string, input: unknown): Promise<WriteResult> {
-  const divalidasi = validateBookInput(input);
+  const divalidasi = validateBookUpdateInput(input);
   if (!divalidasi.ok) return { ok: false, errors: divalidasi.errors };
 
   const value = divalidasi.value;
 
-  const hasil = await execute(
-    `UPDATE books
-        SET title = ?, author = ?, synopsis = ?, publisher_info = ?, book_info = ?,
-            cover_path = ?, status = ?, estimated_release = ?
-      WHERE id = ?`,
-    [
-      value.title,
-      value.author,
-      value.synopsis,
-      value.publisherInfo,
-      value.bookInfo,
-      value.coverPath,
-      value.status,
-      value.estimatedRelease,
-      id,
-    ]
-  );
+  try {
+    const hasil = await execute(
+      `UPDATE books
+          SET title = ?, slug = ?, author = ?, synopsis = ?, publisher_info = ?, book_info = ?,
+              cover_path = ?, status = ?, estimated_release = ?
+        WHERE id = ?`,
+      [
+        value.title,
+        value.slug,
+        value.author,
+        value.synopsis,
+        value.publisherInfo,
+        value.bookInfo,
+        value.coverPath,
+        value.status,
+        value.estimatedRelease,
+        id,
+      ]
+    );
 
-  if (hasil.affectedRows !== 1) {
-    return { ok: false, errors: { form: "Buku tidak ditemukan." } };
+    if (hasil.affectedRows !== 1) {
+      return { ok: false, errors: { form: "Buku tidak ditemukan." } };
+    }
+
+    return { ok: true, book: await ambilSetelahTulis(id) };
+  } catch (error) {
+    if (galatSlug(error)) {
+      return { ok: false, errors: { slug: "Slug sudah dipakai buku lain." } };
+    }
+    throw error;
   }
-
-  return { ok: true, book: await ambilSetelahTulis(id) };
 }
 
 export async function deleteBook(id: string): Promise<{ ok: boolean }> {

@@ -3,8 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/guard";
-import { simpanBukuBaru, bacaTeks } from "@/lib/books/manage";
-import type { NilaiFormBuku, StateFormBuku } from "./form-state";
+import { simpanBukuBaru, perbaruiBuku, hapusBuku, bacaTeks } from "@/lib/books/manage";
+import type { NilaiFormBuku, StateFormBuku, StateHapusBuku } from "./form-state";
 
 /**
  * Berkas ini hanya mengekspor fungsi async: `"use server"` menjadikan
@@ -16,6 +16,7 @@ import type { NilaiFormBuku, StateFormBuku } from "./form-state";
 function bacaNilai(data: FormData): NilaiFormBuku {
   return {
     title: bacaTeks(data, "title"),
+    slug: bacaTeks(data, "slug"),
     author: bacaTeks(data, "author"),
     synopsis: bacaTeks(data, "synopsis"),
     publisherInfo: bacaTeks(data, "publisherInfo"),
@@ -23,6 +24,21 @@ function bacaNilai(data: FormData): NilaiFormBuku {
     status: bacaTeks(data, "status"),
     estimatedRelease: bacaTeks(data, "estimatedRelease"),
   };
+}
+
+/**
+ * Seluruh alamat yang isinya bergantung pada satu buku.
+ *
+ * Dijadikan satu fungsi karena setiap mutasi harus menyentuhnya, dan daftar
+ * yang ditulis ulang di tiga tempat cepat atau lambat akan berbeda isinya.
+ * Detail per-slug memakai argumen `"page"`: tanpa itu `revalidatePath`
+ * menganggapnya path halaman statis dan tidak melakukan apa pun.
+ */
+function revalidasiBuku(slug: string): void {
+  revalidatePath("/admin/buku");
+  revalidatePath("/katalog/[status]", "page");
+  revalidatePath("/", "page");
+  revalidatePath(`/buku/${slug}`, "page");
 }
 
 /**
@@ -57,15 +73,78 @@ export async function createBookAction(
     };
   }
 
-  // Katalog publik dan daftar admin membaca database saat permintaan datang,
-  // tetapi halaman beranda dan shell-nya bisa saja tersimpan di cache router
-  // klien. Revalidasi keduanya supaya buku baru terlihat tanpa perlu reload
-  // paksa, dan detail per-slug supaya tautan lamanya tidak menyajikan versi
-  // lama bila slug itu pernah ada.
-  revalidatePath("/admin/buku");
-  revalidatePath("/katalog/[status]", "page");
-  revalidatePath("/", "page");
-  revalidatePath(`/buku/${hasil.book.slug}`, "page");
+  revalidasiBuku(hasil.book.slug);
+
+  redirect("/admin/buku");
+}
+
+/**
+ * Menyunting buku yang sudah ada.
+ *
+ * `id` diikat pada action lewat `bind` di halaman, bukan dibaca dari form:
+ * nilai yang datang dari form bisa diubah siapa pun yang menyunting HTML,
+ * dan id adalah penentu baris mana yang ditulis.
+ *
+ * Penjaga sesi tetap dipanggil di sini meski `id` sudah diikat — pengikatan
+ * hanya menyembunyikan nilainya dari tampilan, bukan menjadikan pemanggilan
+ * action ini mustahil dilakukan tanpa halaman.
+ */
+export async function updateBookAction(
+  id: string,
+  sebelumnya: StateFormBuku,
+  data: FormData
+): Promise<StateFormBuku> {
+  await requireAdmin();
+
+  const nilai = bacaNilai(data);
+  const percobaan = sebelumnya.percobaan + 1;
+
+  const hasil = await perbaruiBuku(id, data);
+
+  if (!hasil.ok) {
+    return {
+      errors: hasil.errors,
+      nilai,
+      percobaan,
+      ulangiSampul: hasil.errors.coverPath !== undefined || hasil.errors.form !== undefined,
+    };
+  }
+
+  // Alamat lama dan baru sama-sama diinvalidasi: brief §8 menuntut slug lama
+  // tidak lagi menyajikan buku ini sebagai halaman yang masih hidup.
+  revalidasiBuku(hasil.slugLama);
+  if (hasil.book.slug !== hasil.slugLama) {
+    revalidasiBuku(hasil.book.slug);
+  }
+
+  redirect("/admin/buku");
+}
+
+/**
+ * Menghapus buku.
+ *
+ * Sampul ikut dibersihkan oleh lapisan `hapusBuku`; di sini yang tersisa
+ * hanya kewajiban memberi tahu cache bahwa halaman-halaman itu sudah tidak
+ * berisi apa-apa.
+ */
+export async function deleteBookAction(
+  id: string,
+  sebelumnya: StateHapusBuku,
+  // `useActionState` selalu mengirim `(state, formData)`; parameter ini harus
+  // ada agar `formData` tidak masuk ke posisi `sebelumnya`. Isinya tidak
+  // dipakai: penghapusan hanya butuh id yang sudah terikat di server.
+  _data: FormData
+): Promise<StateHapusBuku> {
+  await requireAdmin();
+
+  const percobaan = sebelumnya.percobaan + 1;
+  const hasil = await hapusBuku(id);
+
+  if (!hasil.ok) {
+    return { errors: hasil.errors, percobaan };
+  }
+
+  revalidasiBuku(hasil.book.slug);
 
   redirect("/admin/buku");
 }

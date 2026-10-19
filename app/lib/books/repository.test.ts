@@ -36,9 +36,13 @@ async function seed(
   );
 }
 
-function inputBuku(judul: string) {
+function inputBuku(judul: string, slug?: string) {
   return {
     title: judul,
+    // `slug` diabaikan `createBook` (diturunkan dari judul) dan wajib
+    // `updateBook`. Memberikannya di sini membuat satu helper cukup untuk
+    // kedua jalur.
+    ...(slug === undefined ? {} : { slug }),
     author: "Penulis",
     coverPath: "covers/a.webp",
     status: "published" as const,
@@ -190,15 +194,42 @@ describe("repository buku", () => {
     const sebelum = dibuat.book.updatedAt.getTime();
     await new Promise((selesai) => setTimeout(selesai, 1100));
 
-    const hasil = await updateBook(dibuat.book.id, inputBuku("Judul Baru"));
+    const hasil = await updateBook(dibuat.book.id, inputBuku("Judul Baru", "judul-baru"));
     expect(hasil.ok).toBe(true);
     if (!hasil.ok) return;
     expect(hasil.book.title).toBe("Judul Baru");
     expect(hasil.book.updatedAt.getTime()).toBeGreaterThan(sebelum);
   });
 
+  it("mengubah slug buku dan menolak slug milik buku lain", async () => {
+    const a = await createBook(inputBuku("Buku Satu"));
+    const b = await createBook(inputBuku("Buku Dua"));
+    if (!a.ok || !b.ok) throw new Error("gagal menyiapkan data");
+
+    const diubah = await updateBook(b.book.id, inputBuku("Buku Dua", "alamat-baru"));
+    expect(diubah.ok).toBe(true);
+    if (!diubah.ok) return;
+    expect(diubah.book.slug).toBe("alamat-baru");
+    // Alamat lama benar-benar ditinggalkan, bukan disimpan di kolom lain.
+    expect(await getBookBySlug("buku-dua")).toBeNull();
+    expect(await getBookBySlug("alamat-baru")).not.toBeNull();
+
+    const bentrok = await updateBook(b.book.id, inputBuku("Buku Dua", a.book.slug));
+    expect(bentrok.ok).toBe(false);
+    if (!bentrok.ok) expect(bentrok.errors.slug).toBeDefined();
+  });
+
+  it("menolak slug berformat salah saat memperbarui", async () => {
+    const dibuat = await createBook(inputBuku("Buku Format"));
+    if (!dibuat.ok) throw new Error("gagal menyiapkan data");
+
+    const hasil = await updateBook(dibuat.book.id, inputBuku("Buku Format", "Judul Baru!"));
+    expect(hasil.ok).toBe(false);
+    if (!hasil.ok) expect(hasil.errors.slug).toBeDefined();
+  });
+
   it("melaporkan gagal ketika memperbarui buku yang tidak ada", async () => {
-    const hasil = await updateBook("00000000-0000-0000-0000-000000000000", inputBuku("Judul"));
+    const hasil = await updateBook("00000000-0000-0000-0000-000000000000", inputBuku("Judul", "judul"));
     expect(hasil.ok).toBe(false);
   });
 

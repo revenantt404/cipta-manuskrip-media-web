@@ -26,12 +26,23 @@ export type BookInput = {
 /** Input buku tanpa `coverPath`: yang bisa dinilai sebelum berkas diunggah. */
 export type BookTextInput = Omit<BookInput, "coverPath">;
 
+/** Input ubah buku: teks, sampul, dan slug. */
+export type BookUpdateInput = BookInput & { slug: string };
+
 export type ValidationResult =
   | { ok: true; value: BookInput }
   | { ok: false; errors: Record<string, string> };
 
 export type TextValidationResult =
   | { ok: true; value: BookTextInput }
+  | { ok: false; errors: Record<string, string> };
+
+export type UpdateTextValidationResult =
+  | { ok: true; value: BookTextInput & { slug: string } }
+  | { ok: false; errors: Record<string, string> };
+
+export type UpdateValidationResult =
+  | { ok: true; value: BookUpdateInput }
   | { ok: false; errors: Record<string, string> };
 
 export const PUBLISHER_DEFAULT = "CV Cipta Manuskrip Media";
@@ -128,6 +139,99 @@ export function validateBookInput(raw: unknown): ValidationResult {
     // kesempatan berikutnya: form menampilkan semuanya dalam satu kali
     // kirim, sehingga admin tidak perlu mengirim dua kali untuk mengetahui
     // dua hal yang salah.
+    return {
+      ok: false,
+      errors: coverPath === ""
+        ? { ...teksBuku.errors, coverPath: "Sampul wajib diunggah." }
+        : teksBuku.errors,
+    };
+  }
+
+  if (coverPath === "") {
+    return { ok: false, errors: { coverPath: "Sampul wajib diunggah." } };
+  }
+
+  return { ok: true, value: { ...teksBuku.value, coverPath } };
+}
+
+/**
+ * Bentuk slug yang diterima: hanya `a-z`, angka, dan tanda hubung tunggal,
+ * tanpa tanda hubung di awal atau akhir.
+ *
+ * Slug bukan sekadar label — ia menjadi alamat halaman. Slug yang memuat
+ * spasi, huruf besar, atau tanda baca akan tampil sebagai alamat yang harus
+ * di-escape dan mudah salah ketika disalin ke pesan WhatsApp.
+ */
+const POLA_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export const SLUG_MAKS = 200;
+
+/**
+ * Memvalidasi isian teks buku **beserta slug**, untuk penyuntingan.
+ *
+ * Dipisahkan dari `validateBookText` karena penambahan buku tidak menerima
+ * slug dari form: slug buku baru selalu diturunkan dari judulnya. Hanya
+ * penyuntingan yang membiarkan admin menentukan alamat halaman sendiri.
+ *
+ * Slug kosong ditolak alih-alih diisi otomatis: form edit menampilkan slug
+ * yang berlaku, sehingga kolom kosong berarti admin menghapusnya — bukan
+ * meminta slug dibentuk ulang. Menebak di sini akan mengubah alamat halaman
+ * tanpa admin memintanya.
+ */
+export function validateBookUpdateText(raw: unknown): UpdateTextValidationResult {
+  const teksBuku = validateBookText(raw);
+
+  // Bentuk yang tidak dikenali sudah ditolak `validateBookText`; membaca
+  // `slug` di sini hanya sah kalau `raw` memang objek biasa.
+  if (!objekBiasa(raw)) return { ok: false, errors: teksBuku.ok ? { form: "Data tidak dikenali." } : teksBuku.errors };
+
+  const galat = galatSlugDari(raw.slug);
+
+  if (!teksBuku.ok) {
+    return {
+      ok: false,
+      errors: galat === null ? teksBuku.errors : { ...teksBuku.errors, slug: galat },
+    };
+  }
+
+  if (galat !== null) {
+    return { ok: false, errors: { slug: galat } };
+  }
+
+  return { ok: true, value: { ...teksBuku.value, slug: teks(raw.slug) } };
+}
+
+/** Pesan galat slug, atau `null` bila slug sah. */
+function galatSlugDari(nilai: unknown): string | null {
+  const slug = teks(nilai);
+
+  if (slug === "") return "Slug wajib diisi.";
+  if (slug.length > SLUG_MAKS) return `Slug maksimal ${SLUG_MAKS} karakter.`;
+  if (!POLA_SLUG.test(slug)) return "Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung.";
+  return null;
+}
+
+/**
+ * Versi `validateBookUpdateText` untuk repository: melengkapi `coverPath`.
+ *
+ * `coverPath` di sini **wajib** meski di form edit sampul bersifat opsional.
+ * Alurnya begini: bila admin tidak memilih berkas baru, pemanggil mengirim
+ * path sampul lama sebagai `coverPath`, bukan string kosong. Dengan begitu
+ * "tidak mengganti sampul" dan "lupa mengunggah sampul" tetap bisa
+ * dibedakan — yang kedua memang tidak punya padanan di halaman ubah.
+ */
+export function validateBookUpdateInput(raw: unknown): UpdateValidationResult {
+  const teksBuku = validateBookUpdateText(raw);
+
+  if (!objekBiasa(raw)) {
+    return teksBuku.ok
+      ? { ok: false, errors: { form: "Data tidak dikenali." } }
+      : teksBuku;
+  }
+
+  const coverPath = teks(raw.coverPath);
+
+  if (!teksBuku.ok) {
     return {
       ok: false,
       errors: coverPath === ""

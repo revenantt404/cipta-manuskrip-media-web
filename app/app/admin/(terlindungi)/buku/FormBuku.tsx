@@ -22,9 +22,18 @@ function PesanGalat({ pesan }: { pesan: string | undefined }) {
  * tidak hilang saat validasi gagal — React mereset form setiap action
  * selesai, sehingga nilai di DOM saja tidak cukup untuk mempertahankannya.
  */
-export function FormBuku({ action, awal }: { action: AksiFormBuku; awal: StateFormBuku }) {
+export function FormBuku({
+  action,
+  awal,
+  mode = "tambah",
+}: {
+  action: AksiFormBuku;
+  awal: StateFormBuku;
+  mode?: "tambah" | "edit";
+}) {
   const [state, formAction, sedangProses] = useActionState(action, awal);
   const { nilai, errors } = state;
+  const menyunting = mode === "edit";
 
   return (
     <form
@@ -64,6 +73,32 @@ export function FormBuku({ action, awal }: { action: AksiFormBuku; awal: StateFo
         />
         <PesanGalat pesan={errors.author} />
       </div>
+
+      {/*
+        Slug hanya tampil saat menyunting. Buku baru mendapatkannya otomatis
+        dari judul, dan menampilkan kolom yang tidak berpengaruh hanya
+        membuat admin mengira ia bisa memilih alamat sebelum ada judulnya.
+      */}
+      {menyunting ? (
+        <div className="flex flex-col gap-1">
+          <label htmlFor="slug">Slug (alamat halaman)</label>
+          <input
+            id="slug"
+            name="slug"
+            required
+            defaultValue={nilai.slug}
+            aria-invalid={errors.slug !== undefined}
+            className={`${KELAS_INPUT} font-mono`}
+          />
+          <PesanGalat pesan={errors.slug} />
+          <p className="text-xs text-zinc-600">
+            Alamat publik: /buku/<span className="font-mono">{nilai.slug}</span>
+          </p>
+          <p className="text-xs text-zinc-600">
+            Mengubah slug memutus tautan lama ke alamat ini. Perbaiki hanya bila perlu.
+          </p>
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-1">
         <label htmlFor="status">Status</label>
@@ -145,6 +180,10 @@ export function FormBuku({ action, awal }: { action: AksiFormBuku; awal: StateFo
           <p className="text-xs text-zinc-600">
             Pilih ulang berkasnya: berkas yang tadi sudah dibuang karena penyimpanan gagal.
           </p>
+        ) : menyunting ? (
+          <p className="text-xs text-zinc-600">
+            Kosongkan bila sampul tidak diganti. JPEG, PNG, atau WebP; maksimal 5 MB.
+          </p>
         ) : (
           <p className="text-xs text-zinc-600">JPEG, PNG, atau WebP. Maksimal 5 MB.</p>
         )}
@@ -155,7 +194,7 @@ export function FormBuku({ action, awal }: { action: AksiFormBuku; awal: StateFo
         disabled={sedangProses}
         className="self-start rounded border px-4 py-2 hover:bg-zinc-50 disabled:opacity-50"
       >
-        {sedangProses ? "Menyimpan…" : "Simpan buku"}
+        {sedangProses ? "Menyimpan…" : menyunting ? "Simpan perubahan" : "Simpan buku"}
       </button>
     </form>
   );

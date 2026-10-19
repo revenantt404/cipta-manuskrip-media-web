@@ -10,6 +10,7 @@ import type { BookStatus } from "@/lib/books/types";
  */
 export type NilaiFormBuku = {
   title: string;
+  slug: string;
   author: string;
   synopsis: string;
   publisherInfo: string;
@@ -20,6 +21,7 @@ export type NilaiFormBuku = {
 
 export const NILAI_BUKU_KOSONG: NilaiFormBuku = {
   title: "",
+  slug: "",
   author: "",
   synopsis: "",
   publisherInfo: "",
@@ -53,6 +55,25 @@ export type AksiFormBuku = (
   sebelumnya: StateFormBuku,
   data: FormData
 ) => Promise<StateFormBuku>;
+
+/**
+ * Keadaan form hapus.
+ *
+ * Penghapusan tidak punya isian yang bisa dikembalikan, jadi yang perlu
+ * dipertahankan hanya pesan galat dan jumlah percobaan — `key` yang berubah
+ * tetap diperlukan supaya form bisa dikirim ulang setelah gagal.
+ */
+export type StateHapusBuku = {
+  errors: Record<string, string>;
+  percobaan: number;
+};
+
+export const STATE_HAPUS_AWAL: StateHapusBuku = { errors: {}, percobaan: 0 };
+
+export type AksiHapusBuku = (
+  sebelumnya: StateHapusBuku,
+  data: FormData
+) => Promise<StateHapusBuku>;
 
 /** Status yang boleh dipilih di formulir, dengan labelnya. */
 export const PILIHAN_STATUS: ReadonlyArray<{ nilai: BookStatus; label: string }> = [
