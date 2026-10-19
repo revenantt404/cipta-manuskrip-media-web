@@ -7,3 +7,7 @@ build/
 .env*.local
 .DS_Store
 Thumbs.db
+
+# Dokumen hukum: memuat nama asli, tanda tangan, dan nilai perjanjian.
+# Disimpan di komputer pemilik proyek, tidak di repo kode.
+*.pdf
