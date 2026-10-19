@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:migrate": "node --env-file=.env.local scripts/migrate.mjs"
   },
   "dependencies": {
+    "@node-rs/argon2": "2.2.2",
     "mysql2": "3.24.6",
     "next": "16.4.2",
     "react": "19.3.0",
