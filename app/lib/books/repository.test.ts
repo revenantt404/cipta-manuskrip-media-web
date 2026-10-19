@@ -7,6 +7,7 @@ import {
   createBook,
   updateBook,
   deleteBook,
+  countBooksByStatus,
 } from "./repository";
 
 async function bersihkan() {
@@ -59,6 +60,18 @@ describe("repository buku", () => {
     expect(halaman.page).toBe(1);
     expect(halaman.pageSize).toBe(12);
     expect(halaman.totalPages).toBe(1);
+  });
+
+  it("menghitung buku per status, nol untuk status yang belum terisi", async () => {
+    await seed("Terbit Satu", "terbit-satu", "published");
+    await seed("Terbit Dua", "terbit-dua", "published");
+    await seed("Segera Satu", "segera-satu", "upcoming");
+
+    expect(await countBooksByStatus()).toEqual({ published: 2, upcoming: 1 });
+  });
+
+  it("menghitung nol pada kedua status ketika database kosong", async () => {
+    expect(await countBooksByStatus()).toEqual({ published: 0, upcoming: 0 });
   });
 
   it("hanya mengembalikan buku dengan status yang diminta", async () => {

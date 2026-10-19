@@ -85,8 +85,26 @@ export async function listBooks(opts: {
   return jadikanHalaman(baris.map(mapRow), total, page, pageSize);
 }
 
-export async function getBookBySlug(slug: string): Promise<Book | null> {
-  const baris = await query<Record<string, unknown>>(
+/**
+ * Jumlah buku per status, untuk ringkasan dashboard.
+ *
+ * Satu query `GROUP BY`, bukan dua `COUNT(*)` terpisah: status yang belum
+ * terisi tidak muncul sebagai baris di hasil `GROUP BY`, dan itu justru
+ * yang membuat keduanya bisa dibedakan dari status yang berjumlah nol.
+ */
+export async function countBooksByStatus(): Promise<Record<BookStatus, number>> {
+  const baris = await query<{ status: BookStatus; jumlah: number }>(
+    "SELECT status, COUNT(*) AS jumlah FROM books GROUP BY status"
+  );
+
+  const hasil: Record<BookStatus, number> = { published: 0, upcoming: 0 };
+  for (const b of baris) {
+    hasil[b.status] = Number(b.jumlah);
+  }
+  return hasil;
+}
+
+export async function getBookBySlug(slug: string): Promise<Book | null> {  const baris = await query<Record<string, unknown>>(
     `SELECT ${KOLOM_BUKU} FROM books WHERE slug = ?`,
     [slug]
   );
