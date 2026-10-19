@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readEnv, type EnvSource } from "./env";
+import { readEnv, siteUrl, type EnvSource } from "./env";
 
 /** Sumber environment lengkap dan sah; tes lain menimpanya seperlunya. */
 function sumberLengkap(): EnvSource {
@@ -67,5 +67,23 @@ describe("readEnv", () => {
     delete sumber.DB_PASSWORD;
 
     expect(readEnv(sumber).password).toBe("");
+  });
+});
+
+describe("siteUrl", () => {
+  it("memakai SITE_URL apa adanya tanpa garis miring di ujung", () => {
+    expect(siteUrl({ SITE_URL: "https://ciptamanuskrip.com" })).toBe("https://ciptamanuskrip.com");
+    expect(siteUrl({ SITE_URL: "https://ciptamanuskrip.com/" })).toBe("https://ciptamanuskrip.com");
+  });
+
+  it("jatuh ke localhost bila belum diisi", () => {
+    expect(siteUrl({})).toBe("http://localhost:3000");
+    expect(siteUrl({ SITE_URL: "   " })).toBe("http://localhost:3000");
+  });
+
+  it("mengabaikan nilai yang bukan URL http(s) yang sah", () => {
+    for (const salah of ["bukan-url", "ftp://contoh.com", "javascript:alert(1)"]) {
+      expect(siteUrl({ SITE_URL: salah })).toBe("http://localhost:3000");
+    }
   });
 });

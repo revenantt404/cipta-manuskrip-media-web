@@ -41,3 +41,28 @@ export function readEnv(source: EnvSource = process.env): DbConfig {
     database: source.DB_NAME as string,
   };
 }
+
+/**
+ * Alamat dasar situs tanpa garis miring di ujung, dipakai untuk
+ * `metadataBase`, robots.txt, dan sitemap.xml.
+ *
+ * Berbeda dari `readEnv`, fungsi ini sengaja tidak melempar galat: satu
+ * variabel yang belum diisi tidak boleh menggagalkan halaman publik, jadi
+ * `http://localhost:3000` dikembalikan untuk nilai kosong, spasi saja, atau
+ * bukan URL http(s) yang sah. Tanpa garis miring di ujung penting karena
+ * `metadataBase` dan URL sitemap dari Next.js kelak digandengkan dengan nilai ini.
+ */
+export function siteUrl(source: EnvSource = process.env): string {
+  const bawaan = "http://localhost:3000";
+  const nilai = source.SITE_URL?.trim();
+
+  if (!nilai) return bawaan;
+
+  try {
+    const url = new URL(nilai);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return bawaan;
+    return url.href.replace(/\/+$/, "");
+  } catch {
+    return bawaan;
+  }
+}
