@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildBookOrderUrl } from "./whatsapp";
+import { buildBookOrderUrl, buildJournalSubmitUrl, buildJournalAssistUrl, pesanAsistensi } from "./whatsapp";
 
 describe("buildBookOrderUrl", () => {
   it("membentuk tautan pemesanan buku cetak dengan format persis", () => {
@@ -23,5 +23,48 @@ describe("buildBookOrderUrl", () => {
     expect(decodeURIComponent(new URL(url).searchParams.get("text") ?? "")).toBe(
       `Mau pesan buku cetak judul ${judul}`
     );
+  });
+});
+
+describe("whatsapp jurnal", () => {
+  it("membentuk tautan kirim naskah dengan pesan persis", () => {
+    expect(buildJournalSubmitUrl()).toBe(
+      "https://wa.me/62895629203142?text=ini%20naskah%20artikel%20saya%2C%20admin."
+    );
+  });
+
+  it("membentuk tautan asistensi dengan topik dan titik akhir", () => {
+    const url = buildJournalAssistUrl("analisis wacana kritis");
+    expect(url).toBe(
+      "https://wa.me/62895629203142?text=saya%20mau%20dibantu%20asistensi%20artikel%20topik%20analisis%20wacana%20kritis."
+    );
+  });
+
+  it("pesan asistensi memangkas spasi tepi sebelum dipakai", () => {
+    const hasil = pesanAsistensi("  literasi digital  ");
+    expect(hasil.ok).toBe(true);
+    if (hasil.ok) {
+      expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
+        "saya mau dibantu asistensi artikel topik literasi digital."
+      );
+    }
+  });
+
+  it("menolak topik kosong dan yang hanya berisi spasi", () => {
+    for (const mentah of ["", "   ", "\t\n"]) {
+      const hasil = pesanAsistensi(mentah);
+      expect(hasil.ok).toBe(false);
+    }
+  });
+
+  it("mempertahankan karakter khusus topik setelah didekode", () => {
+    const topik = "Pendidikan & Teknologi (Edisi 2+1) — Résumé";
+    const hasil = pesanAsistensi(topik);
+    expect(hasil.ok).toBe(true);
+    if (hasil.ok) {
+      expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
+        `saya mau dibantu asistensi artikel topik ${topik}.`
+      );
+    }
   });
 });
