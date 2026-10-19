@@ -23,8 +23,15 @@ export type BookInput = {
   estimatedRelease: string | null;
 };
 
+/** Input buku tanpa `coverPath`: yang bisa dinilai sebelum berkas diunggah. */
+export type BookTextInput = Omit<BookInput, "coverPath">;
+
 export type ValidationResult =
   | { ok: true; value: BookInput }
+  | { ok: false; errors: Record<string, string> };
+
+export type TextValidationResult =
+  | { ok: true; value: BookTextInput }
   | { ok: false; errors: Record<string, string> };
 
 export const PUBLISHER_DEFAULT = "CV Cipta Manuskrip Media";
@@ -44,7 +51,15 @@ function teksAtauNull(value: unknown): string | null {
   return hasil === "" ? null : hasil;
 }
 
-export function validateBookInput(raw: unknown): ValidationResult {
+/**
+ * Memvalidasi seluruh isian teks buku, tanpa menyinggung `coverPath`.
+ *
+ * Dipisahkan supaya alur unggah bisa menolak isian yang salah **sebelum**
+ * berkas sampul diproses dan ditulis ke disk. Menyimpan berkas lebih
+ * dahulu lalu membuangnya lagi hanya karena judul kosong adalah kerja
+ * yang bisa dihindari.
+ */
+export function validateBookText(raw: unknown): TextValidationResult {
   if (!objekBiasa(raw)) {
     return { ok: false, errors: { form: "Data tidak dikenali." } };
   }
@@ -53,7 +68,6 @@ export function validateBookInput(raw: unknown): ValidationResult {
 
   const title = teks(raw.title);
   const author = teks(raw.author);
-  const coverPath = teks(raw.coverPath);
   const publisherInfo = teks(raw.publisherInfo) || PUBLISHER_DEFAULT;
   const synopsis = teksAtauNull(raw.synopsis);
   const bookInfo = teksAtauNull(raw.bookInfo);
@@ -61,7 +75,6 @@ export function validateBookInput(raw: unknown): ValidationResult {
 
   if (title === "") errors.title = "Judul wajib diisi.";
   if (author === "") errors.author = "Penulis wajib diisi.";
-  if (coverPath === "") errors.coverPath = "Sampul wajib diunggah.";
 
   const status = raw.status;
   if (status !== "published" && status !== "upcoming") {
@@ -91,9 +104,41 @@ export function validateBookInput(raw: unknown): ValidationResult {
       synopsis,
       publisherInfo,
       bookInfo,
-      coverPath,
       status: status as BookStatus,
       estimatedRelease,
     },
   };
+}
+
+export function validateBookInput(raw: unknown): ValidationResult {
+  const teksBuku = validateBookText(raw);
+
+  // Bentuk yang tidak dikenali sudah ditolak `validateBookText`; membaca
+  // `coverPath` di sini hanya sah kalau `raw` memang objek biasa.
+  if (!objekBiasa(raw)) {
+    return teksBuku.ok
+      ? { ok: false, errors: { form: "Data tidak dikenali." } }
+      : teksBuku;
+  }
+
+  const coverPath = teks(raw.coverPath);
+
+  if (!teksBuku.ok) {
+    // Kesalahan sampul digabung ke kesalahan teks, bukan dilaporkan di
+    // kesempatan berikutnya: form menampilkan semuanya dalam satu kali
+    // kirim, sehingga admin tidak perlu mengirim dua kali untuk mengetahui
+    // dua hal yang salah.
+    return {
+      ok: false,
+      errors: coverPath === ""
+        ? { ...teksBuku.errors, coverPath: "Sampul wajib diunggah." }
+        : teksBuku.errors,
+    };
+  }
+
+  if (coverPath === "") {
+    return { ok: false, errors: { coverPath: "Sampul wajib diunggah." } };
+  }
+
+  return { ok: true, value: { ...teksBuku.value, coverPath } };
 }

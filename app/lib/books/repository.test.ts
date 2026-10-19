@@ -8,6 +8,7 @@ import {
   updateBook,
   deleteBook,
   countBooksByStatus,
+  listAllBooks,
 } from "./repository";
 
 async function bersihkan() {
@@ -211,5 +212,40 @@ describe("repository buku", () => {
 
     const lagi = await deleteBook("00000000-0000-0000-0000-000000000000");
     expect(lagi.ok).toBe(false);
+  });
+});
+
+/**
+ * Daftar admin berbeda dari daftar publik dalam satu hal penting: ia tidak
+ * menyaring per status. Kalau penyaringan itu terbawa ke sini, buku yang
+ * baru disimpan sebagai `upcoming` akan hilang dari pandangan admin — dan
+ * itu buku yang paling mungkin ingin ia periksa lagi.
+ */
+describe("listAllBooks", () => {
+  beforeEach(bersihkan);
+
+  afterAll(async () => {
+    await bersihkan();
+    await closePool();
+  });
+
+  it("mengembalikan buku dari kedua status", async () => {
+    await seed("Buku Terbit", "buku-terbit", "published");
+    await seed("Buku Segera", "buku-segera", "upcoming");
+
+    const halaman = await listAllBooks();
+
+    expect(halaman.total).toBe(2);
+    expect(halaman.items.map((b) => b.status).sort()).toEqual(["published", "upcoming"]);
+  });
+
+  it("menaruh buku yang paling baru disunting di atas", async () => {
+    await seed("Lama", "lama", "published");
+    await seed("Baru", "baru", "published");
+    await execute("UPDATE books SET updated_at = '2020-01-01 00:00:00' WHERE slug = ?", ["lama"]);
+
+    const halaman = await listAllBooks();
+
+    expect(halaman.items.map((b) => b.title)).toEqual(["Baru", "Lama"]);
   });
 });

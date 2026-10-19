@@ -86,6 +86,35 @@ export async function listBooks(opts: {
 }
 
 /**
+ * Seluruh buku, kedua status, untuk daftar admin.
+ *
+ * Terpisah dari `listBooks` karena daftar admin tidak disaring per status:
+ * admin perlu melihat seluruh isi katalog di satu tempat, termasuk buku
+ * yang baru disimpan sebagai `upcoming`. Urutannya waktu ubah terbaru di
+ * atas — yang baru saja disunting admin hampir selalu yang ingin ia lihat
+ * lagi — dengan `id` sebagai pemecah seri agar pagination deterministik.
+ */
+export async function listAllBooks(opts: {
+  page?: number;
+  pageSize?: number;
+} = {}): Promise<Page<Book>> {
+  const pageSize = pageSizeDipakai(opts.pageSize);
+
+  const [hitung] = await query<{ total: number }>("SELECT COUNT(*) AS total FROM books");
+  const total = Number(hitung.total);
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const page = normalizePage(opts.page, totalPages);
+
+  const offset = (page - 1) * pageSize;
+  const baris = await query<Record<string, unknown>>(
+    `SELECT ${KOLOM_BUKU} FROM books ORDER BY updated_at DESC, id ASC LIMIT ? OFFSET ?`,
+    [Number(pageSize), Number(offset)]
+  );
+
+  return jadikanHalaman(baris.map(mapRow), total, page, pageSize);
+}
+
+/**
  * Jumlah buku per status, untuk ringkasan dashboard.
  *
  * Satu query `GROUP BY`, bukan dua `COUNT(*)` terpisah: status yang belum
