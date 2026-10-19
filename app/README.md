@@ -183,4 +183,7 @@ bukan lewat tes. Setiap halaman admin baru harus masuk ke dalam group itu.
 | `docs/DESIGN-STACK.md` | Keputusan teknis dan alasannya |
 | `docs/SPEC-AMENDMENT-01.md` | Perubahan lingkup terhadap brief awal |
 | `PROJECT-BACKEND-FIRST.md` | Brief awal dari klien |
-| `PERJANJIAN KESEPAKATAN KERJASAMA.pdf` | Perjanjian kerja sama yang ditandatangani |
+
+Perjanjian kerja sama yang ditandatangani **tidak** ada di repo ini: dokumen
+itu memuat nama asli, tanda tangan, dan nilai perjanjian, sehingga disimpan
+terpisah oleh pemilik proyek.
