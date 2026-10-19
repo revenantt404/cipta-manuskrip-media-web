@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:migrate": "node --env-file=.env.local scripts/migrate.mjs"
+    "db:migrate": "node --env-file=.env.local scripts/migrate.mjs",
+    "db:create-admin": "node --env-file=.env.local scripts/create-admin.mjs"
   },
   "dependencies": {
     "@node-rs/argon2": "2.2.2",
