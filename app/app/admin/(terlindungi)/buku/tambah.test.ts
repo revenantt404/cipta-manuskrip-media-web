@@ -7,7 +7,7 @@ import { createBookAction } from "./actions";
 import { STATE_BUKU_AWAL } from "./form-state";
 import { simpanBukuBaru } from "@/lib/books/manage";
 
-const DIR_UJI = path.join(process.cwd(), "public", "covers-uji-buku");
+const DIR_UJI = path.join(process.cwd(), "storage", "covers-uji-buku");
 
 const TEKS_SAH = {
   title: "Buku Uji Simpan",
@@ -56,6 +56,17 @@ async function berkasTersimpan(): Promise<string[]> {
   return existsSync(DIR_UJI) ? readdirSync(DIR_UJI) : [];
 }
 
+/**
+ * Berkas sampul dicari di folder sampul, bukan di `public/`.
+ *
+ * `cover_path` memuat nama logis (`covers/<uuid>.webp`); lokasi fisiknya
+ * ditentukan `COVER_DIR`. Keduanya sengaja dipisah supaya folder sampul bisa
+ * berada di luar folder aplikasi di hosting.
+ */
+function berkasAda(coverPath: string): boolean {
+  return existsSync(path.join(DIR_UJI, path.basename(coverPath)));
+}
+
 async function jumlahBuku(): Promise<number> {
   const baris = await query<{ jumlah: number }>("SELECT COUNT(*) AS jumlah FROM books");
   return Number(baris[0].jumlah);
@@ -63,7 +74,7 @@ async function jumlahBuku(): Promise<number> {
 
 async function bersihkan() {
   await execute("DELETE FROM books");
-  rmSync(DIR_UJI, { recursive: true, force: true });
+  rmSync(DIR_UJI, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
   mkdirSync(DIR_UJI, { recursive: true });
 }
 
@@ -71,13 +82,13 @@ describe("simpanBukuBaru", () => {
   beforeEach(async () => {
     await bersihkan();
     // `COVER_DIR` diarahkan ke folder uji supaya berkas yang dibuat tes tidak
-    // pernah bercampur dengan sampul asli di public/covers.
-    process.env.COVER_DIR = "public/covers-uji-buku";
+    // pernah bercampur dengan sampul asli di storage/covers.
+    process.env.COVER_DIR = "storage/covers-uji-buku";
   });
 
   afterAll(async () => {
     await bersihkan();
-    rmSync(DIR_UJI, { recursive: true, force: true });
+    rmSync(DIR_UJI, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
     delete process.env.COVER_DIR;
     await closePool();
   });
@@ -142,10 +153,11 @@ describe("simpanBukuBaru", () => {
     expect(hasil.book.title).toBe(TEKS_SAH.title);
     expect(hasil.book.slug).toBe("buku-uji-simpan");
     expect(hasil.book.status).toBe("published");
-    // Path yang disimpan adalah path relatif, bukan URL — itu yang membuat
-    // pindah domain tidak memerlukan perubahan data.
-    expect(hasil.book.coverPath).toMatch(/^covers-uji-buku\/[0-9a-f-]{36}\.webp$/);
-    expect(existsSync(path.join(process.cwd(), "public", hasil.book.coverPath))).toBe(true);
+    // Path yang disimpan adalah nama logis yang sama di semua lingkungan,
+    // bukan URL dan bukan lokasi fisik folder — itu yang membuat pindah
+    // domain dan pindah folder sampul tidak memerlukan perubahan data.
+    expect(hasil.book.coverPath).toMatch(/^covers\/[0-9a-f-]{36}\.webp$/);
+    expect(berkasAda(hasil.book.coverPath)).toBe(true);
     expect(await jumlahBuku()).toBe(1);
   });
 
@@ -188,7 +200,7 @@ describe("simpanBukuBaru", () => {
     // Satu baris saja, dan hanya sampul buku pertama yang tersisa.
     expect(await jumlahBuku()).toBe(1);
     expect(await berkasTersimpan()).toHaveLength(1);
-    expect(existsSync(path.join(process.cwd(), "public", pertama.book.coverPath))).toBe(true);
+    expect(berkasAda(pertama.book.coverPath)).toBe(true);
   });
 });
 

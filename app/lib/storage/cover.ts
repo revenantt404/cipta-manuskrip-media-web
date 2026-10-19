@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, writeFile, rm, access } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { coverMaxBytes, COVER_DIR } from "./path";
+import { coverMaxBytes, dirSampul, COVER_DIR } from "./path";
 
 /**
  * Batas jumlah piksel, terpisah dari batas ukuran berkas.
@@ -34,29 +34,20 @@ export type HasilSimpanSampul =
   | { ok: false; error: string };
 
 /**
- * Folder tempat berkas sampul ditulis, sebagai path absolut.
- *
- * `COVER_DIR` boleh menunjuk ke luar folder aplikasi — syaratnya ada di
- * `DESIGN-STACK.md` bagian 5: folder sampul tidak boleh ikut terhapus saat
- * aplikasi di-deploy ulang.
- */
-export function dirSampul(): string {
-  const diatur = process.env.COVER_DIR;
-  if (diatur === undefined || diatur.trim() === "") {
-    return path.join(process.cwd(), "public", COVER_DIR);
-  }
-  return path.resolve(diatur);
-}
-
-/**
  * Nama subfolder yang dipakai di `cover_path`.
  *
  * Yang disimpan ke database adalah path relatif (`covers/<uuid>.webp`),
  * bukan URL dan bukan path absolut: pindah domain tidak memerlukan
  * perubahan data, dan folder penyimpanan boleh berbeda antar lingkungan.
+ *
+ * Nilainya sengaja TIDAK diturunkan dari `dirSampul()`: lokasi fisik folder
+ * berbeda antar lingkungan (di hosting `COVER_DIR` menunjuk ke luar folder
+ * aplikasi), sementara nama logis di database harus sama di mana pun. URL
+ * publik dibentuk `resolveCoverUrl` dari nama berkasnya saja, jadi
+ * perbedaan lokasi tidak pernah terlihat pengunjung.
  */
 function subfolderSampul(): string {
-  return path.basename(dirSampul());
+  return COVER_DIR;
 }
 
 function menolak(error: string): HasilSimpanSampul {

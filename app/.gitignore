@@ -44,3 +44,7 @@ next-env.d.ts
 # kredensial lokal
 .env.local
 .env*.local
+
+# sampul yang diunggah admin — data berjalan, bukan bagian dari kode.
+# Folder uji (*-uji*) juga tercakup oleh pola ini.
+/storage/

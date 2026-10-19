@@ -3,9 +3,17 @@ import { existsSync, rmSync, mkdirSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { processAndSaveCover, deleteCoverFile, dirSampul } from "./cover";
+import { processAndSaveCover, deleteCoverFile } from "./cover";
+import { COVER_DIR } from "./path";
 
-const DIR_UJI = path.join(process.cwd(), "public", "covers-uji");
+/**
+ * Folder uji berada di luar `public/`, sama seperti folder sampul sungguhan.
+ *
+ * Bawaannya sudah di `storage/covers` sejak perbaikan Task 8: berkas di
+ * `public/` hanya tersaji bila sudah ada saat `next start` menyala, sehingga
+ * sampul yang baru diunggah tidak akan pernah tampil dari sana.
+ */
+const DIR_UJI = path.join(process.cwd(), "storage", "covers-uji");
 
 async function gambar(
   lebar: number,
@@ -36,14 +44,14 @@ async function metadata(buffer: Buffer) {
  * itu membuat `rmSync` gagal dengan EBUSY saat folder dibersihkan antar tes.
  */
 async function bacaSampul(coverPath: string): Promise<Buffer> {
-  return readFile(path.join(process.cwd(), "public", coverPath));
+  return readFile(path.join(DIR_UJI, path.basename(coverPath)));
 }
 
 describe("processAndSaveCover", () => {
   beforeEach(() => {
     rmSync(DIR_UJI, { recursive: true, force: true });
     mkdirSync(DIR_UJI, { recursive: true });
-    process.env.COVER_DIR = "public/covers-uji";
+    process.env.COVER_DIR = "storage/covers-uji";
   });
 
   afterAll(() => {
@@ -65,8 +73,37 @@ describe("processAndSaveCover", () => {
 
     expect(hasil.ok).toBe(true);
     if (!hasil.ok) return;
-    expect(hasil.coverPath).toMatch(/^covers-uji\/[0-9a-f-]{36}\.webp$/);
-    expect(existsSync(path.join(process.cwd(), "public", hasil.coverPath))).toBe(true);
+    expect(hasil.coverPath).toMatch(new RegExp(`^${COVER_DIR}/[0-9a-f-]{36}\\.webp$`));
+    expect(existsSync(path.join(DIR_UJI, path.basename(hasil.coverPath)))).toBe(true);
+  });
+
+  /**
+   * Nama logis di database tidak boleh bergantung pada lokasi fisik folder.
+   *
+   * Di hosting `COVER_DIR` menunjuk ke luar folder aplikasi; kalau
+   * `cover_path` ikut berubah mengikuti folder, pindah lingkungan akan
+   * membuat semua baris lama menunjuk berkas yang tidak ada.
+   */
+  it("menyimpan nama logis yang sama meski lokasi fisik foldernya berbeda", async () => {
+    const pertama = await processAndSaveCover(await gambar(100, 150), "image/jpeg");
+
+    process.env.COVER_DIR = "storage/covers-uji-lain";
+    const lainDir = path.join(process.cwd(), "storage", "covers-uji-lain");
+    rmSync(lainDir, { recursive: true, force: true });
+
+    try {
+      const kedua = await processAndSaveCover(await gambar(100, 150), "image/jpeg");
+
+      expect(pertama.ok && kedua.ok).toBe(true);
+      if (!pertama.ok || !kedua.ok) return;
+
+      const subfolder = (p: string) => p.slice(0, p.lastIndexOf("/"));
+      expect(subfolder(kedua.coverPath)).toBe(subfolder(pertama.coverPath));
+      expect(existsSync(path.join(lainDir, path.basename(kedua.coverPath)))).toBe(true);
+    } finally {
+      process.env.COVER_DIR = "storage/covers-uji";
+      rmSync(lainDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+    }
   });
 
   it("menerima JPEG, PNG, dan WebP", async () => {
@@ -185,7 +222,7 @@ describe("deleteCoverFile", () => {
   beforeEach(() => {
     rmSync(DIR_UJI, { recursive: true, force: true });
     mkdirSync(DIR_UJI, { recursive: true });
-    process.env.COVER_DIR = "public/covers-uji";
+    process.env.COVER_DIR = "storage/covers-uji";
   });
 
   afterAll(() => {
@@ -197,7 +234,7 @@ describe("deleteCoverFile", () => {
     const disimpan = await processAndSaveCover(await gambar(100, 150), "image/jpeg");
     if (!disimpan.ok) throw new Error("gagal menyiapkan berkas");
 
-    const penuh = path.join(process.cwd(), "public", disimpan.coverPath);
+    const penuh = path.join(DIR_UJI, path.basename(disimpan.coverPath));
     expect(existsSync(penuh)).toBe(true);
 
     expect(await deleteCoverFile(disimpan.coverPath)).toBe(true);
@@ -225,21 +262,5 @@ describe("deleteCoverFile", () => {
   it("menolak path kosong", async () => {
     expect(await deleteCoverFile("")).toBe(false);
     expect(await deleteCoverFile("   ")).toBe(false);
-  });
-});
-
-describe("dirSampul", () => {
-  afterAll(() => {
-    delete process.env.COVER_DIR;
-  });
-
-  it("memakai public/covers sebagai bawaan", () => {
-    delete process.env.COVER_DIR;
-    expect(dirSampul()).toBe(path.join(process.cwd(), "public", "covers"));
-  });
-
-  it("mengikuti COVER_DIR bila diatur, supaya sampul bisa diletakkan di luar aplikasi", () => {
-    process.env.COVER_DIR = "D:/data/sampul";
-    expect(dirSampul()).toBe(path.resolve("D:/data/sampul"));
   });
 });

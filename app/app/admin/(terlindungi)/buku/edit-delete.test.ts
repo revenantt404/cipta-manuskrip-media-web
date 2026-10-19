@@ -14,7 +14,7 @@ import { STATE_BUKU_AWAL, STATE_HAPUS_AWAL } from "./form-state";
  * Skenarionya menghapus berkas sebagai bagian dari perilaku yang diuji, jadi
  * `COVER_DIR` tidak boleh menunjuk folder sampul sungguhan.
  */
-const DIR_UJI = path.join(process.cwd(), "public", "covers-uji-edit");
+const DIR_UJI = path.join(process.cwd(), "storage", "covers-uji-edit");
 
 const ID_TIDAK_ADA = "00000000-0000-0000-0000-000000000000";
 
@@ -66,24 +66,24 @@ async function berkasTersimpan(): Promise<string[]> {
 }
 
 function berkasAda(coverPath: string): boolean {
-  return existsSync(path.join(process.cwd(), "public", coverPath));
+  return existsSync(path.join(DIR_UJI, path.basename(coverPath)));
 }
 
 async function bersihkan() {
   await execute("DELETE FROM books");
-  rmSync(DIR_UJI, { recursive: true, force: true });
+  rmSync(DIR_UJI, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
   mkdirSync(DIR_UJI, { recursive: true });
 }
 
 describe("perbaruiBuku", () => {
   beforeEach(async () => {
     await bersihkan();
-    process.env.COVER_DIR = "public/covers-uji-edit";
+    process.env.COVER_DIR = "storage/covers-uji-edit";
   });
 
   afterAll(async () => {
     await bersihkan();
-    rmSync(DIR_UJI, { recursive: true, force: true });
+    rmSync(DIR_UJI, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
     delete process.env.COVER_DIR;
     await closePool();
   });
@@ -187,7 +187,7 @@ describe("perbaruiBuku", () => {
 describe("hapusBuku", () => {
   beforeEach(async () => {
     await bersihkan();
-    process.env.COVER_DIR = "public/covers-uji-edit";
+    process.env.COVER_DIR = "storage/covers-uji-edit";
   });
 
   afterAll(async () => {
@@ -222,7 +222,7 @@ describe("hapusBuku", () => {
 describe("aksi edit dan hapus tanpa sesi", () => {
   beforeEach(async () => {
     await bersihkan();
-    process.env.COVER_DIR = "public/covers-uji-edit";
+    process.env.COVER_DIR = "storage/covers-uji-edit";
   });
 
   afterAll(async () => {
