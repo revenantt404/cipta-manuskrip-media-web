@@ -38,16 +38,22 @@ terhadap brief awal ada di `docs/SPEC-AMENDMENT-01.md`.
 
 ## Yang sudah dikerjakan di Fase 2
 
-Enam commit Fase 2:
+Sebelas commit sejak akhir Fase 1 — delapan commit fitur dan tiga commit
+dokumentasi/kebersihan repo:
 
 | Commit | Isi |
 |---|---|
+| `01263e2` | Dokumentasi: panduan setup database dan laporan progres Fase 1 |
+| `ea4e14e` | Halaman detail buku dan pembentuk tautan WhatsApp |
 | `a26d0a0` | Verifikasi kata sandi argon2id dan pembatasan percobaan login |
 | `ef93190` | Manajemen sesi dan penjaga route admin |
 | `75d1490` | Pemrosesan dan penyimpanan berkas sampul |
 | `89b44dd` | Halaman login admin dan dashboard terproteksi |
 | `66de450` | Daftar buku admin dan form penambahan dengan kompensasi berkas |
 | `e24ba2e` | Form edit buku dengan pergantian sampul dan aksi hapus |
+| `c2874d1` | Penyajian sampul lewat route sendiri dan tampilan di katalog |
+| `fbeaa1d` | Kebersihan repo: dokumen hukum dikecualikan dari git |
+| `36cd4db` | Dokumentasi: catatan bahwa perjanjian disimpan di luar repo |
 
 Semuanya digabung ke `master` setelah peninjauan branch. Tujuh temuan yang
 mengubah rencana awal dicatat di catatan pelaksanaan Fase 2
@@ -58,7 +64,8 @@ yang ditemukan lewat verifikasi HTTP, bukan lewat tes otomatis — lihat
 
 ## Yang sudah dikerjakan di Fase 3
 
-Dua belas commit di `master` setelah Fase 2, dipisah per satuan kerja:
+Empat belas commit di `master` setelah Fase 2 — dua belas commit fitur dan
+dua commit dokumentasi — dipisah per satuan kerja:
 
 | Commit | Isi |
 |---|---|
@@ -74,6 +81,8 @@ Dua belas commit di `master` setelah Fase 2, dipisah per satuan kerja:
 | `234c8c7` | Halaman `/tentang-kami` dengan kontak dan placeholder legalitas |
 | `c79997d` | `robots.txt`, sitemap dinamis, dan metadata situs |
 | `e5b915d` | Invalidasi `/publish-buku` setelah mutasi admin + acceptance test Fase 3 |
+| `71b5c69` | Dokumentasi: verifikasi Fase 3 dan batas preview katalog |
+| `ea6f6a0` | Dokumentasi: perbaikan bukti, hash, dan hitungan commit |
 
 Rencana kerja lengkapnya ada di
 `docs/superpowers/plans/2026-10-20-fase-3-alur-publik.md`; catatan pelaksanaan
@@ -84,6 +93,13 @@ lokal, sengaja tidak masuk repo.
 ## Yang benar-benar terverifikasi
 
 ### Tes otomatis
+
+> **Peringatan:** tes menunjuk database pengembangan dan **menghapus seluruh
+> isi tabel `books` serta `admin_users`** di setiap awal berkas tes. Akun admin
+> yang sedang dipakai masuk ikut terhapus. Cadangkan dulu, dan setelah tes
+> buat ulang akun admin dengan
+> `ADMIN_PASSWORD=... npm run db:create-admin -- --email admin@localhost`.
+> Jangan pernah menunjuk `DB_NAME` ke database berisi data sungguhan.
 
 ```bash
 cd app && npx vitest run
@@ -134,11 +150,13 @@ Hasil: `✓ Compiled successfully`. Daftar route:
 ƒ  (Dynamic)  server-rendered on demand
 ```
 
-Catatan jujur atas tabel itu: **seluruh route publik yang membaca database
-adalah `ƒ` (Dynamic)** — beranda, katalog, `/publish-buku`, detail buku,
-penyaji sampul, dan sitemap. Artinya mereka dirender saat diminta, bukan
-dibekukan saat build; itu syarat agar buku baru langsung tampil. `robots.txt`
-statik dan independen dari database.
+Catatan jujur atas tabel itu: **setiap route yang membaca database adalah
+`ƒ` (Dynamic)** — katalog, `/publish-buku`, detail buku, penyaji sampul, dan
+sitemap. Artinya mereka dirender saat diminta, bukan dibekukan saat build;
+itu syarat agar buku baru langsung tampil. Beranda (`/`) dan
+`/admin/login` justru `○` (Static): keduanya memang tidak menyentuh
+database, jadi tidak ada isi yang bisa basi. `robots.txt` dan seluruh
+halaman layanan statis juga `○`.
 
 ### Verifikasi HTTP Fase 1
 
@@ -428,7 +446,7 @@ dijalankan terhadap build produksi dan hasilnya tercatat di atas.
 | 12 | Dataset >12 buku: urutan A–Z, pagination, halaman invalid, pemisahan status | otomatis (acceptance `acceptance-fase-3.test.tsx`) | **Lulus** — 30 published lintas 3 halaman |
 | 13 | URL WhatsApp dan hasil decode pesan cocok persis | otomatis | Lulus |
 | 14 | UI tidak membocorkan key; route admin noindex; robots; sitemap | otomatis + HTTP | **Lulus** |
-| 15 | UI sederhana, rapi, responsif, cukup untuk menguji semua alur | — | Sebagaimana diminta |
+| 15 | Lint, type-check, build, dan test otomatis yang relevan lulus; invalidasi diverifikasi pada production build | — | **Lulus** — lihat "Tes otomatis" dan "Build produksi" di atas. Invalidasi pada production build belum diverifikasi terpisah: build berhasil, tetapi pengujian cache eviction menuntut dua proses server yang saling berbagi cache, dan itu belum dijalankan |
 
 Catatan jujur atas yang perlu dijelaskan:
 

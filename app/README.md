@@ -133,9 +133,17 @@ npm test             # Vitest, sekali jalan
 npm run test:watch   # Vitest, mode pantau
 ```
 
-`npm test` menyentuh database yang sama dengan pengembangan. Tes repository
-menghapus isi tabel `books` di setiap awal tes, jadi **jangan menunjuk
-`DB_NAME` ke database berisi data sungguhan** saat menjalankan tes.
+`npm test` menyentuh database yang sama dengan pengembangan, dan **tes
+menghapus seluruh isi tabel `books` dan `admin_users`** di setiap awal tes —
+termasuk akun admin yang sedang Anda pakai masuk. Isi database lokal akan
+hilang dan harus dibuat ulang sesudahnya. Jangan pernah menunjuk `DB_NAME`
+ke database berisi data sungguhan saat menjalankan tes.
+
+Membuat ulang akun admin setelah tes:
+
+```bash
+ADMIN_PASSWORD=sandi-lokal-dev-panjang npm run db:create-admin -- --email admin@localhost
+```
 
 ## Struktur folder
 

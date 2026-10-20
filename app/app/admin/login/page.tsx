@@ -6,8 +6,12 @@ import { FormLogin } from "./FormLogin";
 
 // Halaman login tidak boleh masuk indeks mesin pencari. Brief bagian 7
 // menegaskan ini BUKAN mekanisme keamanan — penjaganya tetap sesi di server.
+//
+// Judulnya hanya "Masuk": template root (`lib/site-metadata.ts`) sudah
+// menambahkan " — CV Cipta Manuskrip Media", jadi menyebutkannya lagi di
+// sini menghasilkan nama situs dua kali.
 export const metadata: Metadata = {
-  title: "Masuk — CV Cipta Manuskrip Media",
+  title: "Masuk",
   robots: { index: false, follow: false },
 };
 
