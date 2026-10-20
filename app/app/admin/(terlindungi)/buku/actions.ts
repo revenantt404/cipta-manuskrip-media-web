@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/guard";
 import { simpanBukuBaru, perbaruiBuku, hapusBuku, bacaTeks } from "@/lib/books/manage";
+import { daftarRevalidasi } from "@/lib/books/revalidate";
 import type { NilaiFormBuku, StateFormBuku, StateHapusBuku } from "./form-state";
 
 /**
@@ -27,18 +28,19 @@ function bacaNilai(data: FormData): NilaiFormBuku {
 }
 
 /**
- * Seluruh alamat yang isinya bergantung pada satu buku.
+ * Memberi tahu cache bahwa seluruh halaman yang isinya bergantung pada satu
+ * buku sudah basi.
  *
- * Dijadikan satu fungsi karena setiap mutasi harus menyentuhnya, dan daftar
- * yang ditulis ulang di tiga tempat cepat atau lambat akan berbeda isinya.
- * Detail per-slug memakai argumen `"page"`: tanpa itu `revalidatePath`
- * menganggapnya path halaman statis dan tidak melakukan apa pun.
+ * Daftar alamatnya hidup di `lib/books/revalidate.ts`, bukan di sini:
+ * berkas `"use server"` hanya boleh mengekspor fungsi async, jadi fungsi
+ * murni yang bisa diimpor dan diuji (`daftarRevalidasi`) tidak tinggal di
+ * sini. Dengan satu daftar untuk ketiga mutasi, tidak ada halaman yang
+ * bisa tertinggal hanya karena daftarnya ditulis ulang.
  */
 function revalidasiBuku(slug: string): void {
-  revalidatePath("/admin/buku");
-  revalidatePath("/katalog/[status]", "page");
-  revalidatePath("/", "page");
-  revalidatePath(`/buku/${slug}`, "page");
+  for (const { path, type } of daftarRevalidasi(slug)) {
+    revalidatePath(path, type);
+  }
 }
 
 /**
