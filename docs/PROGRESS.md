@@ -20,44 +20,45 @@ Blocker.
 
 ## Yang sudah dikerjakan di Fase 1
 
-Delapan commit di branch `feat/fase-1-fondasi-mysql`, dipisah per satuan kerja:
+Delapan commit Fase 1, dipisah per satuan kerja:
 
 | Commit | Isi |
 |---|---|
-| `7f8fb41` | Bootstrap Next.js 16 + TypeScript strict + Tailwind |
-| `cfb2340` | Konfigurasi environment dan validasi kredensial database |
-| `7d6e6cc` | Migration SQL dan skrip pembuatan skema |
-| `ac56cfc` | Koneksi database MySQL dan pengujiannya |
-| `5fb7a88` | Perintah pembuatan akun admin dengan hash argon2id |
-| `227149a` | Validasi input buku dan pembentuk slug |
-| `d37cd64` | Repository buku dengan pagination dan pengujiannya |
-| `4929746` | Halaman katalog: empty state dan galat database terpisah |
+| `4fa86ac` | Bootstrap Next.js 16 + TypeScript strict + Tailwind |
+| `d2ec637` | Konfigurasi environment dan validasi kredensial database |
+| `d5eb26f` | Migration SQL dan skrip pembuatan skema |
+| `3abaf43` | Koneksi database MySQL dan pengujiannya |
+| `8d906e1` | Perintah pembuatan akun admin dengan hash argon2id |
+| `df43dc0` | Validasi input buku dan pembentuk slug |
+| `9ad5051` | Repository buku dengan pagination dan pengujiannya |
+| `61bcd0e` | Halaman katalog: empty state dan galat database terpisah |
 
 Rancangan teknis lengkapnya ada di `docs/DESIGN-STACK.md`; perubahan lingkup
 terhadap brief awal ada di `docs/SPEC-AMENDMENT-01.md`.
 
 ## Yang sudah dikerjakan di Fase 2
 
-Lima commit di branch `feat/fase-2-panel-admin`:
+Enam commit Fase 2:
 
 | Commit | Isi |
 |---|---|
-| `0a5f683` | Verifikasi kata sandi argon2id dan pembatasan percobaan login |
-| `8ceef81` | Manajemen sesi dan penjaga route admin |
-| `8e69e9b` | Pemrosesan dan penyimpanan berkas sampul |
-| `36ce7af` | Halaman login admin dan dashboard terproteksi |
-| `801625e` | Daftar buku admin dan form penambahan dengan kompensasi berkas |
-| `4c5a901` | Form edit buku dengan pergantian sampul dan aksi hapus |
+| `a26d0a0` | Verifikasi kata sandi argon2id dan pembatasan percobaan login |
+| `ef93190` | Manajemen sesi dan penjaga route admin |
+| `75d1490` | Pemrosesan dan penyimpanan berkas sampul |
+| `89b44dd` | Halaman login admin dan dashboard terproteksi |
+| `66de450` | Daftar buku admin dan form penambahan dengan kompensasi berkas |
+| `e24ba2e` | Form edit buku dengan pergantian sampul dan aksi hapus |
 
-Semuanya digabung ke `main` setelah peninjauan branch. Tujuh temuan yang
-mengubah rencana awal dicatat di
-`.superpowers/sdd/2026-10-19-fase-2-panel-admin/progress.md`; dua di antaranya
-adalah perbaikan bug yang ditemukan lewat verifikasi HTTP, bukan lewat tes
-otomatis — lihat "Dua bug yang ditemukan dan diperbaiki" di bawah.
+Semuanya digabung ke `master` setelah peninjauan branch. Tujuh temuan yang
+mengubah rencana awal dicatat di catatan pelaksanaan Fase 2
+(`.superpowers/sdd/2026-10-19-fase-2-panel-admin/progress.md`, berkas kerja
+lokal yang sengaja tidak masuk repo); dua di antaranya adalah perbaikan bug
+yang ditemukan lewat verifikasi HTTP, bukan lewat tes otomatis — lihat
+"Dua bug yang ditemukan dan diperbaiki" di bawah.
 
 ## Yang sudah dikerjakan di Fase 3
 
-Sebelas commit di `master` setelah Fase 2, dipisah per satuan kerja:
+Dua belas commit di `master` setelah Fase 2, dipisah per satuan kerja:
 
 | Commit | Isi |
 |---|---|
@@ -75,8 +76,10 @@ Sebelas commit di `master` setelah Fase 2, dipisah per satuan kerja:
 | `e5b915d` | Invalidasi `/publish-buku` setelah mutasi admin + acceptance test Fase 3 |
 
 Rencana kerja lengkapnya ada di
-`docs/superpowers/plans/2026-10-20-fase-3-alur-publik.md`; temuan yang mengubah
-rencana dicatat di `.superpowers/sdd/2026-10-20-fase-3-alur-publik/progress.md`.
+`docs/superpowers/plans/2026-10-20-fase-3-alur-publik.md`; catatan pelaksanaan
+(temuan yang mengubah rencana, satu per satu) ada di
+`.superpowers/sdd/2026-10-20-fase-3-alur-publik/progress.md` — berkas kerja
+lokal, sengaja tidak masuk repo.
 
 ## Yang benar-benar terverifikasi
 
@@ -213,9 +216,9 @@ diulang di sini — lihat riwayat laporan di git (lampiran laporan Fase 2 di
 | Upload sampul end-to-end | server action `303`, `cover_path` terisi, `/covers/<uuid>.webp` jawab `200 image/webp` |
 | Path traversal `/covers/../package.json` dan variasinya | `404` |
 
-Dua bug yang ditemukannya saat itu (sampul tidak pernah tampil setelah
-`next start` membekukan daftar `public/`; kartu katalog tanpa sampul) keduanya
-sudah diperbaiki dan kini punya tes otomatisnya sendiri:
+Dua bug yang ditemukan dan diperbaiki saat itu (sampul tidak pernah tampil
+setelah `next start` membekukan daftar `public/`; kartu katalog tanpa sampul)
+keduanya kini punya tes otomatisnya sendiri:
 
 1. **Sampul yang baru diunggah tidak pernah tampil.** `next start` membekukan
    daftar berkas `public/` saat server menyala. Berkas yang ditulis setelahnya
@@ -267,8 +270,11 @@ Sitemap: http://localhost:3000/sitemap.xml
 `/publish-jurnal`, `/publish-jurnal/kirim-artikel`,
 `/publish-jurnal/asistensi`, `/katalog/telah-terbit`,
 `/katalog/segera-terbit` — dengan URL absolut dan **tanpa satu pun URL
-`/admin`**. Halaman admin menset `robots: { index: false, follow: false }`
-(`noindex, nofollow` terbaca di HTML `/admin/login`).
+`/admin`**. Halaman admin menset `robots: { index: false, follow: false }`.
+`noindex, nofollow` terbaca langsung di HTML `/admin/login`; untuk halaman di
+belakang `(terlindungi)` buktinya dari sumber — layout group dan ketiga
+halaman anaknya masing-masing mengekspor `robots` yang sama — karena halaman
+itu hanya bisa diambil lewat sesi.
 
 Semua URL berasal dari `SITE_URL`. `SITE_URL` belum diset (domain belum ada),
 jadi nilainya fallback `http://localhost:3000`. **Ini wajib diperbaiki sebelum
@@ -390,12 +396,16 @@ pemilik proyek.
    sudah bangun; penggantian placeholder dengan bahan client adalah jahitan
    yang tinggal dijahit.
 
-6. **Tautan `tel:` di `/tentang-kami` memakai format domestik.**
-   `tel:0895-6292-03142` dan `tel:0896-7189-4900` ditulis dengan format
-   tampilan beranda dalam (dengan tanda hubung) alih-alih format
-   internasional (`+62…`). Ditinjau laporan ini tidak dianggap cacat —
-   pemilik proyek memilih nomor tampilan domestik; dicatat di sini agar
-   keputusannya terlihat, bukan diam-diam diubah.
+6. **Tautan `tel:` di `/tentang-kami` memakai format domestik — perlu
+   keputusan klien.** `tel:0895-6292-03142` dan `tel:0896-7189-4900` ditulis
+   apa adanya dari nomor tampilan yang dikunci brief §9 (dengan tanda hubung
+   dan awalan `0`), bukan dinormalkan ke `+62…`. Konsekuensinya tautan itu
+   berfungsi di Indonesia dan tidak akan tersambung dari luar negeri.
+   Peninjau menilai ini bukan cacat — brief yang menentukan bentuk nomornya,
+   dan mengubahnya berarti membuat representasi kedua dari nomor yang sama.
+   Tetapi **belum ada yang memutuskan** apakah format internasional
+   diinginkan; itu keputusan klien, dicatat di sini agar terlihat, bukan
+   diam-diam diubah.
 
 ## Status acceptance test brief bagian 13
 
@@ -435,8 +445,11 @@ Catatan jujur atas yang perlu dijelaskan:
   sudah dikerjakan di Fase 1; pengujian 30-buku ini yang melengkapi bagian
   yang sebelumnya "Sebagian".
 - **#14 kini lulus.** Route `/admin` (semua halaman di belakang
-  `(terlindungi)`) memuat meta `noindex, nofollow` (terbaca di HTML
-  `/admin/login`); `robots.txt` berisi `Disallow: /admin` plus direktif
+  `(terlindungi)`) memuat meta `noindex, nofollow` — dibaca dari sumber
+  (`app/app/admin/(terlindungi)/layout.tsx` beserta ketiga halaman anaknya,
+  yang masing-masing juga mengekspor `robots`); `noindex` di `/admin/login`
+  terbaca langsung di HTML yang tersaji. `robots.txt` berisi
+  `Disallow: /admin` plus direktif
   sitemap; `sitemap.xml` memuat 8 URL publik absolut dengan URL dari
   `SITE_URL`, tanpa satu pun URL `/admin`, dan memuat kedua status buku.
   `UI tidak membocorkan key`: tidak ada nilai kunci di UI (diperiksa lewat
