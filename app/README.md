@@ -39,6 +39,7 @@ yang dibutuhkan:
 | `DB_PASSWORD` | (kosong) | Kosongkan bila MySQL tidak memakai password |
 | `DB_NAME` | `cipta_manuskrip_media` | Dibuat otomatis oleh migration bila belum ada |
 | `BOOKS_PER_PAGE` | `12` | Jumlah buku per halaman katalog |
+| `SITE_URL` | `http://localhost:3000` | Asal URL absolut untuk sitemap dan robots; wajib diisi alamat produksi sebelum situs naik |
 | `COVER_MAX_BYTES` | `5242880` | Batas ukuran berkas sampul (5 MiB), sebelum diproses |
 | `COVER_DIR` | `storage/covers` | Folder fisik penyimpanan sampul |
 
@@ -142,20 +143,29 @@ menghapus isi tabel `books` di setiap awal tes, jadi **jangan menunjuk
 app/
 ├── app/                    Halaman Next.js (App Router)
 │   ├── layout.tsx          Kerangka halaman, metadata, bahasa
-│   ├── page.tsx            Beranda
-│   ├── katalog/[status]/   Katalog: telah-terbit, segera-terbit
-│   ├── buku/[slug]/        Detail satu buku
+│   ├── robots.ts           robots.txt: Allow semua, Disallow /admin
+│   ├── sitemap.ts          sitemap.xml dinamis (force-dynamic)
+│   ├── (publik)/           Route group halaman publik dengan header/footer
+│   │   ├── page.tsx        Beranda
+│   │   ├── katalog/[status]/   Katalog: telah-terbit, segera-terbit
+│   │   ├── buku/[slug]/    Detail satu buku
+│   │   ├── publish-buku/   Layanan penerbitan buku + preview katalog
+│   │   ├── publish-jurnal/ Layanan penerbitan jurnal (3 subhalaman)
+│   │   └── tentang-kami/   Profil perusahaan dan kontak
 │   ├── covers/[berkas]/    Penyaji berkas sampul (route handler)
 │   └── admin/              Panel admin
-│       ├── login/          Halaman masuk (satu-satunya route admin terbuka)
-│       └── (terlindungi)/  Route group bergerbang layout — lihat catatan
+│       ├── (terlindungi)/  Route group bergerbang layout — lihat catatan
+│       └── login/          Halaman masuk (satu-satunya route admin terbuka)
 ├── components/             Komponen tampilan murni, tanpa akses database
+├── content/site.ts         Seluruh teks statis dan placeholder klien
 ├── db/migrations/          Berkas SQL, dijalankan berurutan
 ├── lib/
 │   ├── auth/               Verifikasi sandi, sesi, penjaga route
-│   ├── books/              Tipe, repository, paginasi, status katalog
+│   ├── books/              Tipe, repository, paginasi, status, revalidasi
 │   ├── db/                 Koneksi pool dan pembantu query
 │   ├── storage/            Pemrosesan sampul dan aturan path-nya
+│   ├── site-metadata.ts    Metadata situs dari SITE_URL
+│   ├── whatsapp.ts         Pembentuk tautan WhatsApp dan validasi topik
 │   ├── validation/         Validasi input dan pembentuk slug
 │   └── env.ts              Pembacaan dan validasi variabel environment
 ├── scripts/                Perintah CLI: migrate, create-admin

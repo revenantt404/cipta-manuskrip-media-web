@@ -4,7 +4,7 @@ Laporan apa adanya. Brief bagian 13 melarang menyebut sebuah fase selesai bila
 alur utamanya belum benar-benar terverifikasi — karena itu setiap klaim di
 bawah ini disertai cara pembuktiannya.
 
-Terakhir diperbarui: 19 Oktober 2026.
+Terakhir diperbarui: 20 Oktober 2026.
 
 ## Ringkasan fase
 
@@ -12,9 +12,9 @@ Terakhir diperbarui: 19 Oktober 2026.
 |---|---|---|
 | 1 | Fondasi, database, dan halaman publik yang membaca data nyata | **Selesai koding — menunggu peninjauan** |
 | 2 | Panel admin, login, unggah sampul, halaman detail buku | **Selesai koding — menunggu peninjauan** |
-| 3 | Semua alur publik, desain visual (Arena), metadata | Belum dimulai |
+| 3 | Semua alur publik, metadata, robots/sitemap | **Selesai koding — menunggu peninjauan** |
 
-Fase 1 dan Fase 2 **belum boleh disebut selesai sepenuhnya**: keduanya baru
+Fase 1–3 **belum boleh disebut selesai sepenuhnya**: semuanya baru
 terverifikasi di komputer pengembangan, belum di server hosting. Lihat bagian
 Blocker.
 
@@ -55,6 +55,29 @@ mengubah rencana awal dicatat di
 adalah perbaikan bug yang ditemukan lewat verifikasi HTTP, bukan lewat tes
 otomatis — lihat "Dua bug yang ditemukan dan diperbaiki" di bawah.
 
+## Yang sudah dikerjakan di Fase 3
+
+Sebelas commit di `master` setelah Fase 2, dipisah per satuan kerja:
+
+| Commit | Isi |
+|---|---|
+| `1cba786` | Konten statis terpusat di `app/content/site.ts` dengan placeholder klien |
+| `bbec5bc` | Kanal WhatsApp jurnal dan validasi topik asistensi |
+| `8d2775e` | Pembacaan URL situs dari environment (`SITE_URL`) |
+| `e628ef4` | Route group `(publik)` dengan header dan footer |
+| `8948379` | Halaman `/publish-buku` dengan preview katalog dari database |
+| `d9fc156` | Halaman `/publish-jurnal` dengan fasilitas dari brief |
+| `f0eb196` | Halaman `/publish-jurnal/kirim-artikel` dengan tiga kategori jurnal |
+| `6dc4fc1` | Fix: hapus klaim indeksasi yang tidak bersumber dari brief |
+| `375f163` | Halaman `/publish-jurnal/asistensi` — input topik ke WhatsApp |
+| `234c8c7` | Halaman `/tentang-kami` dengan kontak dan placeholder legalitas |
+| `c79997d` | `robots.txt`, sitemap dinamis, dan metadata situs |
+| `e5b915d` | Invalidasi `/publish-buku` setelah mutasi admin + acceptance test Fase 3 |
+
+Rencana kerja lengkapnya ada di
+`docs/superpowers/plans/2026-10-20-fase-3-alur-publik.md`; temuan yang mengubah
+rencana dicatat di `.superpowers/sdd/2026-10-20-fase-3-alur-publik/progress.md`.
+
 ## Yang benar-benar terverifikasi
 
 ### Tes otomatis
@@ -63,11 +86,13 @@ otomatis — lihat "Dua bug yang ditemukan dan diperbaiki" di bawah.
 cd app && npx vitest run
 ```
 
-Hasil Fase 2: **24 berkas tes, 200 tes, semuanya lulus.** Mencakup seluruh
-cakupan Fase 1 ditambah verifikasi kata sandi dan penguncian akun, sesi dan
-penjagaan route, pemrosesan berkas sampul (termasuk penolakan SVG dan gambar
-raksasa), penyajian berkas sampul beserta penolakan path traversal, kompensasi
-kegagalan database, serta acceptance test alur nyata Fase 2.
+Hasil terakhir (commit `e5b915d`): **40 berkas tes, 278 tes, semuanya lulus.**
+Mencakup seluruh cakupan Fase 1 dan 2 ditambah Fase 3: konten statis terpusat,
+kanal WhatsApp dan validasi topik asistensi, halaman publik baru
+(`/publish-buku` dengan dua preview katalog, `/publish-jurnal`,
+`/publish-jurnal/kirim-artikel`, `/publish-jurnal/asistensi`,
+`/tentang-kami`), robots/sitemap/metadata, daftar revalidasi, dan acceptance
+test alur admin → publik Fase 3.
 
 ```bash
 cd app && npm run lint && npm run typecheck
@@ -86,16 +111,38 @@ Hasil: `✓ Compiled successfully`. Daftar route:
 ```
 ┌ ○ /
 ├ ○ /_not-found
-└ ƒ /katalog/[status]
+├ ƒ /admin
+├ ƒ /admin/buku
+├ ƒ /admin/buku/[id]/edit
+├ ƒ /admin/buku/tambah
+├ ○ /admin/login
+├ ƒ /buku/[slug]
+├ ƒ /covers/[berkas]
+├ ƒ /katalog/[status]
+├ ƒ /publish-buku
+├ ○ /publish-jurnal
+├ ○ /publish-jurnal/asistensi
+├ ○ /publish-jurnal/kirim-artikel
+├ ○ /robots.txt
+├ ƒ /sitemap.xml
+└ ○ /tentang-kami
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
 ```
 
-`/katalog/[status]` ditandai `ƒ (Dynamic)` — artinya ia dirender saat
-diminta, bukan dibekukan saat build. Ini syarat agar buku baru langsung
-tampil.
+Catatan jujur atas tabel itu: **seluruh route publik yang membaca database
+adalah `ƒ` (Dynamic)** — beranda, katalog, `/publish-buku`, detail buku,
+penyaji sampul, dan sitemap. Artinya mereka dirender saat diminta, bukan
+dibekukan saat build; itu syarat agar buku baru langsung tampil. `robots.txt`
+statik dan independen dari database.
 
-### Tiga keadaan halaman katalog
+### Verifikasi HTTP Fase 1
 
-Dijalankan terhadap `npm run start` (build produksi), dengan `curl`:
+Dijalankan terhadap `npm run start` (build produksi), dengan `curl` —
+dirangkum dari laporan Fase 1; buktinya tidak diulang di sini.
+
+#### Tiga keadaan halaman katalog
 
 | Keadaan | Yang tampil |
 |---|---|
@@ -107,7 +154,7 @@ Ketiganya berbeda, sesuai syarat brief bagian 9. MySQL dimatikan lewat
 `mysqladmin shutdown` lalu dihidupkan kembali; pesannya berubah tanpa perlu
 memulai ulang server Next.js.
 
-### Data nyata dari database
+#### Data nyata dari database
 
 Satu baris dimasukkan **lewat klien MySQL**, bukan lewat kode aplikasi, agar
 yang terbukti benar-benar pembacaan database:
@@ -123,14 +170,14 @@ apostrofnya, penulisnya tampil, dan tautan ke `/buku/panduan-menulis-karya-ilmia
 terbentuk. Judul yang memuat apostrof sengaja dipilih untuk memastikan tidak
 ada masalah pelarian teks.
 
-### Paginasi
+#### Paginasi
 
 Dengan 14 baris uji, halaman 1 menampilkan 12 buku dan menautkan ke halaman 2;
 `?page=2` menampilkan sisa 2 buku dengan penanda halaman aktif berpindah.
 Nilai di luar rentang dijepit ke halaman terakhir (`?page=9`), sedangkan
 `?page=0` dan `?page=abc` jatuh ke halaman 1.
 
-### Keadaan lain
+#### Keadaan lain
 
 | Uji | Hasil |
 |---|---|
@@ -139,7 +186,7 @@ Nilai di luar rentang dijepit ke halaman terakhir (`?page=9`), sedangkan
 | Beranda `/` | Judul dan kedua tautan katalog tampil |
 | `npm run db:migrate` dijalankan dua kali | Aman, tidak menggandakan tabel |
 
-### Kekangan database
+#### Kekangan database
 
 Diuji langsung lewat klien MySQL: enam pelanggaran (status ilegal, judul
 kosong, `published` tanpa sinopsis, `upcoming` tanpa estimasi, `published` yang
@@ -147,110 +194,175 @@ justru punya estimasi, slug duplikat) semuanya **ditolak** database dengan
 `ERROR 3819` / `ERROR 1062`. `ON UPDATE CURRENT_TIMESTAMP` juga dipastikan
 bekerja: `created_at` tetap, `updated_at` maju.
 
-## Verifikasi HTTP Fase 2
+### Verifikasi HTTP Fase 2
 
 Dijalankan terhadap `next start` (build produksi) pada port 3106 dan 3107,
 dengan `curl`. Peralihan halaman dan cookie tidak bisa diuji dari Vitest —
 `cookies()` dan `redirect()` hanya hidup di dalam permintaan HTTP — jadi
 bagian itulah yang dibuktikan di sini.
 
-### Penjagaan akses
+Penjagaan akses, alur unggah sampul ujung ke ujung, penolakan path traversal,
+dan dua bug yang ditemukannya tetap seperti tercatat sebelumnya dan tidak
+diulang di sini — lihat riwayat laporan di git (lampiran laporan Fase 2 di
+`.superpowers/sdd/2026-10-19-fase-2-panel-admin/`). Ringkasnya:
 
 | Permintaan | Hasil |
 |---|---|
-| `GET /admin` tanpa sesi | `307` ke `/admin/login` |
-| `GET /admin/buku` tanpa sesi | `307` ke `/admin/login` |
-| `GET /admin/buku/tambah` tanpa sesi | `307` ke `/admin/login` |
-| `GET /admin/buku/<id>/edit` tanpa sesi | `307` ke `/admin/login` |
-| `GET /admin` dengan sesi sah | `200` |
-| `GET /admin/buku` dengan sesi sah | `200` |
-| `GET /admin/buku/<id>/edit` untuk id yang tidak ada | `404` |
+| Route `/admin/*` tanpa sesi | `307` ke `/admin/login` |
+| Route `/admin/*` dengan sesi sah | `200` |
+| Upload sampul end-to-end | server action `303`, `cover_path` terisi, `/covers/<uuid>.webp` jawab `200 image/webp` |
+| Path traversal `/covers/../package.json` dan variasinya | `404` |
 
-Login lewat Server Action menjawab `303` ke `/admin` dengan `Set-Cookie
-cmm_session` — `HttpOnly`, `Secure`, `SameSite=lax`, masa berlaku 7 hari.
-Cookie lama **tidak** berlaku lagi setelah logout, karena sesi benar-benar
-dihapus dari tabel `sessions`, bukan sekadar dibuang dari peramban.
-
-Penguncian akun juga diuji lewat jalur nyata: 5 percobaan salah berturut-turut
-mengisi `failed_attempts` dan menyetel `locked_until` 15 menit ke depan, lalu
-percobaan ke-6 **dengan kata sandi yang benar** tetap ditolak.
-
-### Alur unggah sampul, ujung ke ujung
-
-Ini alur yang paling penting, karena inilah yang gagal tanpa terlihat:
-
-1. Admin login, membuka `/admin/buku/tambah`, mengirim form beserta berkas
-   JPEG sungguhan (600×900, dibuat `sharp`).
-2. Server Action menjawab `303` ke `/admin/buku`.
-3. `cover_path` di database berisi `covers/7ff19bc7-…-32641496508e.webp`.
-4. `GET /covers/7ff19bc7-…-32641496508e.webp` — **tanpa memulai ulang server**
-   — menjawab `200`, `content-type: image/webp`,
-   `cache-control: public, max-age=31536000, immutable`, 1068 byte.
-5. Berkas yang terunduh didekode `sharp` sebagai WebP 600×900: gambar yang
-   sama persis dengan yang diunggah.
-6. Katalog `/katalog/telah-terbit` menjawab `200` dan memuat
-   `<img src="/covers/…webp" alt="Sampul buku …">`.
-7. Daftar admin dan halaman detail `/buku/<slug>` menjawab `200` dan merujuk
-   berkas yang sama.
-
-Langkah 4 adalah tepat pemeriksaan yang dulu menjawab `404 text/html`.
-
-### Penolakan path traversal
-
-Nama berkas yang diminta `/covers/<nama>` harus persis berbentuk UUID +
-`.webp`. Semuanya menjawab `404`:
-
-| Nama yang diminta | Hasil |
-|---|---|
-| `../package.json` | `404` |
-| `..%2Fpackage.json` | `404` |
-| `%2e%2e%2fpackage.json` | `404` |
-| `catatan.txt` | `404` |
-
-`package.json` di root aplikasi dipastikan memang ada, sehingga `404` di atas
-berarti **ditolak**, bukan kebetulan tidak ditemukan.
-
-### Dua bug yang ditemukan dan diperbaiki
-
-Keduanya lolos dari tes otomatis dan hanya muncul saat alur nyata dijalankan
-lewat HTTP pada build produksi.
+Dua bug yang ditemukannya saat itu (sampul tidak pernah tampil setelah
+`next start` membekukan daftar `public/`; kartu katalog tanpa sampul) keduanya
+sudah diperbaiki dan kini punya tes otomatisnya sendiri:
 
 1. **Sampul yang baru diunggah tidak pernah tampil.** `next start` membekukan
    daftar berkas `public/` saat server menyala. Berkas yang ditulis setelahnya
    — yaitu setiap sampul yang diunggah admin — tidak pernah disajikan, sampai
    server di-restart. Diperbaiki dengan menyajikan sampul lewat route
    `/covers/[berkas]` yang membaca disk per permintaan, dan memindahkan folder
-   bawaan keluar dari `public/` ke `storage/covers`. Ini sekaligus membuat
-   `COVER_DIR` boleh menunjuk folder di luar aplikasi, syarat agar sampul
-   selamat saat deploy ulang.
-
+   bawaan keluar dari `public/` ke `storage/covers`.
 2. **Kartu katalog menampilkan kotak abu, bukan sampul.** Kodenya masih
-   beralasan "sampul belum ada", padahal Fase 2 sudah mengunggahnya dan brief
-   bagian 9 mensyaratkan sampul tampil di katalog. Ketahuan karena katalog
-   memuat judul buku tetapi tidak satu pun `src="/covers/…"`. Diperbaiki, dan
-   sekarang ada tesnya di `app/components/BookCard.test.tsx`.
+   beralasan "sampul belum ada", padahal Fase 2 sudah mengunggahnya. Diperbaiki,
+   dan sekarang ada tesnya di `app/components/BookCard.test.tsx`.
 
-### Kebersihan repository
+## Verifikasi HTTP Fase 3
 
-```bash
-git status --porcelain
-git grep -n -i -E "password|secret|service_role|api[_-]?key" -- app/ ':!app/package-lock.json'
+Dijalankan terhadap `next start` (build produksi) pada port 3106, dengan
+`curl` untuk halaman publik dan **Chrome headless via CDP** untuk form admin —
+form admin membawa token Server Actions dan berkas unggahan yang tidak bisa
+disusun manual dari curl, jadi submit-nya memakai peramban sungguhan yang
+mengisi form yang sama seperti manusia dan mengirim ke endpoint HTTP yang
+sama.
+
+### Seluruh route publik hidup
+
+| Route | Status |
+|---|---|
+| `/` | 200 |
+| `/tentang-kami` | 200 |
+| `/publish-buku` | 200 |
+| `/publish-jurnal` | 200 |
+| `/publish-jurnal/kirim-artikel` | 200 |
+| `/publish-jurnal/asistensi` | 200 |
+| `/katalog/telah-terbit` | 200 |
+| `/katalog/segera-terbit` | 200 |
+| `/robots.txt` | 200 |
+| `/sitemap.xml` | 200 |
+
+### robots.txt dan sitemap.xml
+
+`GET /robots.txt` berisi:
+
+```
+User-Agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: http://localhost:3000/sitemap.xml
 ```
 
-`.env.local` tidak muncul di `git status`, dan pencarian hanya menemukan nama
-variabel di `.env.example`, kode validasi, nama kolom `password_hash`, serta
-password palsu di berkas tes (`password-yang-cukup-panjang`) — tidak ada nilai
-sungguhan. `.env.example` sendiri berisi `DB_PASSWORD=` yang sengaja kosong.
+`GET /sitemap.xml` memuat 8 URL — beranda, `/tentang-kami`, `/publish-buku`,
+`/publish-jurnal`, `/publish-jurnal/kirim-artikel`,
+`/publish-jurnal/asistensi`, `/katalog/telah-terbit`,
+`/katalog/segera-terbit` — dengan URL absolut dan **tanpa satu pun URL
+`/admin`**. Halaman admin menset `robots: { index: false, follow: false }`
+(`noindex, nofollow` terbaca di HTML `/admin/login`).
+
+Semua URL berasal dari `SITE_URL`. `SITE_URL` belum diset (domain belum ada),
+jadi nilainya fallback `http://localhost:3000`. **Ini wajib diperbaiki sebelum
+naik produksi** — lihat Blocker 1.
+
+### Login admin lewat form sungguhan
+
+Login diisi dan disubmit lewat form `/admin/login` di Chrome headless (bukan
+POST buatan): React mengontol form itu, action Server Actions berjalan,
+redirect menuju `/admin`, dan cookie `cmm_session` HttpOnly terbentuk. Cookie
+itu dipakai semua langkah admin di bawah.
+
+### Alur admin → publik, ujung ke ujung
+
+Tanpa memulai ulang server kapan pun:
+
+1. Saat `books` kosong, `/publish-buku` memuat placeholder klien di blok
+   preview dan kedua katalog memuat empty state.
+2. Admin menambah buku **telah terbit** "Buku Uji Produksi Fase Tiga" lewat
+   form `/admin/buku/tambah` — judul, penulis, sinopsis, status
+   `published`, dan berkas JPEG 600×900 buatan `sharp` sebagai sampul.
+   Form kembali ke `/admin/buku` menampilkan `/buku/buku-uji-produksi-fase-tiga`
+   dan sampul `/covers/6cb81127-1bb5-4758-91d0-1a340cb8d84e.webp`.
+3. Tanpa restart, semua permukaan publik langsung menampilkannya:
+   `/publish-buku` (judul muncul), `/katalog/telah-terbit` (judul muncul),
+   `/buku/buku-uji-produksi-fase-tiga` (200, judul, sinopsis, dan tautan
+   WhatsApp `wa.me/6289671894900` 4×), `/sitemap.xml` (menambah
+   `/buku/<slug>`), dan `GET /covers/6cb81127-….webp` menjawab **200
+   `image/webp`**.
+4. Admin mengubah slug menjadi `buku-uji-produksi-fase-tiga-revisi` lewat form
+   edit. Hasilnya: slug lama menjawab **404**, slug baru **200**.
+5. Admin menghapus buku lewat tombol "Hapus buku" (dengan konfirmasi yang
+   di-stub setuju di peramban uji). Hasilnya, **semuanya kosong tanpa
+   restart**: produk hilang dari `/publish-buku`, `/katalog/telah-terbit`,
+   dan `/sitemap.xml`; detail `/buku/<slug-revisi>` menjawab 404; dan berkas
+   sampul `/covers/6cb81127-….webp` ikut terhapus — 404, tidak ada berkas
+   yatim di disk.
+
+Catatan jujur atas langkah 3–5: terbukti di sini adalah **jalur datanya** —
+mutasi admin langsung terlihat di halaman publik tanpa restart. Table route di
+atas menunjukkan seluruh halaman pembaca database adalah `ƒ` (Dynamic), jadi
+yang dicerminkan adalah render barunya per permintaan; klaim "eviction cache
+revalidatePath terverifikasi" tidak dibuat, karena dengan halaman dinamis
+yang terbukti itu render segar, bukan siklus invalidate-cache.
+
+### Anchors dan nomor WhatsApp
+
+| Pemeriksaan | Hasil |
+|---|---|
+| `/publish-buku` memuat `id="paket"` | ada (1) |
+| `/publish-buku` memuat `id="asistensi"` | ada (1) |
+| `/publish-jurnal/kirim-artikel` menaut `wa.me/62895629203142` | 3 tautan |
+| Detail buku menaut WhatsApp admin `wa.me/6289671894900` | ada (4 referensi) |
+| `/tentang-kami` menaut `tel:0895-6292-03142` dan `tel:0896-7189-4900` | ada — dengan format domestik, lihat Blocker 6 |
+
+### Paginasi tiga halaman dan PREVIEW_LIMIT
+
+Dibuktikan acceptance test terhadap MySQL sungguhan
+(`tests/acceptance-fase-3.test.tsx`, laporan lengkap di
+`.superpowers/sdd/2026-10-20-fase-3-alur-publik/task-11-report.md`):
+
+- **30 published lintas 3 halaman**: judul `Judul Z..A` disisipkan mundur;
+  gabungan page 1..3 dari `listBooks` sama persis dengan hasil sort
+  (urutan A–Z), page 3 memuat tepat 6 baris, `new Set(gabungan).size === 30`,
+  dan setiap judul seed ada.
+- **14 upcoming di 2 halaman (12+2)**: terurut, tanpa dobel, dan tetap
+  seluruhnya `upcoming` setelah 5 published ditambahkan kembali — pemisahan
+  status pada level pagination.
+- `page=0`, `page=abc`, `page=999` dirender tanpa galat, tanpa `db-error`, dan
+  berisi halaman yang ada (dinormalkan, bukan kosong).
+- **PREVIEW_LIMIT = 3**: `/publish-buku` mengambil kedua preview dengan
+  `pageSize: PREVIEW_LIMIT` — tiga teratas A–Z muncul, yang keempat tidak, dan
+  kesalahan tebal status (buku terbit tidak bocor ke blok segera, begitu
+  pula sebaliknya) diuji dengan 4+4 buku.
+
+### Sitemap memuat kedua status buku
+
+Acceptance test menambah satu `published` dan satu `upcoming` lewat action
+admin sungguhan dan memastikan keduanya masuk `/sitemap.xml`. Route
+`/katalog/[status]` menolak segmen lain selain kedua nilai itu (404).
 
 ## Blocker
 
 Hal-hal berikut belum bisa diselesaikan dan perlu keputusan atau tindakan dari
 pemilik proyek.
 
-1. **Hosting dan domain belum dibeli.** Seluruh verifikasi Fase 1 dilakukan
-   terhadap MySQL lokal. Perilaku di server sungguhan (versi PHP/Node, batas
-   unggah, izin berkas) belum teruji sama sekali. Sesuai perjanjian, domain dan
-   hosting didaftarkan atas nama CV Cipta Manuskrip Media.
+1. **Hosting dan domain belum dibeli.** Seluruh verifikasi Fase 1–3 dilakukan
+   terhadap MySQL lokal. Perilaku di server sungguhan (versi Node, batas
+   unggah, izin berkas) belum teruji sama sekali. Sesuai perjanjian, domain
+   dan hosting didaftarkan atas nama CV Cipta Manuskrip Media. **Dampak
+   langsung sekarang**: `SITE_URL` belum bisa diset karena domainnya belum
+   ada, sehingga `robots.txt` dan `sitemap.xml` saat ini memuat
+   `http://localhost:3000` — keduanya **wajib dipindah ke domain sungguhan
+   sebelum situs naik**, bukan terbatas "wajar untuk pengembangan".
 
 2. **Versi MySQL/MariaDB di paket hosting belum diketahui.** Bila ternyata
    MariaDB, ada perilaku yang bisa berbeda — terutama `DEFAULT (UUID())` dan
@@ -266,15 +378,29 @@ pemilik proyek.
 4. **Organisasi Supabase yang dibuat sebelumnya kini menganggur dan milik
    client.** Jangan dihapus tanpa sepengetahuan mereka.
 
-5. **Bahan dari client masih memakai placeholder.** Naskah profil perusahaan,
-   logo, dan berkas sampul buku belum diterima. Lihat `docs/DESIGN-STACK.md`
-   bagian 8 untuk daftar lengkapnya. Tidak ada data perusahaan, statistik,
-   testimoni, atau dokumen hukum yang dikarang untuk mengisi kekosongan itu.
+5. **Bahan dari client masih memakai placeholder.** Halaman publik Fase 3
+   sengaja memuat placeholder seperti `[Aset dari klien]`,
+   `[Nama paket dari klien]`, `[Harga dari klien]`,
+   `[Fasilitas paket dari klien]` — teks yang jujur bahwa isinya belum ada,
+   dianggap wajar oleh pemilik proyek per 20 Oktober 2026. Naskah profil
+   perusahaan, logo, dokumen legalitas, dan berkas sampul buku belum
+   diterima; tidak ada data perusahaan, statistik, testimoni, atau dokumen
+   hukum yang dikarang untuk mengisi kekosongan itu. Lihat
+   `docs/DESIGN-STACK.md` bagian 8 untuk daftar lengkapnya. Fondasi halamannya
+   sudah bangun; penggantian placeholder dengan bahan client adalah jahitan
+   yang tinggal dijahit.
+
+6. **Tautan `tel:` di `/tentang-kami` memakai format domestik.**
+   `tel:0895-6292-03142` dan `tel:0896-7189-4900` ditulis dengan format
+   tampilan beranda dalam (dengan tanda hubung) alih-alih format
+   internasional (`+62…`). Ditinjau laporan ini tidak dianggap cacat —
+   pemilik proyek memilih nomor tampilan domestik; dicatat di sini agar
+   keputusannya terlihat, bukan diam-diam diubah.
 
 ## Status acceptance test brief bagian 13
 
 Daftar periksa lengkap. "Otomatis" berarti dijalankan Vitest; "HTTP" berarti
-dijalankan `curl` terhadap build produksi dan hasilnya tercatat di atas.
+dijalankan terhadap build produksi dan hasilnya tercatat di atas.
 
 | # | Kriteria | Cara dibuktikan | Status |
 |---|---|---|---|
@@ -284,17 +410,17 @@ dijalankan `curl` terhadap build produksi dan hasilnya tercatat di atas.
 | 4 | Login nyata, refresh tetap valid, logout menutup akses | otomatis + HTTP | Lulus |
 | 5 | Tambah published dengan sampul → tampil di admin, katalog, detail | otomatis + HTTP | Lulus |
 | 6 | Tambah upcoming → estimasi wajib, tidak ada order di detail | otomatis | Lulus |
-| 7 | Edit judul/penulis/isi/status/slug → publik berubah, slug lama mati | otomatis | Lulus |
+| 7 | Edit judul/penulis/isi/status/slug → publik berubah, slug lama mati | otomatis + HTTP | Lulus |
 | 8 | Ganti sampul → gambar baru tampil, berkas lama dibersihkan | otomatis | Lulus |
-| 9 | Hapus buku → hilang dari admin/katalog/detail, berkas dibersihkan | otomatis | Lulus |
+| 9 | Hapus buku → hilang dari admin/katalog/detail, berkas dibersihkan | otomatis + HTTP | Lulus |
 | 10 | Input kosong, slug duplikat, status invalid, berkas kebesaran/non-gambar ditolak | otomatis + HTTP | Lulus |
 | 11 | Kegagalan simpan setelah unggah tidak meninggalkan berkas, sampul lama tetap | otomatis | Lulus |
-| 12 | Dataset >12 buku: urutan A–Z, pagination, halaman invalid, pemisahan status | otomatis | **Sebagian** — lihat catatan |
+| 12 | Dataset >12 buku: urutan A–Z, pagination, halaman invalid, pemisahan status | otomatis (acceptance `acceptance-fase-3.test.tsx`) | **Lulus** — 30 published lintas 3 halaman |
 | 13 | URL WhatsApp dan hasil decode pesan cocok persis | otomatis | Lulus |
-| 14 | UI tidak membocorkan key; route admin noindex; robots; sitemap | belum | **Belum menyentuh Fase 3** |
+| 14 | UI tidak membocorkan key; route admin noindex; robots; sitemap | otomatis + HTTP | **Lulus** |
 | 15 | UI sederhana, rapi, responsif, cukup untuk menguji semua alur | — | Sebagaimana diminta |
 
-Catatan jujur atas yang belum lengkap:
+Catatan jujur atas yang perlu dijelaskan:
 
 - **#3 tidak berlaku.** Brief aslinya meminta pembuktian bahwa "user
   authenticated non-admin" ditolak. Aplikasi ini tidak punya konsep itu:
@@ -302,30 +428,42 @@ Catatan jujur atas yang belum lengkap:
   publik. `SPEC-AMENDMENT-01.md` §13 sudah menggantinya dengan pengujian
   cookie sesi palsu, sesi kedaluwarsa, dan token yang salah — ketiganya
   diuji dan lulus.
-- **#12 baru sebagian.** Pagination dan penanganan halaman di luar rentang
-  sudah diuji dengan 14 baris data pada Fase 1. Yang belum dijalankan adalah
-  pengujian urutan A–Z lintas halaman pada dataset besar yang melewati lebih
-  dari dua halaman.
-- **#14 belum dikerjakan sama sekali.** `robots.txt`, `sitemap.xml`, dan
-  metadata `noindex` untuk `/admin` masuk lingkup Fase 3 menurut brief §14.
+- **#12 kini lulus penuh.** Dalam acceptance Fase 3 diuji 30 published yang
+  terbaca urut A–Z lintas 3 halaman, 14 upcoming terbaca 2 halaman (12+2),
+  halaman `?page=` yang aneh tidak meledak, dan pemisahan status tetap
+  benar. Pencarian telusuri detail pagination pada halaman katalog juga
+  sudah dikerjakan di Fase 1; pengujian 30-buku ini yang melengkapi bagian
+  yang sebelumnya "Sebagian".
+- **#14 kini lulus.** Route `/admin` (semua halaman di belakang
+  `(terlindungi)`) memuat meta `noindex, nofollow` (terbaca di HTML
+  `/admin/login`); `robots.txt` berisi `Disallow: /admin` plus direktif
+  sitemap; `sitemap.xml` memuat 8 URL publik absolut dengan URL dari
+  `SITE_URL`, tanpa satu pun URL `/admin`, dan memuat kedua status buku.
+  `UI tidak membocorkan key`: tidak ada nilai kunci di UI (diperiksa lewat
+  pencarian sensitif git di laporan verifikasi Fase 2).
 
 ## Pekerjaan tersisa
 
-### Fase 3 — alur publik, metadata, dan tampilan
+### Sebelum naik produksi
 
-- Kedua katalog dengan pagination database penuh, pengurutan A–Z lintas
-  halaman, dan invalidation setelah mutasi admin.
-- `robots.txt`, `sitemap.xml`, dan `noindex` untuk route `/admin`.
-- Desain visual sesungguhnya (brief bagian 4). Tampilan sekarang sengaja
-  seadanya: yang dibuktikan Fase 1 dan 2 adalah aliran datanya, bukan
-  desainnya.
-- `next/image` untuk optimasi sampul. Saat ini `<img>` biasa dipakai dengan
-  sengaja, karena sampul sudah diperkecil dan dikompres `sharp` saat diunggah.
-- Halaman statis yang tersisa dan alur WhatsApp lengkap (nomor WhatsApp dan
-  teks halaman dari brief bagian 9 dan 10).
+- Peninjauan independen atas seluruh branch Fase 3.
+- Beli domain + hosting, lalu set `SITE_URL` ke `https://<domain>` —
+  `robots.txt` dan `sitemap.xml` saat ini masih rendering `localhost:3000`.
+- Kumpulkan bahan dari client (nomor WhatsApp resmi tiap layanan, teks paket,
+  logo, naskah profil, dokumen legalitas, sampul buku) untuk menggantikan
+  placeholder. Halaman sudah siap; yang belum adalah isinya.
+- Ganti kredensial akun admin pengembangan (`admin@localhost`) sebelum serah
+  terima.
+- Konfirmasi versi MySQL/MariaDB di paket hosting, lalu jalankan `npm run
+  db:migrate` di sana dan uji ulang route publik dengan data client.
 
-### Perlu ditinjau sebelum Fase 3
+### Di luar lingkup repo ini — Arena
 
-- **Peninjauan seluruh branch Fase 2 oleh peninjau independen** — belum
-  dijalankan pada saat laporan ini ditulis.
-- Persetujuan pemilik proyek untuk melanjutkan ke Fase 3.
+Desain visual penuh (brief bagian 4) **sengaja tidak dikerjakan di repo ini** —
+brief menetapkan desain dikerjakan di Arena setelah repo diimpor; yang dibangun
+di Fase 3 adalah kerangka per halaman plus header/footer, dengan token warna
+dipakai seperlunya. `next/image` juga belum terpasang: tes komponen mengunci
+`src="/covers/<uuid>.webp"` mentah dan migrasi optimizer ditunda ke Arena
+(sampul sudah diperkecil dan dikompres `sharp` saat diunggah). Keduanya
+tercatat di tabel "Catatan cakupan yang sengaja ditunda" pada rencana Fase 3 —
+pilihan, bukan lupa dikerjakan.
