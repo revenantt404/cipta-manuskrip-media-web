@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { metadataSitus } from "@/lib/site-metadata";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +13,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "CV Cipta Manuskrip Media",
-  description: "Layanan penerbitan buku dan publikasi artikel ilmiah.",
-};
+// Metadata root dibentuk fungsi murni di `lib/site-metadata.ts` — layout
+// tidak dapat diimpor di Vitest karena `next/font/google`.
+export const metadata: Metadata = metadataSitus();
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

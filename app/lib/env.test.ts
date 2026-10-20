@@ -86,4 +86,13 @@ describe("siteUrl", () => {
       expect(siteUrl({ SITE_URL: salah })).toBe("http://localhost:3000");
     }
   });
+
+  it("menolak SITE_URL yang memuat query atau fragment (Ruling AA)", () => {
+    // `siteUrl()` hasilnya digandengkan dengan path (`/sitemap.xml`,
+    // `/robots.txt`). SITE_URL ber-query atau ber-fragment menghasilkan
+    // `https://contoh.com/?x=1/sitemap.xml` — path tersesat ke belakang query.
+    expect(siteUrl({ SITE_URL: "https://contoh.com/?x=1" })).toBe("http://localhost:3000");
+    expect(siteUrl({ SITE_URL: "https://contoh.com/#bagian" })).toBe("http://localhost:3000");
+    expect(siteUrl({ SITE_URL: "https://contoh.com/?x=1#t" })).toBe("http://localhost:3000");
+  });
 });

@@ -15,7 +15,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const book = await getBookBySlug(slug);
     if (book === null) return {};
     return {
-      title: `${book.title} — CV Cipta Manuskrip Media`,
+      // Judul polos: template root (`%s — CV Cipta Manuskrip Media`) yang
+      // menambahkan akhiran; menulis lengkap di sini menggandakannya.
+      title: book.title,
       description: book.synopsis ?? book.bookInfo ?? undefined,
     };
   } catch {

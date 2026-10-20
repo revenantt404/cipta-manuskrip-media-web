@@ -61,6 +61,11 @@ export function siteUrl(source: EnvSource = process.env): string {
   try {
     const url = new URL(nilai);
     if (url.protocol !== "http:" && url.protocol !== "https:") return bawaan;
+    // Ruling AA: hasil fungsi ini digandengkan dengan path (`/sitemap.xml`,
+    // `/robots.txt`). SITE_URL ber-query atau ber-fragment menghasilkan
+    // `https://contoh.com/?x=1/sitemap.xml` — path tersesat di belakang
+    // query. Nilai seperti itu dianggap tidak sah, bukan dipangkas.
+    if (url.search !== "" || url.hash !== "") return bawaan;
     return url.href.replace(/\/+$/, "");
   } catch {
     return bawaan;

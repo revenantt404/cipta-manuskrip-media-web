@@ -86,6 +86,20 @@ export async function listBooks(opts: {
 }
 
 /**
+ * Seluruh buku, kedua status, untuk sitemap.
+ *
+ * Terpisah dari `listAllBooks` karena fungsi itu berhalaman (bawaan 12) —
+ * sitemap yang memakainya terpotong tanpa sadar. Daftar di sini utuh dan
+ * terurut judul agar keluaran sitemap stabil antar permintaan.
+ */
+export async function listBooksForSitemap(): Promise<Book[]> {
+  const baris = await query<Record<string, unknown>>(
+    `SELECT ${KOLOM_BUKU} FROM books ORDER BY title ASC, id ASC`
+  );
+  return baris.map(mapRow);
+}
+
+/**
  * Seluruh buku, kedua status, untuk daftar admin.
  *
  * Terpisah dari `listBooks` karena daftar admin tidak disaring per status:
