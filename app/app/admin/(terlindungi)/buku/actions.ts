@@ -24,6 +24,9 @@ function bacaNilai(data: FormData): NilaiFormBuku {
     bookInfo: bacaTeks(data, "bookInfo"),
     status: bacaTeks(data, "status"),
     estimatedRelease: bacaTeks(data, "estimatedRelease"),
+    isbn: bacaTeks(data, "isbn"),
+    pricePrint: bacaTeks(data, "pricePrint"),
+    priceEbook: bacaTeks(data, "priceEbook"),
   };
 }
 

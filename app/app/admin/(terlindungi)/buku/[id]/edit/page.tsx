@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBookById } from "@/lib/books/repository";
+import { nilaiFormHarga } from "@/lib/books/price";
 import { resolveCoverUrl } from "@/lib/storage/path";
 import { FormBuku } from "../../FormBuku";
 import { TombolHapus } from "../../TombolHapus";
@@ -54,6 +55,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       bookInfo: buku.bookInfo ?? "",
       status: buku.status,
       estimatedRelease: buku.estimatedRelease ?? "",
+      isbn: buku.isbn ?? "",
+      pricePrint: nilaiFormHarga(buku.pricePrint),
+      priceEbook: nilaiFormHarga(buku.priceEbook),
     },
     percobaan: 0,
     ulangiSampul: false,

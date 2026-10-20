@@ -17,6 +17,15 @@ export type NilaiFormBuku = {
   bookInfo: string;
   status: string;
   estimatedRelease: string;
+  /**
+   * Ketiga isian berikut dikembalikan sebagai teks apa adanya, bukan
+   * angka: yang dikembalikan adalah apa yang barusan diketik admin, dan
+   * `parseHarga` sudah menolak isian yang salah sebelum ini. Mengubahnya
+   * menjadi angka di sini akan menghapus titik ribuan yang ia ketik.
+   */
+  isbn: string;
+  pricePrint: string;
+  priceEbook: string;
 };
 
 export const NILAI_BUKU_KOSONG: NilaiFormBuku = {
@@ -28,6 +37,9 @@ export const NILAI_BUKU_KOSONG: NilaiFormBuku = {
   bookInfo: "",
   status: "published",
   estimatedRelease: "",
+  isbn: "",
+  pricePrint: "",
+  priceEbook: "",
 };
 
 export type StateFormBuku = {

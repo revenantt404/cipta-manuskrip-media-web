@@ -20,6 +20,9 @@ function buku(judul: string, slug: string): Book {
     coverPath: "covers/8f14e45f-ceea-467a-9c1b-1d0b0e9a7c31.webp",
     status: "published",
     estimatedRelease: null,
+    isbn: "978-602-1234-56-7",
+    pricePrint: 85000,
+    priceEbook: 45000,
     createdAt: new Date("2026-01-01T00:00:00Z"),
     updatedAt: new Date("2026-01-01T00:00:00Z"),
   };

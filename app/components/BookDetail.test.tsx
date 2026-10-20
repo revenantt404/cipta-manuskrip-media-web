@@ -15,6 +15,9 @@ function buku(ubah: Partial<Book> = {}): Book {
     coverPath: "covers/uji.webp",
     status: "published",
     estimatedRelease: null,
+    isbn: "978-602-1234-56-7",
+    pricePrint: 85000,
+    priceEbook: 45000,
     createdAt: new Date("2026-01-01T00:00:00Z"),
     updatedAt: new Date("2026-01-01T00:00:00Z"),
     ...ubah,
@@ -55,6 +58,27 @@ describe("BookDetail — buku telah terbit", () => {
   it("menampilkan sampul dengan alt text dari judul buku", () => {
     expect(html).toContain('src="/covers/uji.webp"');
     expect(html).toContain('alt="Sampul buku Filsafat Ilmu"');
+  });
+});
+
+describe("BookDetail — ISBN dan harga", () => {
+  const html = renderToStaticMarkup(<BookDetail book={buku()} />);
+
+  it("menampilkan ISBN dan kedua harga dalam format rupiah", () => {
+    expect(html).toContain("978-602-1234-56-7");
+    expect(html).toContain("Harga buku cetak");
+    expect(html).toContain("Rp85.000");
+    expect(html).toContain("Sewa ebook");
+    expect(html).toContain("Rp45.000");
+  });
+
+  it("menampilkan tanda hubung untuk data yang belum ditetapkan", () => {
+    const kosong = renderToStaticMarkup(
+      <BookDetail book={buku({ isbn: null, pricePrint: null, priceEbook: null })} />
+    );
+    // Satu untuk ISBN, dua untuk harga.
+    expect((kosong.match(/>-</g) ?? []).length).toBe(3);
+    expect(kosong).not.toContain("Rp0");
   });
 });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { PILIHAN_STATUS } from "./form-state";
 import type { AksiFormBuku, StateFormBuku } from "./form-state";
 
@@ -34,6 +34,12 @@ export function FormBuku({
   const [state, formAction, sedangProses] = useActionState(action, awal);
   const { nilai, errors } = state;
   const menyunting = mode === "edit";
+
+  // Status dipantau di klien hanya untuk menonaktifkan isian yang tidak
+  // berlaku. Server tetap penentu: `validateBookText` menolak ISBN/harga
+  // pada buku segera terbit siapa pun yang menyunting HTML-nya.
+  const [status, setStatus] = useState(nilai.status === "" ? "published" : nilai.status);
+  const segeraTerbit = status === "upcoming";
 
   return (
     <form
@@ -105,7 +111,8 @@ export function FormBuku({
         <select
           id="status"
           name="status"
-          defaultValue={nilai.status === "" ? "published" : nilai.status}
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
           className={KELAS_INPUT}
         >
           {PILIHAN_STATUS.map((p) => (
@@ -158,6 +165,67 @@ export function FormBuku({
           Dikosongkan berarti &ldquo;CV Cipta Manuskrip Media&rdquo;.
         </p>
       </div>
+
+      {/*
+        ISBN dan harga hanya bermakna untuk buku yang sudah terbit. Buku
+        "segera terbit" tidak dijual, jadi ketiga isian ini dikosongkan dan
+        dinonaktifkan saat status itu dipilih — validasi server tetap
+        menolak bila isinya terkirim, karena atribut HTML bukan penjaga.
+      */}
+      <div className="flex flex-col gap-1">
+        <label htmlFor="isbn">ISBN</label>
+        <input
+          id="isbn"
+          name="isbn"
+          defaultValue={nilai.isbn}
+          disabled={segeraTerbit}
+          aria-invalid={errors.isbn !== undefined}
+          className={`${KELAS_INPUT} disabled:bg-zinc-100 disabled:text-zinc-500`}
+        />
+        <PesanGalat pesan={errors.isbn} />
+        <p className="text-xs text-zinc-600">
+          {segeraTerbit
+            ? "Buku yang segera terbit belum punya ISBN — katalog menampilkan statusnya."
+            : "Kosongkan bila belum ada."}
+        </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-1">
+          <label htmlFor="pricePrint">Harga buku cetak</label>
+          <input
+            id="pricePrint"
+            name="pricePrint"
+            inputMode="numeric"
+            placeholder="-"
+            defaultValue={nilai.pricePrint}
+            disabled={segeraTerbit}
+            aria-invalid={errors.pricePrint !== undefined}
+            className={`${KELAS_INPUT} disabled:bg-zinc-100 disabled:text-zinc-500`}
+          />
+          <PesanGalat pesan={errors.pricePrint} />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor="priceEbook">Harga sewa ebook</label>
+          <input
+            id="priceEbook"
+            name="priceEbook"
+            inputMode="numeric"
+            placeholder="-"
+            defaultValue={nilai.priceEbook}
+            disabled={segeraTerbit}
+            aria-invalid={errors.priceEbook !== undefined}
+            className={`${KELAS_INPUT} disabled:bg-zinc-100 disabled:text-zinc-500`}
+          />
+          <PesanGalat pesan={errors.priceEbook} />
+        </div>
+      </div>
+      <p className="-mt-2 text-xs text-zinc-600">
+        {segeraTerbit
+          ? "Buku yang segera terbit tidak dijual, jadi tidak punya harga."
+          : "Rupiah tanpa koma; titik ribuan boleh. Kosongkan bila belum ditetapkan — katalog akan menampilkan “-”."}
+      </p>
 
       <div className="flex flex-col gap-1">
         <label htmlFor="bookInfo">Informasi buku</label>

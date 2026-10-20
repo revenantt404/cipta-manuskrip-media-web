@@ -2,13 +2,15 @@
  * Validasi input buku.
  *
  * Aturan di sini mencerminkan constraint CHECK pada tabel `books` di
- * `db/migrations/001_init.sql`. Database tetap penjaga terakhir; validator
- * ini yang membuat pesan kesalahan bisa dibaca manusia sebelum data
- * menyentuh database.
+ * `db/migrations/001_init.sql` dan `002_isbn_harga.sql`. Database tetap
+ * penjaga terakhir; validator ini yang membuat pesan kesalahan bisa dibaca
+ * manusia sebelum data menyentuh database.
  *
  * Semua kesalahan dikumpulkan sekaligus, bukan berhenti di yang pertama,
  * supaya form dapat menampilkan seluruh masalah dalam satu kali kirim.
  */
+
+import { parseHarga } from "../books/price";
 
 export type BookStatus = "published" | "upcoming";
 
@@ -21,6 +23,9 @@ export type BookInput = {
   coverPath: string;
   status: BookStatus;
   estimatedRelease: string | null;
+  isbn: string | null;
+  pricePrint: number | null;
+  priceEbook: number | null;
 };
 
 /** Input buku tanpa `coverPath`: yang bisa dinilai sebelum berkas diunggah. */
@@ -46,6 +51,27 @@ export type UpdateValidationResult =
   | { ok: false; errors: Record<string, string> };
 
 export const PUBLISHER_DEFAULT = "CV Cipta Manuskrip Media";
+
+/**
+ * Bentuk ISBN yang diterima: angka, tanda hubung, spasi, dan `X` (huruf
+ * pemeriksa ISBN-10), panjang 10–20 karakter.
+ *
+ * Checksum ISBN-13 **tidak** diperiksa. Alasannya bukan kelalaian: klien
+ * belum pernah menyerahkan satu ISBN pun, sehingga aturan checksum tidak
+ * bisa diuji terhadap data nyata dan justru akan menolak ISBN lama
+ * (ISBN-10) atau ISBN yang ditulis dengan spasi. Yang dicegah di sini
+ * adalah salah ketik yang jelas — huruf, tanda baca asing, atau panjang
+ * yang mustahil — bukan validitas kepemilikan nomor.
+ */
+const POLA_ISBN = /^[0-9Xx][0-9Xx\s-]{8,18}$/;
+
+function galatIsbnDari(isbn: string | null): string | null {
+  if (isbn === null) return null;
+  if (!POLA_ISBN.test(isbn)) {
+    return "ISBN hanya boleh berisi angka, tanda hubung, dan spasi (10–20 karakter).";
+  }
+  return null;
+}
 
 function objekBiasa(raw: unknown): raw is Record<string, unknown> {
   return typeof raw === "object" && raw !== null && !Array.isArray(raw);
@@ -83,9 +109,19 @@ export function validateBookText(raw: unknown): TextValidationResult {
   const synopsis = teksAtauNull(raw.synopsis);
   const bookInfo = teksAtauNull(raw.bookInfo);
   const estimatedRelease = teksAtauNull(raw.estimatedRelease);
+  const isbn = teksAtauNull(raw.isbn);
 
   if (title === "") errors.title = "Judul wajib diisi.";
   if (author === "") errors.author = "Penulis wajib diisi.";
+
+  const galatIsbn = galatIsbnDari(isbn);
+  if (galatIsbn !== null) errors.isbn = galatIsbn;
+
+  const hargaCetak = parseHarga(raw.pricePrint);
+  if (!hargaCetak.ok) errors.pricePrint = hargaCetak.error;
+
+  const hargaEbook = parseHarga(raw.priceEbook);
+  if (!hargaEbook.ok) errors.priceEbook = hargaEbook.error;
 
   const status = raw.status;
   if (status !== "published" && status !== "upcoming") {
@@ -100,6 +136,23 @@ export function validateBookText(raw: unknown): TextValidationResult {
   } else {
     if (estimatedRelease === null) {
       errors.estimatedRelease = "Buku yang segera terbit wajib punya estimasi terbit.";
+    }
+
+    // Buku yang belum terbit tidak dijual, jadi harganya tidak boleh terisi:
+    // angka yang dimasukkan sekarang akan muncul di katalog begitu buku
+    // ditandai terbit, padahal belum pernah diputuskan untuk publikasi.
+    if (hargaCetak.ok && hargaCetak.value !== null) {
+      errors.pricePrint = "Buku yang segera terbit belum punya harga cetak.";
+    }
+    if (hargaEbook.ok && hargaEbook.value !== null) {
+      errors.priceEbook = "Buku yang segera terbit belum punya harga ebook.";
+    }
+
+    // ISBN buku yang belum terbit tidak ditampilkan sebagai angka — katalog
+    // menyebut statusnya. Menyimpannya sekarang hanya menciptakan ISBN yang
+    // bisa dikira sudah terdaftar.
+    if (isbn !== null) {
+      errors.isbn = "Buku yang segera terbit belum punya ISBN.";
     }
   }
 
@@ -117,6 +170,9 @@ export function validateBookText(raw: unknown): TextValidationResult {
       bookInfo,
       status: status as BookStatus,
       estimatedRelease,
+      isbn,
+      pricePrint: hargaCetak.ok ? hargaCetak.value : null,
+      priceEbook: hargaEbook.ok ? hargaEbook.value : null,
     },
   };
 }

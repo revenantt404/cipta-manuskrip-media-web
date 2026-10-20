@@ -202,8 +202,8 @@ export async function createBook(input: unknown): Promise<WriteResult> {
 
   try {
     const hasil = await execute(
-      `INSERT INTO books (title, slug, author, synopsis, publisher_info, book_info, cover_path, status, estimated_release)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO books (title, slug, author, synopsis, publisher_info, book_info, cover_path, status, estimated_release, isbn, price_print, price_ebook)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         value.title,
         slug,
@@ -214,6 +214,9 @@ export async function createBook(input: unknown): Promise<WriteResult> {
         value.coverPath,
         value.status,
         value.estimatedRelease,
+        value.isbn,
+        value.pricePrint,
+        value.priceEbook,
       ]
     );
 
@@ -263,7 +266,8 @@ export async function updateBook(id: string, input: unknown): Promise<WriteResul
     const hasil = await execute(
       `UPDATE books
           SET title = ?, slug = ?, author = ?, synopsis = ?, publisher_info = ?, book_info = ?,
-              cover_path = ?, status = ?, estimated_release = ?
+              cover_path = ?, status = ?, estimated_release = ?, isbn = ?,
+              price_print = ?, price_ebook = ?
         WHERE id = ?`,
       [
         value.title,
@@ -275,6 +279,9 @@ export async function updateBook(id: string, input: unknown): Promise<WriteResul
         value.coverPath,
         value.status,
         value.estimatedRelease,
+        value.isbn,
+        value.pricePrint,
+        value.priceEbook,
         id,
       ]
     );

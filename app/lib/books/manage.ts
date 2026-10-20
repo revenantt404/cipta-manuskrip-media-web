@@ -86,6 +86,9 @@ export async function simpanBukuBaru(data: FormData): Promise<HasilSimpan> {
     bookInfo: bacaTeks(data, "bookInfo"),
     status: bacaTeks(data, "status"),
     estimatedRelease: bacaTeks(data, "estimatedRelease"),
+    isbn: bacaTeks(data, "isbn"),
+    pricePrint: bacaTeks(data, "pricePrint"),
+    priceEbook: bacaTeks(data, "priceEbook"),
   });
 
   if (!teks.ok) return { ok: false, errors: teks.errors };
@@ -150,6 +153,9 @@ export async function perbaruiBuku(id: string, data: FormData): Promise<HasilUba
     bookInfo: bacaTeks(data, "bookInfo"),
     status: bacaTeks(data, "status"),
     estimatedRelease: bacaTeks(data, "estimatedRelease"),
+    isbn: bacaTeks(data, "isbn"),
+    pricePrint: bacaTeks(data, "pricePrint"),
+    priceEbook: bacaTeks(data, "priceEbook"),
   });
 
   if (!teks.ok) return { ok: false, errors: teks.errors };

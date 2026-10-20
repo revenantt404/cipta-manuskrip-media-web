@@ -113,3 +113,105 @@ describe("validateBookInput", () => {
     expect(validateBookInput([]).ok).toBe(false);
   });
 });
+
+/**
+ * ISBN dan harga hanya berlaku untuk buku yang sudah terbit. Aturan ini
+ * adalah cermin constraint `chk_books_upcoming_no_price` di migration 002,
+ * ditegakkan di sini supaya admin mendapat pesan yang bisa dibaca, bukan
+ * galat MySQL.
+ */
+describe("validateBookInput — ISBN dan harga", () => {
+  it("menerima published dengan ISBN dan dua harga", () => {
+    const hasil = validateBookInput({
+      ...valid,
+      isbn: "978-602-1234-56-7",
+      pricePrint: "85000",
+      priceEbook: "Rp45.000",
+    });
+    expect(hasil.ok).toBe(true);
+    if (hasil.ok) {
+      expect(hasil.value.isbn).toBe("978-602-1234-56-7");
+      expect(hasil.value.pricePrint).toBe(85000);
+      expect(hasil.value.priceEbook).toBe(45000);
+    }
+  });
+
+  it("menerima published tanpa ISBN dan tanpa harga", () => {
+    const hasil = validateBookInput({ ...valid, isbn: "", pricePrint: "", priceEbook: "" });
+    expect(hasil.ok).toBe(true);
+    if (hasil.ok) {
+      expect(hasil.value.isbn).toBeNull();
+      expect(hasil.value.pricePrint).toBeNull();
+      expect(hasil.value.priceEbook).toBeNull();
+    }
+  });
+
+  it("memangkas spasi ISBN", () => {
+    const hasil = validateBookInput({ ...valid, isbn: "  978-602-1234-56-7  " });
+    expect(hasil.ok).toBe(true);
+    if (hasil.ok) expect(hasil.value.isbn).toBe("978-602-1234-56-7");
+  });
+
+  it("menolak ISBN yang memuat huruf selain X", () => {
+    const hasil = validateBookInput({ ...valid, isbn: "ABCDEFGHIJ" });
+    expect(hasil.ok).toBe(false);
+    if (!hasil.ok) expect(hasil.errors.isbn).toBeDefined();
+  });
+
+  it("menolak ISBN yang terlalu pendek", () => {
+    const hasil = validateBookInput({ ...valid, isbn: "123" });
+    expect(hasil.ok).toBe(false);
+    if (!hasil.ok) expect(hasil.errors.isbn).toBeDefined();
+  });
+
+  it("menolak harga negatif dan harga berisi huruf", () => {
+    const negatif = validateBookInput({ ...valid, pricePrint: "-5000" });
+    expect(negatif.ok).toBe(false);
+    if (!negatif.ok) expect(negatif.errors.pricePrint).toBeDefined();
+
+    const huruf = validateBookInput({ ...valid, priceEbook: "45rb" });
+    expect(huruf.ok).toBe(false);
+    if (!huruf.ok) expect(huruf.errors.priceEbook).toBeDefined();
+  });
+
+  it("menolak harga pada buku yang segera terbit", () => {
+    const hasil = validateBookInput({
+      ...valid,
+      status: "upcoming",
+      synopsis: "",
+      estimatedRelease: "Januari 2027",
+      pricePrint: "85000",
+      priceEbook: "45000",
+    });
+    expect(hasil.ok).toBe(false);
+    if (!hasil.ok) {
+      expect(hasil.errors.pricePrint).toBeDefined();
+      expect(hasil.errors.priceEbook).toBeDefined();
+    }
+  });
+
+  it("menolak ISBN pada buku yang segera terbit", () => {
+    const hasil = validateBookInput({
+      ...valid,
+      status: "upcoming",
+      synopsis: "",
+      estimatedRelease: "Januari 2027",
+      isbn: "978-602-1234-56-7",
+    });
+    expect(hasil.ok).toBe(false);
+    if (!hasil.ok) expect(hasil.errors.isbn).toBeDefined();
+  });
+
+  it("menerima buku segera terbit tanpa ISBN dan tanpa harga", () => {
+    const hasil = validateBookInput({
+      ...valid,
+      status: "upcoming",
+      synopsis: "",
+      estimatedRelease: "Januari 2027",
+      isbn: "",
+      pricePrint: "",
+      priceEbook: "",
+    });
+    expect(hasil.ok).toBe(true);
+  });
+});
