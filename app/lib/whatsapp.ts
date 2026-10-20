@@ -30,7 +30,7 @@ export function buildJournalSubmitUrl(): string {
   )}`;
 }
 
-/** Pesan asistensi dengan topik — persis: "saya mau dibantu asistensi artikel topik <topik>." */
+/** Pesan asistensi artikel dengan topik — persis: "saya mau dibantu asistensi artikel topik <topik>." */
 export function buildJournalAssistUrl(topik: string): string {
   return `https://wa.me/${NOMOR_JURNAL}?text=${encodeURIComponent(
     `saya mau dibantu asistensi artikel topik ${topik}.`
@@ -38,15 +38,44 @@ export function buildJournalAssistUrl(topik: string): string {
 }
 
 /**
- * Memangkas spasi tepi topik mentah lebih dulu; menolak bila kosong murni.
- * Trimming tidak ditaruh di buildJournalAssistUrl supaya formatter itu murni.
+ * Pesan asistensi **buku** dengan topik.
+ *
+ * Kalimat ini tidak berasal dari brief §10 — brief hanya mengunci pesan
+ * pemesanan buku dan asistensi artikel. Bentuknya dipilih pemilik proyek
+ * (20 Oktober 2026) dan sengaja berbeda dari versi artikel pada dua hal:
+ * huruf awal `S` besar, dan kata `buku` menggantikan `artikel`. Jangan
+ * "menyeragamkan" keduanya — perbedaan itu keputusan, bukan kelalaian.
  */
-export function pesanAsistensi(
-  topikMentah: string
-): { ok: true; url: string } | { ok: false; error: string } {
+export function buildBookAssistUrl(topik: string): string {
+  return `https://wa.me/${NOMOR_BUKU}?text=${encodeURIComponent(
+    `Saya mau dibantu asistensi buku topik ${topik}.`
+  )}`;
+}
+
+export type HasilPesanAsistensi = { ok: true; url: string } | { ok: false; error: string };
+
+/**
+ * Memangkas spasi tepi topik mentah lebih dulu; menolak bila kosong murni.
+ * Trimming tidak ditaruh di pembentuk URL supaya formatter itu murni, dan
+ * aturan ini hanya ditulis sekali untuk kedua jenis asistensi.
+ */
+function pesanAsistensiDari(
+  topikMentah: string,
+  bangunUrl: (topik: string) => string
+): HasilPesanAsistensi {
   const topik = topikMentah.trim();
   if (topik === "") {
     return { ok: false, error: "Topik asistensi belum diisi." };
   }
-  return { ok: true, url: buildJournalAssistUrl(topik) };
+  return { ok: true, url: bangunUrl(topik) };
+}
+
+/** Asistensi artikel jurnal. */
+export function pesanAsistensiJurnal(topikMentah: string): HasilPesanAsistensi {
+  return pesanAsistensiDari(topikMentah, buildJournalAssistUrl);
+}
+
+/** Asistensi penulisan buku. */
+export function pesanAsistensiBuku(topikMentah: string): HasilPesanAsistensi {
+  return pesanAsistensiDari(topikMentah, buildBookAssistUrl);
 }

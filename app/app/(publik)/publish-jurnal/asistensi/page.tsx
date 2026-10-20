@@ -4,8 +4,9 @@ import { FormAsistensi } from "@/components/FormAsistensi";
 /**
  * Halaman asistensi penulisan artikel jurnal — komponen sinkron, tanpa
  * pengambilan data, jadi tanpa `force-dynamic`. Formulir topiknya ada di
- * `<FormAsistensi />` (komponen klien): topik hanya pernah masuk isi
- * pesan WhatsApp lewat `pesanAsistensi`, tidak pernah dikirim ke server.
+ * `<FormAsistensi jenis="jurnal" />` (komponen klien): topik hanya pernah
+ * masuk isi pesan WhatsApp lewat `pesanAsistensiJurnal`, tidak pernah
+ * dikirim ke server.
  *
  * `<main>` dokumen dimiliki layout `(publik)`, jadi pembungkus terluarnya
  * `<div>` — `<main>` bersarang adalah HTML tidak sah. Tiga kategori jurnal
@@ -33,7 +34,7 @@ export default function Page() {
         ))}
       </ul>
 
-      <FormAsistensi />
+      <FormAsistensi jenis="jurnal" />
     </div>
   );
 }

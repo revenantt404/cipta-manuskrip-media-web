@@ -67,6 +67,22 @@ describe("publish-buku", () => {
     expect(html).toContain('id="asistensi"');
   });
 
+  /**
+   * Section asistensi buku harus benar-benar bisa dipakai, bukan sekadar
+   * teks: formnya mengirim topik ke admin buku dengan label yang menyebut
+   * "buku" secara eksplisit, sehingga tidak tertukar dengan form artikel.
+   */
+  it("menyediakan form asistensi buku dengan label dan input buku", async () => {
+    const el = await Page();
+    const html = renderToStaticMarkup(el);
+
+    expect(html).toContain("Topik Asistensi Penulisan Buku");
+    expect(html).toContain('id="topik-buku"');
+    expect(html).toContain("Lanjut ke WhatsApp");
+    // Label artikel jurnal tidak boleh muncul di halaman buku.
+    expect(html).not.toContain("Topik Asistensi Penulisan Artikel Jurnal Ilmiah");
+  });
+
   it("mencetak tepat tiga kartu paket, semuanya placeholder klien", async () => {
     const el = await Page();
     const html = renderToStaticMarkup(el);

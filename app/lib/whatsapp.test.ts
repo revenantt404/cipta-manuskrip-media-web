@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { buildBookOrderUrl, buildJournalSubmitUrl, buildJournalAssistUrl, pesanAsistensi } from "./whatsapp";
+import {
+  buildBookOrderUrl,
+  buildBookAssistUrl,
+  buildJournalSubmitUrl,
+  buildJournalAssistUrl,
+  pesanAsistensiBuku,
+  pesanAsistensiJurnal,
+} from "./whatsapp";
 
 describe("buildBookOrderUrl", () => {
   it("membentuk tautan pemesanan buku cetak dengan format persis", () => {
@@ -41,7 +48,7 @@ describe("whatsapp jurnal", () => {
   });
 
   it("pesan asistensi memangkas spasi tepi sebelum dipakai", () => {
-    const hasil = pesanAsistensi("  literasi digital  ");
+    const hasil = pesanAsistensiJurnal("  literasi digital  ");
     expect(hasil.ok).toBe(true);
     if (hasil.ok) {
       expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
@@ -52,18 +59,53 @@ describe("whatsapp jurnal", () => {
 
   it("menolak topik kosong dan yang hanya berisi spasi", () => {
     for (const mentah of ["", "   ", "\t\n"]) {
-      const hasil = pesanAsistensi(mentah);
-      expect(hasil.ok).toBe(false);
+      expect(pesanAsistensiJurnal(mentah).ok).toBe(false);
+      expect(pesanAsistensiBuku(mentah).ok).toBe(false);
     }
   });
 
   it("mempertahankan karakter khusus topik setelah didekode", () => {
     const topik = "Pendidikan & Teknologi (Edisi 2+1) — Résumé";
-    const hasil = pesanAsistensi(topik);
+    const hasil = pesanAsistensiJurnal(topik);
     expect(hasil.ok).toBe(true);
     if (hasil.ok) {
       expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
         `saya mau dibantu asistensi artikel topik ${topik}.`
+      );
+    }
+  });
+});
+
+/**
+ * Asistensi buku memakai nomor admin buku dan kalimat yang berbeda dari
+ * versi jurnal. Kalimat ini tidak ada di brief §10 — bentuknya dipilih
+ * pemilik proyek, jadi tes ini yang menjaganya dari "penyeragaman".
+ */
+describe("whatsapp asistensi buku", () => {
+  it("membentuk tautan asistensi buku dengan nomor admin buku", () => {
+    expect(buildBookAssistUrl("Metodologi Penelitian")).toBe(
+      "https://wa.me/6289671894900?text=Saya%20mau%20dibantu%20asistensi%20buku%20topik%20Metodologi%20Penelitian."
+    );
+  });
+
+  it("huruf awal besar dan titik akhir dipertahankan, berbeda dari versi artikel", () => {
+    const buku = buildBookAssistUrl("literasi");
+    const jurnal = buildJournalAssistUrl("literasi");
+
+    expect(new URL(buku).searchParams.get("text")).toBe(
+      "Saya mau dibantu asistensi buku topik literasi."
+    );
+    expect(new URL(jurnal).searchParams.get("text")).toBe(
+      "saya mau dibantu asistensi artikel topik literasi."
+    );
+  });
+
+  it("memangkas spasi tepi topik sebelum dipakai", () => {
+    const hasil = pesanAsistensiBuku("  Kurikulum Merdeka  ");
+    expect(hasil.ok).toBe(true);
+    if (hasil.ok) {
+      expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
+        "Saya mau dibantu asistensi buku topik Kurikulum Merdeka."
       );
     }
   });

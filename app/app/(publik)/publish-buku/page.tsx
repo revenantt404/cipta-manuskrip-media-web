@@ -1,6 +1,7 @@
 import { listBooks } from "@/lib/books/repository";
 import { catalogueKind } from "@/lib/books/status";
 import { CataloguePreview } from "@/components/CataloguePreview";
+import { FormAsistensi } from "@/components/FormAsistensi";
 import { PAKET_BUKU, PREVIEW_LIMIT } from "@/content/site";
 
 // Wajib: halaman membaca database. Tanpa ini Next.js membekukan hasil query
@@ -74,9 +75,10 @@ export default async function Page() {
       <section id="asistensi" className="mt-12 scroll-mt-24">
         <h2 className="text-xl font-semibold text-teks sm:text-2xl">Asistensi Penulisan</h2>
         <p className="mt-2 text-teks-sec">
-          Penulisan artikel dan naskah dibantu sampai terbit. Hubungi admin untuk
-          mengatur topik dan mulainya pendampingan.
+          Pendampingan penulisan untuk artikel dan naskah buku. Hubungi admin
+          untuk menanyakan ruang lingkup dan jadwalnya.
         </p>
+        <FormAsistensi jenis="buku" />
       </section>
 
       <section className="mt-12">

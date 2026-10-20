@@ -7,7 +7,7 @@ import { KATEGORI_JURNAL } from "@/content/site";
 /**
  * Halaman `/publish-jurnal/asistensi` — statis, tanpa database. Topik
  * asistensi tidak pernah dikirim ke server: ia hanya pernah masuk isi
- * pesan WhatsApp lewat `pesanAsistensi`, jadi halaman ini tidak punya
+ * pesan WhatsApp lewat `pesanAsistensiJurnal`, jadi halaman ini tidak punya
  * tes pengiriman data — hanya markup kategori dan input berlabel.
  */
 describe("asistensi", () => {
@@ -19,6 +19,8 @@ describe("asistensi", () => {
 
   it("menyediakan input topik yang diberi label", () => {
     expect(html).toContain('name="topik"');
-    expect(html).toMatch(/<label[^>]*for="topik"/);
+    expect(html).toContain('id="topik-jurnal"');
+    expect(html).toContain("Topik Asistensi Penulisan Artikel Jurnal Ilmiah");
+    expect(html).toMatch(/<label[^>]*for="topik-jurnal"/);
   });
 });
