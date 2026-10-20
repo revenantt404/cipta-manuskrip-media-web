@@ -11,3 +11,10 @@ Thumbs.db
 # Dokumen hukum: memuat nama asli, tanda tangan, dan nilai perjanjian.
 # Disimpan di komputer pemilik proyek, tidak di repo kode.
 *.pdf
+
+# Konfigurasi agen AI lokal. Isinya hook dan path absolut mesin ini
+# (C:\Users\ocako\...), jadi tidak ada gunanya — dan justru membocorkan
+# struktur folder lokal — kalau ikut ke repo klien.
+.claude/
+.agent/
+.gemini/
