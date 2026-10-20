@@ -13,7 +13,10 @@ import { FASILITAS_JURNAL } from "@/content/site";
  *
  * Tiga area pertama memajang aset yang belum diserahkan klien, jadi
  * slotnya menampilkan `[Aset dari klien]` — jujur, bukan sementara
- * (docs/DESIGN-STACK.md §8). Halaman ini tidak menambah statistik,
+ * (docs/DESIGN-STACK.md §8). Isi tiap area hanya judul dan slot aset,
+ * tanpa prosa deskriptif: deskripsi yang terdengar netral pun tetap
+ * karangan bila klien tidak menyebutnya (contoh yang sudah disingkirkan:
+ * OJS, github, keanggotaan). Halaman ini tidak menambah statistik,
  * jumlah terbit, atau janji apa pun di luar `FASILITAS_JURNAL`.
  */
 export default function Page() {
@@ -42,9 +45,6 @@ export default function Page() {
 
       <section id="bukti" className="mt-12 scroll-mt-24">
         <h2 className="text-xl font-semibold text-teks sm:text-2xl">Bukti Submission</h2>
-        <p className="mt-2 text-teks-sec">
-          Tampak RECEIPT SUBMISSION dari OJS sebagai bukti artikel masuk.
-        </p>
         <div className="mt-4 rounded border border-garis bg-latar-alt p-5">
           <p className="text-teks-sec">[Aset dari klien]</p>
         </div>
@@ -52,9 +52,6 @@ export default function Page() {
 
       <section id="korespondensi" className="mt-12 scroll-mt-24">
         <h2 className="text-xl font-semibold text-teks sm:text-2xl">Dokumentasi Korespondensi</h2>
-        <p className="mt-2 text-teks-sec">
-          Jalur email admin yang bisa ditelusuri untuk setiap tahap proses.
-        </p>
         <div className="mt-4 rounded border border-garis bg-latar-alt p-5">
           <p className="text-teks-sec">[Aset dari klien]</p>
         </div>
@@ -62,9 +59,6 @@ export default function Page() {
 
       <section id="indeksasi" className="mt-12 scroll-mt-24">
         <h2 className="text-xl font-semibold text-teks sm:text-2xl">Logo Indeksasi</h2>
-        <p className="mt-2 text-teks-sec">
-          Logo indeks github dan unsur keanggotaan atas jurnal yang dikelola.
-        </p>
         <div className="mt-4 rounded border border-garis bg-latar-alt p-5">
           <p className="text-teks-sec">[Aset dari klien]</p>
         </div>

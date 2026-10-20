@@ -18,11 +18,20 @@ describe("publish-jurnal", () => {
     expect(html).toContain("Publikasi Artikel Ilmiah Sekali Klik.");
   });
 
-  it("memuat keempat area dengan satu placeholder aset yang jujur", () => {
+  it("memuat keempat area dengan tepat satu placeholder aset per area", () => {
     for (const area of ["Bukti Submission", "Dokumentasi Korespondensi", "Logo Indeksasi", "Fasilitas"]) {
       expect(html).toContain(area);
     }
-    expect(html).toContain("[Aset dari klien]");
+    // Satu slot per tiga area aset: hitungannya mengunci bahwa editan
+    // berikutnya tidak membiarkan satu area tampil tanpa slotnya.
+    expect((html.match(/\[Aset dari klien\]/g) ?? []).length).toBe(3);
+  });
+
+  it("tidak mengarang klaim vendor atau indeksasi di luar brief", () => {
+    // Penjaga data-jujur: OJS, github, dan keanggotaan tidak ada di
+    // brief/plan/spec — regex ini memasangkannya bila ada yang menambahkan
+    // klaim platform atau indeksasi karangan.
+    expect(html).not.toMatch(/OJS|github|keanggotaan/i);
   });
 
   it("memuat seluruh 13 fasilitas tanpa menambah janji", () => {
