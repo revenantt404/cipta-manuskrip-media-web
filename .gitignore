@@ -17,4 +17,6 @@ Thumbs.db
 # struktur folder lokal — kalau ikut ke repo klien.
 .claude/
 .agent/
+.agents/
 .gemini/
+skills-lock.json
