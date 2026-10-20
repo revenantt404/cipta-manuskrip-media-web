@@ -351,10 +351,12 @@ Salin blok berikut sebagai prompt awal. Ganti bagian `[...]` sesuai kebutuhan.
 >   memakainya, ubah tesnya di PR yang sama dan jelaskan alasannya.
 > - `cacheComponents` di `next.config.ts` harus tetap `false`.
 >
-> **Sebelum menyatakan selesai, jalankan:** `npm run lint && npm run typecheck &&
-> npm run build`. Laporkan hasilnya apa adanya. `npm test` butuh MySQL yang
-> sedang berjalan — kalau tidak tersedia, laporkan tes mana yang tidak dijalankan,
-> jangan diam-diam melewatinya.
+> **Sebelum menyatakan selesai, jalankan:** `npm run build` **lalu**
+> `npm run lint && npm run typecheck`. Urutannya bukan selera: `LayoutProps`
+> dihasilkan `next build`, jadi typecheck sebelum build di clone baru gagal
+> dengan `Cannot find name 'LayoutProps'`. Laporkan hasilnya apa adanya.
+> `npm test` butuh MySQL yang sedang berjalan — kalau tidak tersedia, laporkan
+> tes mana yang tidak dijalankan, jangan diam-diam melewatinya.
 
 ---
 

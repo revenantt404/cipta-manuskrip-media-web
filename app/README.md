@@ -133,6 +133,13 @@ npm test             # Vitest, sekali jalan
 npm run test:watch   # Vitest, mode pantau
 ```
 
+**Urutannya penting di clone baru: jalankan `npm run build` sebelum
+`npm run typecheck`.** Layout memakai tipe `LayoutProps`, yang bukan tipe
+bawaan melainkan **dihasilkan Next.js saat build**. Di clone yang belum
+pernah di-build, `npm run typecheck` gagal dengan
+`Cannot find name 'LayoutProps'` — itu bukan kerusakan kode, hanya tipe yang
+belum dibuat. `npm run build` sendiri tidak terpengaruh urutan ini.
+
 `npm test` menyentuh database yang sama dengan pengembangan, dan **tes
 menghapus seluruh isi tabel `books` dan `admin_users`** di setiap awal tes —
 termasuk akun admin yang sedang Anda pakai masuk. Isi database lokal akan
