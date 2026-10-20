@@ -26,17 +26,17 @@ export default async function Page({
     hasil = await listBooks({ status: kind.status, page: Number(page ?? 1) });
   } catch {
     return (
-      <main className="mx-auto max-w-4xl p-6">
+      <div className="mx-auto max-w-4xl p-6">
         <h1 className="text-2xl font-semibold">{kind.heading}</h1>
         <p data-testid="db-error" className="mt-4 text-red-700">
           Katalog sedang tidak dapat dimuat. Silakan coba beberapa saat lagi.
         </p>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto max-w-4xl p-6">
+    <div className="mx-auto max-w-4xl p-6">
       <h1 className="text-2xl font-semibold">{kind.heading}</h1>
 
       {hasil.items.length === 0 ? (
@@ -77,6 +77,6 @@ export default async function Page({
           ) : null}
         </nav>
       ) : null}
-    </main>
+    </div>
   );
 }

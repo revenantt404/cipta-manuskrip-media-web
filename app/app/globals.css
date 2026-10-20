@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #102a31;
 }
 
 @theme inline {
@@ -10,13 +10,19 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Token warna brief §4 — nama membangkitkan utilitas Tailwind:
+     `--color-teal` → `bg-teal` / `text-teal` / `border-teal`, dst. */
+  --color-teal: #09677d;
+  --color-teal-hover: #075569;
+  --color-teal-soft: #e8f4f6;
+  --color-lime: #c2cc08;
+  --color-lime-hover: #aab306;
+  --color-lime-soft: #f7f9d8;
+  --color-teks: #102a31;
+  --color-teks-sec: #5f7075;
+  --color-garis: #dce6e8;
+  --color-latar-alt: #f7fafb;
 }
 
 body {

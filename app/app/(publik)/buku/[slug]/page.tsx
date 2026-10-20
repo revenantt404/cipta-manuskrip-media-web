@@ -40,12 +40,12 @@ export default async function Page({ params }: Props) {
     book = await getBookBySlug(slug);
   } catch {
     return (
-      <main className="mx-auto max-w-3xl p-6">
+      <div className="mx-auto max-w-3xl p-6">
         <h1 className="text-2xl font-semibold">Buku sedang tidak dapat dimuat</h1>
         <p data-testid="db-error" className="mt-3 text-zinc-700">
           Silakan coba beberapa saat lagi atau buka kembali tautan ini nanti.
         </p>
-      </main>
+      </div>
     );
   }
 

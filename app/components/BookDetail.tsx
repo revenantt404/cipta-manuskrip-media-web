@@ -16,7 +16,7 @@ export function BookDetail({ book }: { book: Book }) {
   const sudahTerbit = book.status === "published";
 
   return (
-    <main className="mx-auto max-w-3xl p-6">
+    <div className="mx-auto max-w-3xl p-6">
       <article className="flex flex-col gap-6 sm:flex-row">
         {/* eslint-disable-next-line @next/next/no-img-element -- sampul sudah
             diperkecil dan dikompres sharp saat diunggah; next/image baru
@@ -69,6 +69,6 @@ export function BookDetail({ book }: { book: Book }) {
           <p className="mt-8 text-sm text-zinc-600">{book.publisherInfo}</p>
         </div>
       </article>
-    </main>
+    </div>
   );
 }
