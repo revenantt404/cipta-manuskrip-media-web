@@ -11,9 +11,12 @@ describe("SiteHeader", () => {
     expect(html).toContain('href="/tentang-kami"');
   });
 
-  it("tidak menautkan layanan — brief membatasi header pada dua tautan", () => {
-    expect(html).not.toContain('href="/publish-buku"');
-    expect(html).not.toContain('href="/publish-jurnal"');
-    expect(html).not.toContain('href="/katalog/');
+  it("menu navigasi hanya berisi Beranda dan Tentang Kami", () => {
+    const menu = html.match(/<div class="nav-links">([\s\S]*?)<\/div>/)?.[1] ?? "";
+    expect(menu).toContain('href="/"');
+    expect(menu).toContain('href="/tentang-kami"');
+    expect(menu).not.toContain('href="/publish-buku"');
+    expect(menu).not.toContain('href="/publish-jurnal"');
+    expect(menu).not.toContain('href="/katalog/');
   });
 });

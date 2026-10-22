@@ -4,11 +4,11 @@ import { useActionState, useState } from "react";
 import { PILIHAN_STATUS } from "./form-state";
 import type { AksiFormBuku, StateFormBuku } from "./form-state";
 
-const KELAS_INPUT = "rounded border px-3 py-2";
+const KELAS_INPUT = "admin-control rounded border px-3 py-2";
 
 function PesanGalat({ pesan }: { pesan: string | undefined }) {
   if (pesan === undefined) return null;
-  return <p className="mt-1 text-sm text-red-700">{pesan}</p>;
+  return <p className="admin-field-error mt-1 text-sm text-red-700">{pesan}</p>;
 }
 
 /**
@@ -46,10 +46,10 @@ export function FormBuku({
       key={state.percobaan}
       action={formAction}
       encType="multipart/form-data"
-      className="flex flex-col gap-4"
+      className="admin-book-form flex flex-col gap-4"
     >
       {errors.form !== undefined ? (
-        <p data-testid="galat-form" className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">
+        <p data-testid="galat-form" className="admin-form-error rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">
           {errors.form}
         </p>
       ) : null}
@@ -260,7 +260,7 @@ export function FormBuku({
       <button
         type="submit"
         disabled={sedangProses}
-        className="self-start rounded border px-4 py-2 hover:bg-zinc-50 disabled:opacity-50"
+        className="admin-form-submit self-start rounded border px-4 py-2 hover:bg-zinc-50 disabled:opacity-50"
       >
         {sedangProses ? "Menyimpan…" : menyunting ? "Simpan perubahan" : "Simpan buku"}
       </button>

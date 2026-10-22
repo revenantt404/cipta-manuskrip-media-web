@@ -36,7 +36,7 @@ describe("publish-jurnal", () => {
 
   it("memuat seluruh 13 fasilitas tanpa menambah janji", () => {
     for (const f of FASILITAS_JURNAL) expect(html).toContain(f);
-    expect(html).toContain("revisi minor–mayor");
+    expect(html).toContain("Revisi Minor–Mayor");
   });
 
   it("kedua tombol menuju halaman yang benar", () => {

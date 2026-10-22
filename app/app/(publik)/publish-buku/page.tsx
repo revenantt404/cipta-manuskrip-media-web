@@ -1,7 +1,10 @@
+import { ArrowDown, ArrowUpRight, BookOpen, Feather, PenLine } from "lucide-react";
 import { listBooks } from "@/lib/books/repository";
 import { catalogueKind } from "@/lib/books/status";
 import { CataloguePreview } from "@/components/CataloguePreview";
 import { FormAsistensi } from "@/components/FormAsistensi";
+import { PackagePicker } from "@/components/PackagePicker";
+import { PackageSelectionStatus } from "@/components/PackageSelectionStatus";
 import { PAKET_BUKU, PREVIEW_LIMIT } from "@/content/site";
 
 // Wajib: halaman membaca database. Tanpa ini Next.js membekukan hasil query
@@ -10,17 +13,9 @@ import { PAKET_BUKU, PREVIEW_LIMIT } from "@/content/site";
 export const dynamic = "force-dynamic";
 
 /**
- * Halaman layanan publish buku.
- *
- * Urutan halaman dikunci brief §10: headline → dua tombol scroll → tiga
- * kartu paket (`#paket`) → section asistensi (`#asistensi`) → preview
- * published → preview upcoming. `<main>` dokumen dimiliki layout `(publik)`,
- * jadi di sini pembungkus terluarnya `<div>` — `<main>` bersarang adalah
- * HTML tidak sah.
- *
- * Kedua preview mengambil status, heading, dan empty message dari
- * `catalogueKind`, bukan literl yang diketik ulang di sini; nilai `status`
- * dari konstanta membuat kedua blok tidak pernah tumpah satu ke lainnya.
+ * Halaman layanan publish buku. Data dan aturan bisnis tetap bersumber dari
+ * content/site.ts dan komponen yang sudah ada; perubahan di file ini khusus UI.
+ * Layout publik memiliki satu-satunya <main>, jadi pembungkusnya <div>.
  */
 export default async function Page() {
   const sudahTerbit = catalogueKind("telah-terbit");
@@ -34,76 +29,52 @@ export default async function Page() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6">
-      <section>
-        <h1 className="text-3xl font-semibold tracking-tight text-teks sm:text-4xl">
-          Terbit Buku Sekali Klik.
-        </h1>
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <a
-            href="#paket"
-            className="rounded-md bg-teal px-5 py-2.5 font-medium text-white hover:bg-teal-hover"
-          >
-            Kirim Naskah
-          </a>
-          <a
-            href="#asistensi"
-            className="rounded-md bg-lime px-5 py-2.5 font-medium text-teks hover:bg-lime-hover"
-          >
-            Asistensi Penulisan
-          </a>
+    <div className="publish-page">
+      <section className="publish-hero">
+        <div aria-hidden="true" className="publish-orb publish-orb-one" />
+        <div aria-hidden="true" className="publish-orb publish-orb-two" />
+        <div className="publish-hero-content">
+          <p className="publish-eyebrow"><BookOpen size={14} /> PENERBITAN BUKU</p>
+          <h1>Terbit Buku Sekali Klik.</h1>
+          <p className="publish-lede">Layanan penerbitan buku dan pendampingan penulisan untuk membantu naskah Anda melangkah menuju publikasi.</p>
+          <div className="publish-hero-actions">
+            <a href="#paket" className="publish-button publish-button-primary">Kirim Naskah <ArrowUpRight size={16} /></a>
+            <a href="#asistensi" className="publish-button publish-button-secondary">Asistensi Penulisan <ArrowUpRight size={16} /></a>
+          </div>
+          <a href="#paket" className="publish-scroll"><span>Lihat pilihan paket</span><ArrowDown size={14} /></a>
+        </div>
+        <div className="publish-hero-art" aria-hidden="true">
+          <div className="publish-art-glow" />
+          <div className="publish-sheet sheet-back"><i /><i /><i /></div>
+          <div className="publish-sheet sheet-front"><span className="sheet-emblem"><Feather size={22} /></span><i /><i /><i /><small>CIPTA MANUSKRIP MEDIA</small></div>
+          <span className="art-spark art-spark-one">✳</span><span className="art-spark art-spark-two">✳</span>
+          <span className="art-label">DARI NASKAH MENJADI BUKU</span>
         </div>
       </section>
 
-      <section id="paket" className="mt-12 scroll-mt-24">
-        <h2 className="text-xl font-semibold text-teks sm:text-2xl">Paket Terbit Buku</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          {PAKET_BUKU.map((paket, i) => (
-            <div
-              key={`${paket.nama}-${i}`}
-              className="rounded border border-garis bg-latar-alt p-5"
-            >
-              <p className="font-medium text-teks">{paket.nama}</p>
-              <p className="mt-2 text-teks-sec">{paket.harga}</p>
-              <p className="mt-2 text-sm text-teks-sec">{paket.fasilitas}</p>
-            </div>
-          ))}
+      <PackagePicker tiers={PAKET_BUKU} />
+
+      <section id="asistensi" className="assist-section scroll-mt-24">
+        <div className="assist-copy">
+          <p className="publish-section-kicker">PENDAMPINGAN NASKAH</p>
+          <h2>Setiap ide layak mendapat ruang untuk tumbuh.</h2>
+          <p>Pendampingan penulisan untuk artikel dan naskah buku. Hubungi admin untuk menanyakan ruang lingkup dan jadwalnya.</p>
+          <div className="assist-note"><PenLine size={17} /><span>Mulai dengan menceritakan topik atau gagasan buku Anda.</span></div>
         </div>
+        <div className="assist-form-card"><PackageSelectionStatus /><FormAsistensi jenis="buku" /></div>
       </section>
 
-      <section id="asistensi" className="mt-12 scroll-mt-24">
-        <h2 className="text-xl font-semibold text-teks sm:text-2xl">Asistensi Penulisan</h2>
-        <p className="mt-2 text-teks-sec">
-          Pendampingan penulisan untuk artikel dan naskah buku. Hubungi admin
-          untuk menanyakan ruang lingkup dan jadwalnya.
-        </p>
-        <FormAsistensi jenis="buku" />
-      </section>
-
-      <section className="mt-12">
+      <section className="book-preview-section">
         {sudahTerbit === null || hasil === null ? (
-          <p data-testid="db-error" className="text-red-700">
-            Preview katalog sedang tidak dapat dimuat. Silakan coba beberapa saat lagi.
-          </p>
+          <p data-testid="db-error" className="text-red-700">Preview katalog sedang tidak dapat dimuat. Silakan coba beberapa saat lagi.</p>
         ) : (
           <>
             <div data-testid="preview-telah-terbit">
-              <CataloguePreview
-                heading={sudahTerbit.heading}
-                emptyMessage={sudahTerbit.emptyMessage}
-                items={hasil.terbit.items}
-                lihatSemuaHref="/katalog/telah-terbit"
-              />
+              <CataloguePreview heading={sudahTerbit.heading} emptyMessage={sudahTerbit.emptyMessage} items={hasil.terbit.items} lihatSemuaHref="/katalog/telah-terbit" />
             </div>
             {segeraTerbit === null ? null : (
               <div data-testid="preview-segera-terbit">
-                <CataloguePreview
-                  heading={segeraTerbit.heading}
-                  emptyMessage={segeraTerbit.emptyMessage}
-                  items={hasil.segera.items}
-                  lihatSemuaHref="/katalog/segera-terbit"
-                />
+                <CataloguePreview heading={segeraTerbit.heading} emptyMessage={segeraTerbit.emptyMessage} items={hasil.segera.items} lihatSemuaHref="/katalog/segera-terbit" />
               </div>
             )}
           </>

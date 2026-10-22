@@ -4,10 +4,10 @@
  * mengimpor dari sini, jadi tidak ada teks yang tersalin dobel atau
  * berbeda antarhalaman.
  *
- * Nilai dalam kurung siku ([...]) itu jujur, bukan sementara: materinya
- * memang belum diserahkan klien. Semuanya wajib diganti hanya setelah
- * klien mengirim materinya — jangan mengarang harga, nama paket, atau
- * aset apa pun (docs/DESIGN-STACK.md §8).
+ * Placeholder dalam kurung siku tetap menandai materi klien yang belum ada.
+ * PAKET_BUKU saat ini pengecualian eksperimental: tier dan harga simulasi,
+ * dibuat atas izin pemilik proyek dan bukan penawaran resmi. Ganti dengan
+ * paket klien yang disetujui sebelum rilis produksi (docs/DESIGN-STACK.md §8).
  *
  * Teks yang dikunci brief (nomor WhatsApp format tampil, 13 fasilitas,
  * kategori jurnal dengan en dash `–`) diperiksa di `site.test.ts`, jadi
@@ -38,18 +38,46 @@ export const KONTAK: { adminBuku: string; adminJurnal: string } = {
 };
 
 /**
- * Tepat tiga paket buku, semuanya placeholder — nama, harga, dan
- * fasilitasnya belum diserahkan klien, jadi jangan mengarang angka.
- * Strukturnya sudah final agar kartu paket bisa dirakit sekarang.
+ * Tiga tier contoh untuk prototipe visual, tertinggi ke terendah.
+ * Nama, harga, dan fasilitas ini dikarang atas persetujuan pemilik proyek
+ * (21 Oktober 2026) dan BUKAN penawaran resmi. Ganti setelah klien
+ * mengirim paket dan harga final.
  */
 export const PAKET_BUKU: ReadonlyArray<{
   nama: string;
   harga: string;
-  fasilitas: string;
+  fasilitas: readonly string[];
 }> = [
-  { nama: "[Nama paket dari klien]", harga: "[Harga dari klien]", fasilitas: "[Fasilitas paket dari klien]" },
-  { nama: "[Nama paket dari klien]", harga: "[Harga dari klien]", fasilitas: "[Fasilitas paket dari klien]" },
-  { nama: "[Nama paket dari klien]", harga: "[Harga dari klien]", fasilitas: "[Fasilitas paket dari klien]" },
+  {
+    nama: "Paket Eksklusif",
+    harga: "Rp7.500.000",
+    fasilitas: [
+      "Penyuntingan naskah",
+      "Proofreading akhir",
+      "Desain sampul dan tata letak isi",
+      "Pendampingan proses ISBN",
+      "10 buku cetak",
+    ],
+  },
+  {
+    nama: "Paket Profesional",
+    harga: "Rp4.500.000",
+    fasilitas: [
+      "Proofreading akhir",
+      "Desain sampul dan tata letak isi",
+      "Pendampingan proses ISBN",
+      "5 buku cetak",
+    ],
+  },
+  {
+    nama: "Paket Dasar",
+    harga: "Rp2.500.000",
+    fasilitas: [
+      "Tata letak isi buku",
+      "Desain sampul buku",
+      "Pendampingan proses ISBN",
+    ],
+  },
 ];
 
 /**
@@ -58,19 +86,19 @@ export const PAKET_BUKU: ReadonlyArray<{
  * (statistik, jumlah terbit, dan sebagainya).
  */
 export const FASILITAS_JURNAL: readonly string[] = [
-  "LOA cepat",
-  "DOI aktif",
-  "dokumentasi korespondensi lengkap",
-  "review transparan",
-  "jurnal bukan predator",
-  "revisi minor–mayor",
+  "LOA Cepat",
+  "DOI Aktif",
+  "Dokumentasi Korespondensi Lengkap",
+  "Review Transparan",
+  "Jurnal Non-Predator",
+  "Revisi Minor–Mayor",
   "Turnitin",
-  "konversi skripsi/tesis/disertasi",
-  "penerjemahan artikel",
-  "proofreading",
-  "layout",
-  "template artikel",
-  "garansi terbit",
+  "Konversi Skripsi/Tesis/Disertasi",
+  "Penerjemahan Artikel",
+  "Proofreading",
+  "Layout",
+  "Template Artikel",
+  "Garansi Terbit",
 ];
 
 /** Tepat tiga kategori; en dash pada `SINTA 1–4` persis dari brief. */

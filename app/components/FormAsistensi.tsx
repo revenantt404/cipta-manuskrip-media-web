@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowUpRight, BookOpen, FileText } from "lucide-react";
 import { pesanAsistensiBuku, pesanAsistensiJurnal } from "@/lib/whatsapp";
 
 export type JenisAsistensi = "buku" | "jurnal";
@@ -59,14 +60,22 @@ export function FormAsistensi({ jenis }: { jenis: JenisAsistensi }) {
       <label htmlFor={varian.id} className="font-medium text-teks">
         {varian.label}
       </label>
-      <input
-        id={varian.id}
-        name="topik"
-        type="text"
-        value={topik}
-        onChange={(e) => setTopik(e.target.value)}
-        className="rounded-md border border-garis bg-white px-4 py-2.5 text-teks"
-      />
+      <div className="assist-input-shell">
+        {jenis === "buku" ? <BookOpen aria-hidden="true" size={18} /> : <FileText aria-hidden="true" size={18} />}
+        <input
+          id={varian.id}
+          name="topik"
+          type="text"
+          value={topik}
+          onChange={(e) => setTopik(e.target.value)}
+          placeholder={jenis === "buku" ? "Tuliskan topik atau gagasan buku Anda" : "Tuliskan topik artikel yang ingin Anda konsultasikan"}
+          aria-describedby={`assist-hint-${varian.id}`}
+          className="assist-topic-input"
+        />
+      </div>
+      <p id={`assist-hint-${varian.id}`} className="assist-input-hint">
+        Topik ini hanya digunakan untuk menyusun pesan WhatsApp kepada admin.
+      </p>
       {/* Area galat dirender selalu (kosong saat tidak ada galat) agar
           elemen `role="alert"` sudah ada di markup sejak awal — ditanam
           belakangan, region live bisa terlewat pembaca layar. */}
@@ -75,9 +84,9 @@ export function FormAsistensi({ jenis }: { jenis: JenisAsistensi }) {
       </p>
       <button
         type="submit"
-        className="justify-self-start rounded-md bg-teal px-5 py-2.5 font-medium text-white hover:bg-teal-hover"
+        className="assist-submit justify-self-start rounded-md bg-teal px-5 py-2.5 font-medium text-white hover:bg-teal-hover"
       >
-        Lanjut ke WhatsApp
+        Lanjut ke WhatsApp <ArrowUpRight aria-hidden="true" size={16} />
       </button>
     </form>
   );

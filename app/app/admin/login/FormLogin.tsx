@@ -1,58 +1,44 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
+import { Eye, EyeOff, KeyRound, Mail, MoveRight } from "lucide-react";
 import type { LoginState } from "../login-state";
 
 type Aksi = (sebelumnya: LoginState, data: FormData) => Promise<LoginState>;
 
 export function FormLogin({ action, awal }: { action: Aksi; awal: LoginState }) {
   const [state, formAction, sedangProses] = useActionState(action, awal);
+  const [lihatPassword, setLihatPassword] = useState(false);
 
   return (
-    // `key` yang berubah setiap percobaan memaksa form dipasang ulang dengan
-    // isian awal yang baru. Ini yang membuat email yang sudah diketik tidak
-    // hilang saat validasi gagal — React mereset form setiap action selesai,
-    // jadi mengandalkan nilai di DOM saja tidak cukup.
-    <form key={state.percobaan} action={formAction} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
+    <form key={state.percobaan} action={formAction} className="admin-login-form">
+      <div className="admin-login-field">
         <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="username"
-          // Halaman login hanya berisi satu form; fokus otomatis
-          // menghemat satu klik bagi admin yang membukanya berkali-kali.
-          autoFocus
-          required
-          defaultValue={state.email}
-          className="rounded border px-3 py-2"
-        />
+        <div className="admin-login-input-wrap">
+          <Mail size={17} aria-hidden="true" />
+          <input id="email" name="email" type="email" autoComplete="username" autoFocus required defaultValue={state.email} placeholder="nama@perusahaan.com" />
+        </div>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="password">Kata sandi</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          className="rounded border px-3 py-2"
-        />
+      <div className="admin-login-field">
+        <div className="admin-login-label-row"><label htmlFor="password">Kata sandi</label></div>
+        <div className="admin-login-input-wrap">
+          <KeyRound size={17} aria-hidden="true" />
+          <input id="password" name="password" type={lihatPassword ? "text" : "password"} autoComplete="current-password" required placeholder="Masukkan kata sandi" />
+          <button type="button" className="admin-password-toggle" aria-label={lihatPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"} onClick={() => setLihatPassword((visible) => !visible)}>
+            {lihatPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+          </button>
+        </div>
       </div>
 
-      <p aria-live="polite" data-testid="login-error" className="min-h-5 text-sm text-red-700">
+      <p aria-live="polite" role={state.error ? "alert" : undefined} data-testid="login-error" className={`admin-login-error${state.error ? " has-error" : ""}`}>
         {state.error}
       </p>
-
-      <button
-        type="submit"
-        disabled={sedangProses}
-        className="rounded border px-4 py-2 hover:bg-zinc-50 disabled:opacity-50"
-      >
-        {sedangProses ? "Memproses…" : "Masuk"}
+      <button type="submit" disabled={sedangProses} className="admin-login-submit">
+        <span>{sedangProses ? "Memeriksa akun…" : "Masuk ke panel"}</span>
+        <MoveRight size={17} aria-hidden="true" />
       </button>
+      <p className="admin-login-secure-note"><KeyRound size={13} /> Sesi masuk dikelola secara aman oleh server.</p>
     </form>
   );
 }

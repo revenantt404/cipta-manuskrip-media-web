@@ -1,78 +1,99 @@
 import Link from "next/link";
+import { ArrowDown, ArrowUpRight, BadgeCheck, Eye, FileText, Fingerprint, GraduationCap, Languages, Layers3, LayoutTemplate, Link2, MessageSquareText, MessagesSquare, PanelsTopLeft, PenLine, ScanSearch, ShieldCheck, Timer } from "lucide-react";
 import { FASILITAS_JURNAL } from "@/content/site";
 
-/**
- * Halaman layanan publish jurnal — komponen sinkron, tanpa pengambilan
- * data, jadi tanpa `force-dynamic` (berbeda dari `/publish-buku` yang
- * membaca database dan wajib dinamis).
- *
- * Urutan halaman: headline → dua tombol → empat area aset (`#bukti`,
- * `#korespondensi`, `#indeksasi`) plus daftar 13 fasilitas (`#fasilitas`).
- * `<main>` dokumen dimiliki layout `(publik)`, jadi pembungkus terluarnya
- * `<div>` — `<main>` bersarang adalah HTML tidak sah.
- *
- * Tiga area pertama memajang aset yang belum diserahkan klien, jadi
- * slotnya menampilkan `[Aset dari klien]` — jujur, bukan sementara
- * (docs/DESIGN-STACK.md §8). Isi tiap area hanya judul dan slot aset,
- * tanpa prosa deskriptif: deskripsi yang terdengar netral pun tetap
- * karangan bila klien tidak menyebutnya (contoh yang sudah disingkirkan:
- * OJS, github, keanggotaan). Halaman ini tidak menambah statistik,
- * jumlah terbit, atau janji apa pun di luar `FASILITAS_JURNAL`.
- */
+const IKON_FASILITAS = [
+  Timer,
+  Link2,
+  MessagesSquare,
+  Eye,
+  ShieldCheck,
+  PenLine,
+  Fingerprint,
+  GraduationCap,
+  Languages,
+  ScanSearch,
+  PanelsTopLeft,
+  LayoutTemplate,
+  BadgeCheck,
+] as const;
+
+const AREA_ASET = [
+  { id: "bukti", judul: "Bukti Submission", penanda: "01", ikon: FileText },
+  { id: "korespondensi", judul: "Dokumentasi Korespondensi", penanda: "02", ikon: MessageSquareText },
+  { id: "indeksasi", judul: "Logo Indeksasi", penanda: "03", ikon: ScanSearch },
+];
+
+/** UI editorial jurnal; seluruh konten layanan tetap mengikuti brief. */
 export default function Page() {
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6">
-      <section>
-        <h1 className="text-3xl font-semibold tracking-tight text-teks sm:text-4xl">
-          Publikasi Artikel Ilmiah Sekali Klik.
-        </h1>
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href="/publish-jurnal/kirim-artikel"
-            className="rounded-md bg-teal px-5 py-2.5 font-medium text-white hover:bg-teal-hover"
-          >
-            Kirim Artikel
-          </Link>
-          <Link
-            href="/publish-jurnal/asistensi"
-            className="rounded-md bg-lime px-5 py-2.5 font-medium text-teks hover:bg-lime-hover"
-          >
-            Belum Ada Artikel
-          </Link>
+    <div className="journal-page journal-overview">
+      <section className="journal-hero">
+        <div className="journal-hero-copy">
+          <p className="journal-kicker"><span className="journal-kicker-line" /> LAYANAN PUBLIKASI JURNAL</p>
+          <h1>Publikasi Artikel Ilmiah Sekali Klik.</h1>
+          <p className="journal-hero-description">Jelajahi fasilitas publikasi, dokumentasi, dan pilihan layanan artikel ilmiah.</p>
+          <div className="journal-hero-actions">
+            <Link href="/publish-jurnal/kirim-artikel" className="journal-button journal-button-bright">Kirim Artikel <ArrowUpRight size={17} /></Link>
+            <Link href="/publish-jurnal/asistensi" className="journal-button journal-button-outline">Belum Ada Artikel <ArrowUpRight size={17} /></Link>
+          </div>
+          <a className="journal-scroll" href="#fasilitas">Lihat fasilitas <ArrowDown size={14} /></a>
+        </div>
+        <div className="journal-hero-visual" aria-hidden="true">
+          <div className="journal-visual-ring journal-ring-one" />
+          <div className="journal-visual-ring journal-ring-two" />
+          <div className="journal-paper-back"><i /><i /><i /><i /></div>
+          <div className="journal-paper-front">
+            <span className="paper-index">JOURNAL / ARTICLE</span>
+            <span className="paper-glyph">J.</span>
+            <span className="paper-rule" /><span className="paper-rule short" />
+            <span className="paper-stamp"><Layers3 size={17} /></span>
+          </div>
+          <span className="journal-visual-caption">NASKAH · DOKUMENTASI · PUBLIKASI</span>
         </div>
       </section>
 
-      <section id="bukti" className="mt-12 scroll-mt-24">
-        <h2 className="text-xl font-semibold text-teks sm:text-2xl">Bukti Submission</h2>
-        <div className="mt-4 rounded border border-garis bg-latar-alt p-5">
-          <p className="text-teks-sec">[Aset dari klien]</p>
+      <section className="journal-assets-section" aria-labelledby="journal-assets-title">
+        <div className="journal-section-heading">
+          <div><p className="journal-section-kicker">DOKUMENTASI</p><h2 id="journal-assets-title">Ruang untuk bukti publikasi.</h2></div>
+          <p>Aset akan ditampilkan setelah materi dari klien tersedia.</p>
         </div>
-      </section>
-
-      <section id="korespondensi" className="mt-12 scroll-mt-24">
-        <h2 className="text-xl font-semibold text-teks sm:text-2xl">Dokumentasi Korespondensi</h2>
-        <div className="mt-4 rounded border border-garis bg-latar-alt p-5">
-          <p className="text-teks-sec">[Aset dari klien]</p>
-        </div>
-      </section>
-
-      <section id="indeksasi" className="mt-12 scroll-mt-24">
-        <h2 className="text-xl font-semibold text-teks sm:text-2xl">Logo Indeksasi</h2>
-        <div className="mt-4 rounded border border-garis bg-latar-alt p-5">
-          <p className="text-teks-sec">[Aset dari klien]</p>
-        </div>
-      </section>
-
-      <section id="fasilitas" className="mt-12 scroll-mt-24">
-        <h2 className="text-xl font-semibold text-teks sm:text-2xl">Fasilitas</h2>
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-          {FASILITAS_JURNAL.map((f) => (
-            <li key={f} className="rounded border border-garis bg-latar-alt px-4 py-3 text-teks">
-              {f}
-            </li>
+        <div className="journal-assets-grid">
+          {AREA_ASET.map(({ id, judul, penanda, ikon: Icon }) => (
+            <section id={id} key={id} className="journal-asset-card">
+              <div className="journal-asset-top"><span className="journal-asset-number">{penanda} / 03</span><Icon size={19} strokeWidth={1.6} /></div>
+              <h3>{judul}</h3>
+              <div className="journal-asset-placeholder"><span className="asset-placeholder-icon"><Icon size={21} /></span><span>[Aset dari klien]</span><i /></div>
+            </section>
           ))}
+        </div>
+      </section>
+
+      <section id="fasilitas" className="journal-facilities-section">
+        <div className="journal-facilities-heading">
+          <div><p className="journal-section-kicker">CAKUPAN LAYANAN</p><h2>Fasilitas</h2></div>
+          <p>Daftar fasilitas publikasi artikel ilmiah.</p>
+        </div>
+        <ul className="journal-facilities-grid">
+          {FASILITAS_JURNAL.map((fasilitas, i) => {
+            const IkonFasilitas = IKON_FASILITAS[i];
+            return (
+              <li key={fasilitas} className="journal-facility">
+                <span className="facility-number">{String(i + 1).padStart(2, "0")}</span>
+                <span className="facility-check" aria-hidden="true"><IkonFasilitas size={14} strokeWidth={1.8} /></span>
+                <span>{fasilitas}</span>
+              </li>
+            );
+          })}
         </ul>
+      </section>
+
+      <section className="journal-next-step">
+        <div><p className="journal-section-kicker">LANGKAH BERIKUTNYA</p><h2>Siap melanjutkan artikel?</h2></div>
+        <div className="journal-next-actions">
+          <Link href="/publish-jurnal/kirim-artikel" className="journal-button journal-button-dark">Kirim Artikel <ArrowUpRight size={16} /></Link>
+          <Link href="/publish-jurnal/asistensi" className="journal-text-link">Belum Ada Artikel <ArrowUpRight size={15} /></Link>
+        </div>
       </section>
     </div>
   );

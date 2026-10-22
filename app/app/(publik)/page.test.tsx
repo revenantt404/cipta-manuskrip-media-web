@@ -7,8 +7,9 @@ describe("beranda", () => {
   const html = renderToStaticMarkup(<Home />);
 
   it("memakai headline dan pendukung persis dari brief", () => {
-    expect(html).toContain("Publikasi Semudah Beli Kopi.");
-    expect(html).toContain("Layanan penerbitan buku dan publikasi artikel ilmiah.");
+    const visibleText = html.replace(/<[^>]*>/g, "");
+    expect(visibleText).toContain("Publikasi Semudah Beli Kopi.");
+    expect(visibleText).toContain("Layanan penerbitan buku dan publikasi artikel ilmiah.");
   });
 
   it("tombol mengarah ke dua halaman layanan, bukan katalog", () => {

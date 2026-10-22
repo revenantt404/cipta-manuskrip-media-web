@@ -25,30 +25,35 @@ describe("content/site", () => {
     expect(KONTAK.adminJurnal).toBe("0895-6292-03142");
   });
 
-  it("tepat tiga paket dan semuanya placeholder, bukan data karangan", () => {
+  it("tiga tier contoh berurutan dari harga tertinggi ke terendah dan berbeda fasilitasnya", () => {
     expect(PAKET_BUKU).toHaveLength(3);
-    for (const paket of PAKET_BUKU) {
-      expect(paket.nama).toBe("[Nama paket dari klien]");
-      expect(paket.harga).toBe("[Harga dari klien]");
-      expect(paket.fasilitas).toBe("[Fasilitas paket dari klien]");
-    }
+    expect(PAKET_BUKU.map((paket) => paket.nama)).toEqual([
+      "Paket Eksklusif",
+      "Paket Profesional",
+      "Paket Dasar",
+    ]);
+    const harga = PAKET_BUKU.map((paket) => Number(paket.harga.replace(/[^0-9]/g, "")));
+    expect(harga[0]).toBeGreaterThan(harga[1]);
+    expect(harga[1]).toBeGreaterThan(harga[2]);
+    expect(new Set(PAKET_BUKU.map((paket) => paket.fasilitas.join("|"))).size).toBe(3);
+    expect(PAKET_BUKU.every((paket) => paket.fasilitas.length > 0)).toBe(true);
   });
 
   it("daftar fasilitas jurnal 13 item persis seperti brief", () => {
     expect(FASILITAS_JURNAL).toEqual([
-      "LOA cepat",
-      "DOI aktif",
-      "dokumentasi korespondensi lengkap",
-      "review transparan",
-      "jurnal bukan predator",
-      "revisi minor–mayor",
+      "LOA Cepat",
+      "DOI Aktif",
+      "Dokumentasi Korespondensi Lengkap",
+      "Review Transparan",
+      "Jurnal Non-Predator",
+      "Revisi Minor–Mayor",
       "Turnitin",
-      "konversi skripsi/tesis/disertasi",
-      "penerjemahan artikel",
-      "proofreading",
-      "layout",
-      "template artikel",
-      "garansi terbit",
+      "Konversi Skripsi/Tesis/Disertasi",
+      "Penerjemahan Artikel",
+      "Proofreading",
+      "Layout",
+      "Template Artikel",
+      "Garansi Terbit",
     ]);
   });
 

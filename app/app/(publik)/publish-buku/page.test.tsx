@@ -83,19 +83,22 @@ describe("publish-buku", () => {
     expect(html).not.toContain("Topik Asistensi Penulisan Artikel Jurnal Ilmiah");
   });
 
-  it("mencetak tepat tiga kartu paket, semuanya placeholder klien", async () => {
+  it("mencetak tiga tier harga contoh berurutan, dengan fasilitas per-tier yang berbeda", async () => {
     const el = await Page();
     const html = renderToStaticMarkup(el);
 
-    // Teks placeholder persis dari content/site.ts — halaman tidak boleh
-    // mengarang nama, harga, atau fasilitas untuk melengkapi tampilannya.
-    expect(html).toContain("[Nama paket dari klien]");
-    expect(html).toContain("[Harga dari klien]");
-    expect(html).toContain("[Fasilitas paket dari klien]");
+    expect(html).toContain("Paket Eksklusif");
+    expect(html).toContain("Rp7.500.000");
+    expect(html).toContain("Paket Profesional");
+    expect(html).toContain("Rp4.500.000");
+    expect(html).toContain("Paket Dasar");
+    expect(html).toContain("Rp2.500.000");
+    expect(html).toContain("Penyuntingan naskah");
+    expect(html).toContain("Tata letak isi buku");
+    expect(html).toContain("bukan penawaran resmi");
 
-    const jumlah = (html.match(/\[Nama paket dari klien\]/g) ?? []).length;
-    expect(jumlah).toBe(PAKET_BUKU.length);
     expect(PAKET_BUKU).toHaveLength(3);
+    expect(new Set(PAKET_BUKU.map((paket) => paket.fasilitas.join("|"))).size).toBe(3);
   });
 
   it("dua preview masing-masing memuat PREVIEW_LIMIT buku statusnya sendiri", async () => {

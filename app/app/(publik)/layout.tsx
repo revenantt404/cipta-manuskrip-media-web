@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 /**
  * Layout semua halaman publik (route group `(publik)` — grupnya tidak ikut
@@ -13,6 +14,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <>
       <SiteHeader />
+      <ScrollReveal />
       <main className="flex-1">{children}</main>
       <SiteFooter />
     </>

@@ -35,10 +35,10 @@ export function TombolHapus({
           event.preventDefault();
         }
       }}
-      className="flex flex-col gap-2"
+      className="admin-delete-form flex flex-col gap-2"
     >
       {state.errors.form !== undefined ? (
-        <p data-testid="galat-hapus" className="text-sm text-red-700">
+        <p data-testid="galat-hapus" className="admin-delete-error text-sm text-red-700">
           {state.errors.form}
         </p>
       ) : null}
@@ -46,7 +46,7 @@ export function TombolHapus({
       <button
         type="submit"
         disabled={sedangProses}
-        className="self-start rounded border border-red-300 px-4 py-2 text-red-700 hover:bg-red-50 disabled:opacity-50"
+        className="admin-delete-button self-start rounded border border-red-300 px-4 py-2 text-red-700 hover:bg-red-50 disabled:opacity-50"
       >
         {sedangProses ? "Menghapus…" : "Hapus buku"}
       </button>
