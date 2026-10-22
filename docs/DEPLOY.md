@@ -54,7 +54,7 @@ akan ditolak; itu disengaja.
 
 ## Build id deterministik
 
-`next.config.ts` mengunci `generateBuildId` ke hash `package-lock.json`.
+`next.config.mjs` mengunci `generateBuildId` ke hash `package-lock.json`.
 Dua build dari dependensi yang sama menghasilkan id yang sama, sehingga
 build ulang saat server lama masih hidup tidak memaksa setiap pengunjung
 mengunduh ulang seluruh aset. Build id berubah hanya ketika dependensi
@@ -109,17 +109,24 @@ Kalau ingin memakai Turbopack (lebih cepat, tetapi menuntut SWC native),
 jalankan `npm run build:turbopack` di mesin yang glibc-nya 2.29 atau lebih
 baru.
 
-Dua hal yang sudah disiapkan di repo supaya jalur webpack benar:
+Tiga hal yang sudah disiapkan di repo supaya jalur ini benar:
 
+- **Konfigurasi bernama `next.config.mjs`, bukan `next.config.ts`.** Next hanya
+  men-transpilasi `next.config.ts` lewat SWC sebelum menjalankannya. Di server
+  yang SWC native-nya gagal dimuat, transpilasi itu berakhir dengan
+  `ERR_MODULE_NOT_FOUND` yang menunjuk ke `<hash>.next.config` — berkas yang
+  tidak pernah ada. Berkas `.mjs` tidak melewati jalur itu sama sekali, jadi
+  jenis kegagalan tersebut tidak bisa terjadi. Tipe tetap terjaga lewat JSDoc
+  (`@type {import("next").NextConfig}`). Jangan mengganti namanya kembali ke
+  `.ts`.
 - `postcss.config.mjs` memuat `@tailwindcss/postcss`. Webpack memproses CSS
-  lewat PostCSS, sedangkan konfigurasi `turbopack.rules` di `next.config.ts`
-  hanya dibaca Turbopack. Tanpa berkas ini build **berhasil** tetapi CSS-nya
-  keluar mentah: tidak ada satu pun kelas utilitas Tailwind, sehingga halaman
-  tampil tanpa gaya dan tanpa galat apa pun.
-- `generateBuildId` di `next.config.ts` memakai `process.cwd()`, bukan
-  `import.meta.url`. Di jalur webpack `import.meta.url` menunjuk ke nama modul
-  hasil transpilasi yang tidak pernah ada (`<hash>.next.config`), sehingga
-  build gagal `ERR_MODULE_NOT_FOUND`.
+  lewat PostCSS, sedangkan konfigurasi `turbopack.rules` hanya dibaca
+  Turbopack. Tanpa berkas ini build **berhasil** tetapi CSS-nya keluar mentah:
+  tidak ada satu pun kelas utilitas Tailwind, sehingga halaman tampil tanpa
+  gaya dan tanpa galat apa pun.
+- `generateBuildId` memakai `process.cwd()` + `package-lock.json`. `next build`
+  dan `next start` dijalankan dari folder aplikasi, jadi nilainya sama di
+  kedua jalur build.
 
 Cek cepat setelah build: `npx next start`, buka situs, dan pastikan tata
 letaknya benar — bukan sekadar "build sukses".
