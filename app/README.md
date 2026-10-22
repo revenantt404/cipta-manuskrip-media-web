@@ -75,9 +75,21 @@ teks biasa.
 
 ```bash
 npm run dev          # mode pengembangan di http://localhost:3000
-npm run build        # build produksi
+npm run build        # build produksi (webpack)
 npm run start        # menjalankan hasil build
 ```
+
+`npm run build` memakai **webpack**, bukan Turbopack. Alasannya server hosting
+memakai glibc lebih tua dari 2.29 sehingga SWC native gagal dimuat dan Next
+jatuh ke SWC WASM — sedangkan Turbopack tidak bisa jalan dengan WASM. Webpack
+bekerja di kedua keadaan. Turbopack tetap bisa dipakai bila lingkungan
+mendukung SWC native:
+
+```bash
+npm run build:turbopack
+```
+
+Rinciannya di `docs/DEPLOY.md`.
 
 ## Memakai panel admin
 

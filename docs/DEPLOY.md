@@ -101,17 +101,15 @@ yang sudah dipercaya kebijakan. Di Linux umumnya tidak terjadi.
 **`GLIBC_2.29 not found` lalu `Cannot find module '...next.config'`** — server
 memakai glibc lebih tua dari 2.29, sehingga `@next/swc-linux-x64-gnu` tidak
 bisa dimuat. Next lalu jatuh ke SWC **WASM**, dan Turbopack tidak bisa jalan
-dengan WASM. Perbaikannya **bukan** menaikkan versi glibc, melainkan memakai
-webpack, yang berjalan dengan SWC WASM:
+dengan WASM. Karena itu `npm run build` di repo ini sudah memakai webpack
+(`next build --webpack`), yang berjalan dengan SWC WASM. Tidak ada yang perlu
+diubah di panel hosting — biarkan perintah build tetap `npm run build`.
 
-```bash
-npx next build --webpack
-```
+Kalau ingin memakai Turbopack (lebih cepat, tetapi menuntut SWC native),
+jalankan `npm run build:turbopack` di mesin yang glibc-nya 2.29 atau lebih
+baru.
 
-Jalankan perintah itu (bukan `npm run build`) di panel hosting, atau ubah
-perintah build panel menjadi `next build --webpack`.
-
-Dua hal yang sudah disiapkan di repo supaya jalur ini benar:
+Dua hal yang sudah disiapkan di repo supaya jalur webpack benar:
 
 - `postcss.config.mjs` memuat `@tailwindcss/postcss`. Webpack memproses CSS
   lewat PostCSS, sedangkan konfigurasi `turbopack.rules` di `next.config.ts`
