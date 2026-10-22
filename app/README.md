@@ -11,9 +11,9 @@ dikelola sendiri, diakses tanpa ORM.
 | Kebutuhan | Versi | Catatan |
 |---|---|---|
 | Node.js | ≥ 20.9 | Dikembangkan dan diuji di Node v24.22.0 |
-| MySQL | 8.4 | Diuji pada MySQL 8.4.3. Lihat `docs/DATABASE-SETUP.md` |
+| MySQL | 8.4 | Diuji pada MySQL 8.4.3 |
 
-MariaDB belum diuji. Lihat `docs/PROGRESS.md` bagian blocker.
+MariaDB belum diuji. Untuk menaikkan situs ke server, lihat `docs/DEPLOY.md`.
 
 ## Menyiapkan proyek
 
@@ -48,8 +48,8 @@ aplikasi) atau diarahkan ke folder **di luar** folder aplikasi. Yang terakhir
 itu yang dianjurkan di hosting: sampul tidak ikut terhapus saat aplikasi
 di-deploy ulang. Folder mana pun yang dipakai, sampul **tidak** disajikan
 sebagai berkas statis — isinya dibaca oleh route `/covers/[berkas]` per
-permintaan. Lihat `docs/PROGRESS.md` bagian "Dua bug yang ditemukan dan
-diperbaiki" untuk alasannya.
+permintaan. Sampul disimpan di luar folder aplikasi di hosting supaya selamat
+saat deploy ulang — lihat `docs/DEPLOY.md`.
 
 ## Menyiapkan database
 
@@ -203,10 +203,7 @@ bukan lewat tes. Setiap halaman admin baru harus masuk ke dalam group itu.
 
 | Berkas | Isi |
 |---|---|
-| `docs/DATABASE-SETUP.md` | Menyiapkan MySQL, aturan perubahan skema |
-| `docs/PROGRESS.md` | Apa yang sudah selesai, apa yang masih terblokir |
-| `docs/DESIGN-STACK.md` | Keputusan teknis dan alasannya |
-| `docs/SPEC-AMENDMENT-01.md` | Perubahan lingkup terhadap brief awal |
+| `docs/DEPLOY.md` | Menaikkan situs ke hosting, environment produksi, daftar periksa |
 | `PROJECT-BACKEND-FIRST.md` | Brief awal dari klien |
 
 Perjanjian kerja sama yang ditandatangani **tidak** ada di repo ini: dokumen

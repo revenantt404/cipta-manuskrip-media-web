@@ -20,3 +20,7 @@ Thumbs.db
 .agents/
 .gemini/
 skills-lock.json
+
+# Status kerja skill desain Impeccable: sama seperti di atas, isinya state
+# lokal mesin ini (susunan berkas yang sedang disunting), bukan bagian kode.
+.impeccable/
