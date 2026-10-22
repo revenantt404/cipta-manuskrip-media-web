@@ -203,6 +203,7 @@ bukan lewat tes. Setiap halaman admin baru harus masuk ke dalam group itu.
 
 | Berkas | Isi |
 |---|---|
+| `docs/UPLOAD-DATABASE.md` | Membuat database di panel hosting, mengisi env, migrasi, akun admin |
 | `docs/DEPLOY.md` | Menaikkan situs ke hosting, environment produksi, daftar periksa |
 | `PROJECT-BACKEND-FIRST.md` | Brief awal dari klien |
 
