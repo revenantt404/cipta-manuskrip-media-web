@@ -96,3 +96,30 @@ describe("siteUrl", () => {
     expect(siteUrl({ SITE_URL: "https://contoh.com/?x=1#t" })).toBe("http://localhost:3000");
   });
 });
+
+describe("readEnv di produksi", () => {
+  it("menolak DB_USER 'root' dan menjelaskan bahwa nilainya contoh", () => {
+    // Di hosting, user database selalu berprefiks. 'root' hanya bisa masuk
+    // dari .env.example yang ikut terpakai, dan galat asli dari driver
+    // ("Access denied for user 'root'@'127.0.0.1'") tidak menunjukkan itu.
+    expect(() => readEnv({ ...sumberLengkap(), NODE_ENV: "production" })).toThrow(
+      /DB_USER bernilai 'root'[\s\S]*env\.example/
+    );
+  });
+
+  it("tetap mengizinkan DB_USER 'root' di luar produksi", () => {
+    // MySQL lokal di mesin pengembangan memang memakai root tanpa password.
+    const hasil = readEnv({ ...sumberLengkap(), NODE_ENV: "development" });
+    expect(hasil.user).toBe("root");
+  });
+
+  it("tidak menolak user berprefiks di produksi", () => {
+    const hasil = readEnv({
+      ...sumberLengkap(),
+      NODE_ENV: "production",
+      DB_USER: "u982783321_admin",
+      DB_PASSWORD: "rahasia",
+    });
+    expect(hasil.user).toBe("u982783321_admin");
+  });
+});

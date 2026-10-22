@@ -131,6 +131,30 @@ Tiga hal yang sudah disiapkan di repo supaya jalur ini benar:
 Cek cepat setelah build: `npx next start`, buka situs, dan pastikan tata
 letaknya benar — bukan sekadar "build sukses".
 
+**`Access denied for user 'root'@'127.0.0.1' (using password: NO)`** — aplikasi
+memakai nilai contoh dari `.env.example`, bukan kredensial hosting. `root` tidak
+pernah ada di hosting (user di sana selalu berprefiks, mis. `u982783321_admin`),
+dan `using password: NO` berarti `DB_PASSWORD` kosong.
+
+Penyebab yang paling sering: **berkas `.env` di panel tertimpa setiap deploy**,
+karena isinya berasal dari repo dan repo hanya memuat `.env.example`. Periksa
+dengan membuka `.env` di panel setelah deploy — kalau isinya sama dengan
+`.env.example`, itu buktinya.
+
+Dua cara memperbaiki, pilih salah satu:
+
+1. **Environment Variables di panel** (dianjurkan). Isi `DB_HOST`,
+   `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `SITE_URL`, `COVER_DIR` di
+   menu Environment Variables, bukan di berkas. Panel akan menyuntikkannya
+   sebagai environment proses setiap kali aplikasi dijalankan.
+2. **Berkas `.env` yang tidak tertimpa.** Letakkan di luar folder yang
+   diganti saat deploy, atau hapus `.env.example` dari salinan deploy. Cara ini
+   rapuh — setiap deploy bisa mengembalikannya.
+
+Untuk memastikan nilai mana yang benar-benar terbaca, pesan galat di layar
+login menyebutkan nama user yang dipakai driver. Kalau tertulis `'root'`,
+belum ada satupun variabel panel yang masuk.
+
 **`connect ECONNREFUSED 127.0.0.1:3306`** — MySQL belum jalan, atau kredensial
 di environment salah. Tes integrasi memakai database sungguhan, jadi galat ini
 juga muncul saat `npm test` bila MySQL mati.

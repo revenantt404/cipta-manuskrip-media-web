@@ -13,6 +13,22 @@ export type DbConfig = {
   database: string;
 };
 
+/**
+ * Diisi bila `DB_USER` bernilai `root` saat produksi.
+ *
+ * `root` bukan akun yang bisa dipakai di hosting: user database di sana selalu
+ * berprefiks (`u123456789_nama`) dan `root` tidak pernah ada. Nilai itu hanya
+ * bisa masuk dari `.env.example`, yaitu bila berkas itu ikut terpakai di
+ * server — persis yang terjadi ketika `.env` ditulis di panel lalu tertimpa
+ * saat deploy. Galat asli dari driver menyebut `'root'@'127.0.0.1'`, yang
+ * tidak menunjukkan sebabnya. Pesan ini menggantinya dengan petunjuk yang
+ * bisa langsung ditindaklanjuti.
+ */
+const PESAN_ROOT_PRODUKSI =
+  "DB_USER bernilai 'root', nilai contoh dari .env.example. Di hosting, isi variabel " +
+  "environment lewat panel (DB_HOST=127.0.0.1, DB_NAME dan DB_USER memakai prefiks akun, " +
+  "mis. u123456789_cipta), lalu PASTIKAN berkas .env di panel tidak ikut tertimpa saat deploy.";
+
 export function readEnv(source: EnvSource = process.env): DbConfig {
   const missing: string[] = [];
   const required = ["DB_HOST", "DB_PORT", "DB_USER", "DB_NAME"] as const;
@@ -26,6 +42,12 @@ export function readEnv(source: EnvSource = process.env): DbConfig {
     throw new Error(
       `Variabel environment belum diisi: ${missing.join(", ")}. Salin .env.example menjadi .env.local lalu isi nilainya.`
     );
+  }
+
+  // Hanya diperiksa di produksi: `root` tanpa password adalah keadaan normal
+  // untuk MySQL lokal di mesin pengembangan.
+  if (source.NODE_ENV === "production" && source.DB_USER?.trim() === "root") {
+    throw new Error(PESAN_ROOT_PRODUKSI);
   }
 
   const port = Number(source.DB_PORT);
