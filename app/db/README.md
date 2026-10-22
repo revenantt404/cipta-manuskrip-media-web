@@ -54,7 +54,7 @@ Catatan `books`:
 - Kolom `status` hanya boleh `'published'` atau `'upcoming'`, ditegakkan `chk_books_status`.
 - Buku `published` wajib punya `synopsis` dan tidak boleh punya `estimated_release`.
 - Buku `upcoming` wajib punya `estimated_release`.
-- Kolasi `utf8mb4_0900_ai_ci` membuat pengurutan judul A–Z tidak membedakan huruf besar/kecil, sesuai kebutuhan katalog.
+- Kolasi `utf8mb4_unicode_ci` membuat pengurutan judul A–Z tidak membedakan huruf besar/kecil, sesuai kebutuhan katalog. Kolasi ini dipilih karena tersedia di MySQL 8 maupun MariaDB; `utf8mb4_0900_ai_ci` hanya ada di MySQL 8 dan membuat migration gagal di MariaDB.
 
 ## Urutan membangun database dari nol
 

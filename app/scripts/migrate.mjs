@@ -36,7 +36,7 @@ try {
   try {
     await connection.query(
       `CREATE DATABASE IF NOT EXISTS \`${env("DB_NAME")}\`
-       CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci`
+       CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
   } catch (error) {
     if (error.code !== "ER_DBACCESS_DENIED_ERROR" && error.code !== "ER_ACCESS_DENIED_ERROR") {

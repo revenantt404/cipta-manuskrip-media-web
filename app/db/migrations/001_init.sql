@@ -1,5 +1,14 @@
 -- Migration 001 — skema awal CV Cipta Manuskrip Media
 -- Idempoten: aman dijalankan ulang.
+--
+-- Kolasi `utf8mb4_unicode_ci`, bukan `utf8mb4_0900_ai_ci`. Akhiran `_0900_`
+-- adalah tatanan Unicode 9.0 milik MySQL 8 dan tidak dikenal MariaDB, jadi
+-- memakainya membuat migration ini gagal total di hosting MariaDB.
+-- Konsekuensi yang perlu diketahui: kedua kolasi sama-sama tidak membedakan
+-- huruf besar/kecil, tetapi `unicode_ci` mengurutkan tanda baca dan aksen
+-- berbeda dari `0900_ai_ci` (mis. "Yang Dipertuan" vs "yang dipertuan").
+-- Itu tidak mengubah urutan A–Z untuk judul normal, dan katalog tidak
+-- memakai fitur yang sensitif terhadap perbedaan tersebut.
 
 CREATE TABLE IF NOT EXISTS books (
   id CHAR(36) NOT NULL DEFAULT (UUID()),
@@ -32,7 +41,7 @@ CREATE TABLE IF NOT EXISTS books (
   )
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS admin_users (
   id CHAR(36) NOT NULL DEFAULT (UUID()),
@@ -47,7 +56,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
   CONSTRAINT chk_admin_users_email_not_blank CHECK (TRIM(email) <> '')
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash CHAR(64) NOT NULL,
@@ -61,4 +70,4 @@ CREATE TABLE IF NOT EXISTS sessions (
     FOREIGN KEY (admin_id) REFERENCES admin_users (id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+  COLLATE = utf8mb4_unicode_ci;

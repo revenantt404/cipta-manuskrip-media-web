@@ -13,7 +13,7 @@ dikelola sendiri, diakses tanpa ORM.
 | Node.js | ≥ 20.9 | Dikembangkan dan diuji di Node v24.22.0 |
 | MySQL | 8.4 | Diuji pada MySQL 8.4.3 |
 
-MariaDB belum diuji. Untuk menaikkan situs ke server, lihat `docs/DEPLOY.md`.
+MariaDB 11.8 didukung (diuji sebagai target hosting). Untuk menaikkan situs ke server, lihat `docs/DEPLOY.md` dan `docs/UPLOAD-DATABASE.md`.
 
 ## Menyiapkan proyek
 
