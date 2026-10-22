@@ -105,17 +105,40 @@ Sama seperti di atas: ada `CREATE DATABASE` di berkas yang diimport. Pakai
 
 ## Setelah tabel jadi
 
-Yang masih perlu dikerjakan, dan **tidak bisa lewat phpMyAdmin**:
+### Akun admin — bisa lewat phpMyAdmin
 
-1. **Akun admin** — password harus di-hash argon2id, tidak bisa diketik
-   manual. Butuh Node.js:
-   `npm run db:create-admin -- --email admin@ciptamanuskripmedia.com`
-   Kalau hosting tidak bisa menjalankan Node.js sama sekali, situsnya juga
-   tidak bisa jalan — jadi ini bukan hambatan tambahan.
+Password admin disimpan sebagai hash argon2id, jadi tidak bisa diketik manual
+di phpMyAdmin. Tetapi **hash-nya bisa dibuat di komputermu sendiri**, lalu
+ditempel sebagai satu baris SQL. Ini tidak butuh Node.js di server.
 
-2. **Environment variable** — `DB_HOST`, `DB_NAME`, `DB_USER`,
+Di komputermu (folder `app/`, sekali saja):
+
+```bash
+npm install
+npm run db:admin-sql -- --email admin@ciptamanuskripmedia.com
+```
+
+Ketik password (minimal 12 karakter, tidak tampil di layar). Skrip akan
+mencetak satu pernyataan `INSERT`. Tempel di phpMyAdmin → tab **SQL** → **Go**.
+
+Skrip ini **tidak menyentuh database apa pun** — ia hanya menghitung hash.
+Setelah SQL-nya dijalankan, login di `/admin/login` dengan email dan password
+yang sama.
+
+Periksa hasilnya:
+
+```sql
+SELECT email, created_at FROM admin_users;
+```
+
+Kalau ingin membuat admin kedua, ulangi dengan email berbeda. Email yang sudah
+ada akan ditolak database (`uq_admin_users_email`).
+
+### Yang masih butuh Node.js di server
+
+1. **Environment variable** — `DB_HOST`, `DB_NAME`, `DB_USER`,
    `DB_PASSWORD`, `SITE_URL`, `COVER_DIR` diisi dari panel hosting.
 
-3. **Upload kode aplikasi** dan jalankan `npm ci && npm run build && npm start`.
+2. **Upload kode aplikasi** dan jalankan `npm run build && npm start`.
 
 Panduan lengkapnya di `docs/UPLOAD-DATABASE.md`.

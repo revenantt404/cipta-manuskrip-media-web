@@ -133,6 +133,23 @@ idempoten.
 
 ## 7. Buat akun admin
 
+Pilih salah satu. **Cara A tidak butuh Node.js di server** dan cocok kalau
+hosting hanya memberi phpMyAdmin.
+
+### Cara A — buat hash di komputer sendiri, tempel SQL di phpMyAdmin
+
+```bash
+# di folder app/ pada komputermu
+npm run db:admin-sql -- --email admin@ciptamanuskripmedia.com
+```
+
+Ketik password (minimal 12 karakter, tidak tampil). Skrip mencetak satu
+pernyataan `INSERT`. Tempel di phpMyAdmin → tab **SQL** → **Go**.
+
+Skrip ini tidak menyentuh database apa pun; ia hanya menghitung hash argon2id.
+
+### Cara B — jalankan langsung di server (butuh Node.js di sana)
+
 ```bash
 npm run db:create-admin -- --email admin@ciptamanuskripmedia.com
 ```
@@ -146,6 +163,12 @@ Kalau panel tidak memberi terminal interaktif:
 
 ```bash
 ADMIN_PASSWORD='password-panjang-kamu' npm run db:create-admin -- --email admin@ciptamanuskripmedia.com
+```
+
+Periksa hasilnya dari kedua cara:
+
+```sql
+SELECT email, created_at FROM admin_users;
 ```
 
 ## 8. Build dan jalankan
