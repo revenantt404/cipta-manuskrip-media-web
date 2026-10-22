@@ -98,6 +98,34 @@ memblokir berkas `.node` di folder yang belum dikenal (gejalanya:
 Coba `npm rebuild @next/swc-win32-x64-msvc`, atau pindahkan proyek ke folder
 yang sudah dipercaya kebijakan. Di Linux umumnya tidak terjadi.
 
+**`GLIBC_2.29 not found` lalu `Cannot find module '...next.config'`** — server
+memakai glibc lebih tua dari 2.29, sehingga `@next/swc-linux-x64-gnu` tidak
+bisa dimuat. Next lalu jatuh ke SWC **WASM**, dan Turbopack tidak bisa jalan
+dengan WASM. Perbaikannya **bukan** menaikkan versi glibc, melainkan memakai
+webpack, yang berjalan dengan SWC WASM:
+
+```bash
+npx next build --webpack
+```
+
+Jalankan perintah itu (bukan `npm run build`) di panel hosting, atau ubah
+perintah build panel menjadi `next build --webpack`.
+
+Dua hal yang sudah disiapkan di repo supaya jalur ini benar:
+
+- `postcss.config.mjs` memuat `@tailwindcss/postcss`. Webpack memproses CSS
+  lewat PostCSS, sedangkan konfigurasi `turbopack.rules` di `next.config.ts`
+  hanya dibaca Turbopack. Tanpa berkas ini build **berhasil** tetapi CSS-nya
+  keluar mentah: tidak ada satu pun kelas utilitas Tailwind, sehingga halaman
+  tampil tanpa gaya dan tanpa galat apa pun.
+- `generateBuildId` di `next.config.ts` memakai `process.cwd()`, bukan
+  `import.meta.url`. Di jalur webpack `import.meta.url` menunjuk ke nama modul
+  hasil transpilasi yang tidak pernah ada (`<hash>.next.config`), sehingga
+  build gagal `ERR_MODULE_NOT_FOUND`.
+
+Cek cepat setelah build: `npx next start`, buka situs, dan pastikan tata
+letaknya benar — bukan sekadar "build sukses".
+
 **`connect ECONNREFUSED 127.0.0.1:3306`** — MySQL belum jalan, atau kredensial
 di environment salah. Tes integrasi memakai database sungguhan, jadi galat ini
 juga muncul saat `npm test` bila MySQL mati.

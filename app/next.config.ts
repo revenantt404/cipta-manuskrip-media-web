@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 /**
  * Batas body Server Action.
@@ -34,10 +37,18 @@ const nextConfig: NextConfig = {
   // sehingga dua proses yang berbagi folder (mis. build ulang di hosting
   // saat server lama masih hidup) tidak menghasilkan id berbeda untuk kode
   // yang sama — klien lama tidak dipaksa memuat ulang seluruh aset.
-  generateBuildId: async () => {
-    const { createHash } = await import("node:crypto");
-    const { readFile } = await import("node:fs/promises");
-    const pkg = await readFile(new URL("./package-lock.json", import.meta.url));
+  //
+  // `process.cwd()` sengaja dipakai, bukan `import.meta.url` maupun
+  // `__dirname`. Next menerjemahkan `next.config.ts` ke CommonJS sebelum
+  // menjalankannya, dan di jalur webpack `import.meta.url` berakhir sebagai
+  // URL `file://` yang menunjuk ke nama modul hasil transpilasi (mis.
+  // `6ada20f49c042.next.config`) — berkas yang tidak pernah ada, sehingga
+  // build gagal `ERR_MODULE_NOT_FOUND`. Di jalur yang sama `__dirname` juga
+  // tidak tersedia. `next build` dan `next start` selalu dijalankan dari
+  // folder aplikasi (folder yang berisi `package-lock.json`), jadi
+  // `process.cwd()` menunjuk tempat yang benar di kedua jalur.
+  generateBuildId: () => {
+    const pkg = readFileSync(join(process.cwd(), "package-lock.json"));
     return createHash("sha256").update(pkg).digest("hex").slice(0, 16);
   },
   experimental: {
