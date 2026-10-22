@@ -48,11 +48,20 @@ export async function loginAction(
   let hasil;
   try {
     hasil = await attemptLogin(email, password);
-  } catch {
+  } catch (galat) {
     // Database tidak terjangkau bukan "kredensial salah" — mengatakannya
     // begitu membuat admin mengira kata sandinya bermasalah.
+    //
+    // Pesan aslinya ikut ditampilkan karena di hosting tanpa akses log,
+    // "coba lagi beberapa saat lagi" tidak bisa ditindaklanjuti: admin tidak
+    // punya cara apa pun untuk tahu apakah yang salah nama host, user,
+    // password, atau nama database. Yang ditampilkan hanya keterangan galat
+    // dari driver (kode + pesan); nilai environment — termasuk password —
+    // tidak pernah ikut, karena `readEnv` hanya menyebut NAMA variabel yang
+    // kosong, bukan nilainya.
+    const rinci = galat instanceof Error ? `${galat.name}: ${galat.message}` : String(galat);
     return {
-      error: "Login sedang tidak dapat diproses. Coba lagi beberapa saat lagi.",
+      error: `Login sedang tidak dapat diproses. Coba lagi beberapa saat lagi. (${rinci})`,
       email,
       percobaan,
     };
