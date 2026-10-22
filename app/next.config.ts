@@ -28,6 +28,18 @@ const nextConfig: NextConfig = {
   // database gagal di-prerender. `partialPrefetching` juga harus hilang —
   // ia menuntut `cacheComponents` menyala.
   cacheComponents: false,
+
+  // `.next` boleh dipakai ulang antar-build, tetapi build baru menimpa
+  // isinya. `generateBuildId` mengunci id ke hash isi build alih-alih acak,
+  // sehingga dua proses yang berbagi folder (mis. build ulang di hosting
+  // saat server lama masih hidup) tidak menghasilkan id berbeda untuk kode
+  // yang sama — klien lama tidak dipaksa memuat ulang seluruh aset.
+  generateBuildId: async () => {
+    const { createHash } = await import("node:crypto");
+    const { readFile } = await import("node:fs/promises");
+    const pkg = await readFile(new URL("./package-lock.json", import.meta.url));
+    return createHash("sha256").update(pkg).digest("hex").slice(0, 16);
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: batasBodyAksi,
