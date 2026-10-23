@@ -78,6 +78,21 @@ keempat pembentuk pesan:
 (`ini naskah artikel saya, admin.` tidak berubah.) Perbedaan huruf awal `S`,
 ejaan `ebook`, dan titik akhir hanya pada pesan asistensi tetap dipertahankan.
 
+Sejak 24 Oktober 2026 **paket yang dipilih** di halaman Publish Buku ikut
+dikirim sebagai baris kedua, dengan tanda petik dua yang sama:
+
+```
+Saya mau dibantu asistensi buku topik "Metodologi Penelitian".
+Paket pilihan: "Paket Profesional - Rp4.500.000"
+```
+
+Baris pertama sengaja tidak berubah sedikit pun — hanya ada tambahan baris di
+bawahnya. Pemilihan paket dan formulir membaca satu sumber yang sama lewat
+`app/components/use-paket-terpilih.ts`, jadi ringkasan di atas formulir tidak
+mungkin berbeda dengan yang terkirim. Tanpa paket terpilih, pesannya kembali
+utuh seperti di atas. Formulir jurnal tidak memakai paket karena halaman
+jurnal tidak punya tier harga.
+
 ## Rel lebar
 
 Navigasi, banner beranda, panel halaman dalam, dan grid bagian beranda berhenti

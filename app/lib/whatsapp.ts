@@ -3,6 +3,9 @@ export const NOMOR_JURNAL = "62895629203142";
 
 export type JenisPesanan = "cetak" | "ebook";
 
+/** Tier yang dipilih pengunjung di halaman Publish Buku. */
+export type PaketTerpilih = { nama: string; harga: string };
+
 /**
  * Nomor dan kalimat pesan dikunci brief bagian 10 — jangan "memperbaiki"
  * ejaan `ebook`, menambah salam, atau mengubah nomornya.
@@ -44,7 +47,22 @@ export function buildJournalAssistUrl(topik: string): string {
 }
 
 /**
- * Pesan asistensi **buku** dengan topik.
+ * Satu baris keterangan paket, mis. `Paket Profesional - Rp4.500.000`.
+ *
+ * Nama dan harga dipangkas terpisah; kalau salah satunya kosong, yang ada
+ * saja yang dipakai, dan kalau keduanya kosong hasilnya `null` sehingga
+ * baris paket tidak ikut dikirim sama sekali.
+ */
+function labelPaket(paket: PaketTerpilih | null | undefined): string | null {
+  const nama = paket?.nama.trim() ?? "";
+  const harga = paket?.harga.trim() ?? "";
+  if (nama === "" && harga === "") return null;
+  return [nama, harga].filter((bagian) => bagian !== "").join(" - ");
+}
+
+/**
+ * Pesan asistensi **buku** dengan topik, dan — bila pengunjung memilih tier
+ * di halaman Publish Buku — nama paket beserta harganya.
  *
  * Kalimat ini tidak berasal dari brief §10 — brief hanya mengunci pesan
  * pemesanan buku dan asistensi artikel. Bentuknya dipilih pemilik proyek
@@ -54,11 +72,25 @@ export function buildJournalAssistUrl(topik: string): string {
  *
  * Sejak 23 Oktober 2026 topik diapit tanda petik dua, sama seperti judul
  * pada pesan pemesanan buku.
+ *
+ * Sejak 24 Oktober 2026 pilihan paket ikut dikirim (permintaan pemilik
+ * proyek: "pas pemilihan paket, bisa gak sambil ikut ke pesan whatsapp").
+ * Baris paket ditaruh di baris KEDUA dengan pemisah baris baru, bukan
+ * disambung ke kalimat pertama: kalimat pertama tetap sama persis dengan
+ * yang dikunci brief, dan admin bisa membaca paketnya tanpa menyortir
+ * kalimat panjang. Tanpa pilihan paket, pesannya utuh seperti sebelumnya.
  */
-export function buildBookAssistUrl(topik: string): string {
-  return `https://wa.me/${NOMOR_BUKU}?text=${encodeURIComponent(
-    `Saya mau dibantu asistensi buku topik "${topik}".`
-  )}`;
+export function buildBookAssistUrl(
+  topik: string,
+  paket?: PaketTerpilih | null
+): string {
+  const paketLabel = labelPaket(paket);
+  const pesan =
+    paketLabel === null
+      ? `Saya mau dibantu asistensi buku topik "${topik}".`
+      : `Saya mau dibantu asistensi buku topik "${topik}".\nPaket pilihan: "${paketLabel}"`;
+
+  return `https://wa.me/${NOMOR_BUKU}?text=${encodeURIComponent(pesan)}`;
 }
 
 export type HasilPesanAsistensi = { ok: true; url: string } | { ok: false; error: string };
@@ -84,7 +116,16 @@ export function pesanAsistensiJurnal(topikMentah: string): HasilPesanAsistensi {
   return pesanAsistensiDari(topikMentah, buildJournalAssistUrl);
 }
 
-/** Asistensi penulisan buku. */
-export function pesanAsistensiBuku(topikMentah: string): HasilPesanAsistensi {
-  return pesanAsistensiDari(topikMentah, buildBookAssistUrl);
+/**
+ * Asistensi penulisan buku. `paket` opsional: hanya terisi kalau pengunjung
+ * menekan "Pilih Paket" di halaman yang sama. Aturan topik (pangkas, tolak
+ * kosong) tetap satu pintu lewat `pesanAsistensiDari`.
+ */
+export function pesanAsistensiBuku(
+  topikMentah: string,
+  paket?: PaketTerpilih | null
+): HasilPesanAsistensi {
+  return pesanAsistensiDari(topikMentah, (topik) =>
+    buildBookAssistUrl(topik, paket)
+  );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowUpRight, BookOpen, FileText, MessageCircle } from "lucide-react";
 import { pesanAsistensiBuku, pesanAsistensiJurnal } from "@/lib/whatsapp";
+import { usePaketTerpilih } from "./use-paket-terpilih";
 
 export type JenisAsistensi = "buku" | "jurnal";
 
@@ -38,15 +39,22 @@ const VARIAN: Record<
  * Validasi (trim, kosong murni, teks galatnya) seluruhnya milik
  * `lib/whatsapp.ts` — komponen hanya merender hasilnya, jadi aturannya
  * tidak pernah dobel di sini.
+ *
+ * Paket yang dipilih pengunjung di kartu tier ikut masuk ke pesan asistensi
+ * buku (permintaan pemilik proyek, 24 Oktober 2026). Formulir jurnal tidak
+ * memakai paket — halaman jurnal memang tidak punya tier harga.
  */
 export function FormAsistensi({ jenis }: { jenis: JenisAsistensi }) {
   const varian = VARIAN[jenis];
   const [topik, setTopik] = useState("");
   const [galat, setGalat] = useState<string | null>(null);
+  // Pendengar paket hanya dipasang di formulir buku.
+  const paket = usePaketTerpilih(jenis === "buku");
 
   function saatDisubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const hasil = varian.pesan(topik);
+    const hasil =
+      jenis === "buku" ? pesanAsistensiBuku(topik, paket) : varian.pesan(topik);
     if (hasil.ok) {
       setGalat(null);
       window.open(hasil.url, "_blank", "noopener,noreferrer");

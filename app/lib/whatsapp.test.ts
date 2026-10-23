@@ -110,3 +110,72 @@ describe("whatsapp asistensi buku", () => {
     }
   });
 });
+
+/**
+ * Permintaan pemilik proyek (24 Oktober 2026): paket yang dipilih di kartu
+ * tier ikut masuk ke pesan WhatsApp. Baris paket ditaruh di baris kedua
+ * supaya kalimat pertama tetap persis seperti yang sudah dikunci.
+ */
+describe("whatsapp asistensi buku — paket pilihan ikut dikirim", () => {
+  const paket = { nama: "Paket Profesional", harga: "Rp4.500.000" };
+
+  it("menambahkan baris paket setelah kalimat asistensi", () => {
+    const hasil = pesanAsistensiBuku("Metodologi Penelitian", paket);
+    expect(hasil.ok).toBe(true);
+    if (hasil.ok) {
+      expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
+        'Saya mau dibantu asistensi buku topik "Metodologi Penelitian".\nPaket pilihan: "Paket Profesional - Rp4.500.000"'
+      );
+    }
+  });
+
+  it("memakai pemisah baris baru yang ter-encode sebagai %0A", () => {
+    expect(buildBookAssistUrl("literasi", paket)).toBe(
+      "https://wa.me/6289671894900?text=Saya%20mau%20dibantu%20asistensi%20buku%20topik%20%22literasi%22.%0APaket%20pilihan%3A%20%22Paket%20Profesional%20-%20Rp4.500.000%22"
+    );
+  });
+
+  it("tetap mengirim pesan lama bila tidak ada paket terpilih", () => {
+    for (const kosong of [undefined, null]) {
+      const hasil = pesanAsistensiBuku("literasi", kosong);
+      expect(hasil.ok).toBe(true);
+      if (hasil.ok) {
+        expect(new URL(hasil.url).searchParams.get("text")).toBe(
+          'Saya mau dibantu asistensi buku topik "literasi".'
+        );
+      }
+    }
+  });
+
+  it("memakai nama saja bila harga kosong, dan sebaliknya", () => {
+    const tanpaHarga = pesanAsistensiBuku("literasi", { nama: "Paket Dasar", harga: "  " });
+    const tanpaNama = pesanAsistensiBuku("literasi", { nama: " ", harga: "Rp2.500.000" });
+
+    expect(tanpaHarga.ok && decodeURIComponent(new URL(tanpaHarga.url).searchParams.get("text") ?? "")).toBe(
+      'Saya mau dibantu asistensi buku topik "literasi".\nPaket pilihan: "Paket Dasar"'
+    );
+    expect(tanpaNama.ok && decodeURIComponent(new URL(tanpaNama.url).searchParams.get("text") ?? "")).toBe(
+      'Saya mau dibantu asistensi buku topik "literasi".\nPaket pilihan: "Rp2.500.000"'
+    );
+  });
+
+  it("tidak menambah baris paket bila nama dan harga sama-sama kosong", () => {
+    const hasil = pesanAsistensiBuku("literasi", { nama: "", harga: "" });
+    expect(hasil.ok).toBe(true);
+    if (hasil.ok) {
+      expect(new URL(hasil.url).searchParams.get("text")).toBe(
+        'Saya mau dibantu asistensi buku topik "literasi".'
+      );
+    }
+  });
+
+  it("pesan jurnal tidak pernah membawa paket", () => {
+    const jurnal = pesanAsistensiJurnal("literasi digital");
+    expect(jurnal.ok).toBe(true);
+    if (jurnal.ok) {
+      expect(new URL(jurnal.url).searchParams.get("text")).toBe(
+        'saya mau dibantu asistensi artikel topik "literasi digital".'
+      );
+    }
+  });
+});

@@ -1,27 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Check, Tag } from "lucide-react";
+import { usePaketTerpilih } from "./use-paket-terpilih";
 
-type Pilihan = { nama: string; harga: string };
-
+/**
+ * Ringkasan tier yang dipilih, tampil tepat di atas formulir asistensi.
+ *
+ * Komponen ini dan formulir membaca pilihan yang sama lewat
+ * `usePaketTerpilih`, jadi yang tertulis di sini dijamin sama dengan yang
+ * ikut terkirim ke WhatsApp — tidak ada dua sumber kebenaran.
+ */
 export function PackageSelectionStatus() {
-  const [pilihan, setPilihan] = useState<Pilihan | null>(null);
-
-  useEffect(() => {
-    function perbarui(event: Event) {
-      setPilihan((event as CustomEvent<Pilihan>).detail);
-    }
-    window.addEventListener("cmm:paket-terpilih", perbarui);
-    return () => window.removeEventListener("cmm:paket-terpilih", perbarui);
-  }, []);
+  const pilihan = usePaketTerpilih();
 
   if (!pilihan) return null;
 
   return (
     <div className="assist-selected-package" role="status">
       <span className="assist-selected-icon"><Check size={14} /></span>
-      <span><small>Pilihan tier untuk referensi</small><strong><Tag size={12} /> {pilihan.nama} · {pilihan.harga}</strong><em>Pilihan ini tidak ikut terkirim; pesan WhatsApp berisi topik asistensi.</em></span>
+      <span>
+        <small>Paket yang Anda pilih</small>
+        <strong><Tag size={12} /> {pilihan.nama}{pilihan.harga ? ` · ${pilihan.harga}` : ""}</strong>
+        <em>Paket ini ikut disertakan pada pesan WhatsApp asistensi Anda.</em>
+      </span>
     </div>
   );
 }
