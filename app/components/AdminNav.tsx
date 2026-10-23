@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, LayoutDashboard, Plus } from "lucide-react";
+import { tautanAktif } from "./admin-nav-state";
 
 const NAV_REAL = [
   { label: "Ringkasan", href: "/admin", icon: LayoutDashboard },
@@ -18,11 +19,13 @@ const NAV_DEMO = [
 export function AdminNav({ demo = false }: { demo?: boolean }) {
   const pathname = usePathname() ?? "";
   const items = demo ? NAV_DEMO : NAV_REAL;
+  // Satu halaman = satu tautan menyala; alamat paling spesifik yang menang.
+  const aktif = tautanAktif(pathname, items.map(({ href }) => href));
 
   return (
     <nav className="admin-nav" aria-label="Navigasi panel admin">
       {items.map(({ label, href, icon: Icon }) => {
-        const active = pathname === href || (label === "Kelola Buku" && pathname.startsWith(`${href}/`));
+        const active = href === aktif;
         return (
           <Link key={href} href={href} className={`admin-nav-link${active ? " is-active" : ""}`} aria-current={active ? "page" : undefined}>
             <Icon size={17} strokeWidth={1.8} aria-hidden="true" />

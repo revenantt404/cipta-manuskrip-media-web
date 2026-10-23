@@ -96,3 +96,18 @@ isi di dalamnya.
 Diverifikasi pada 1440, 1280, 1184, 1024, 900, 768, dan 390 piksel: tepi
 `.site-nav` dan tepi panel di bawahnya selalu sama persis (mis. 1440 →
 `160..1280`).
+
+## Navigasi panel admin
+
+Hanya satu butir menu yang boleh menyala, dan yang menang adalah alamat paling
+spesifik. Sebelumnya aturannya `pathname === href` atau awalan untuk "Kelola
+Buku", sehingga di `/admin/buku/tambah` kedua butir menyala bersamaan. Logika
+itu kini berdiri sendiri di `app/components/admin-nav-state.ts` dengan tes
+`admin-nav-state.test.ts`:
+
+- `/admin/buku/tambah` → **Tambah Buku**
+- `/admin/buku/12/edit` → **Kelola Buku**
+- `/admin` → **Ringkasan**
+
+Nomor `08-admin-form.png` di atas sudah diperbarui dengan keadaan setelah
+perbaikan.
