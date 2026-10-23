@@ -16,7 +16,7 @@ export default function Page() {
       <section className="admin-login-story" aria-label="Informasi panel admin">
         <Link href="/" className="admin-login-brand">
           {/* eslint-disable-next-line @next/next/no-img-element -- local brand mark */}
-          <img src="/logo-cmm-trim.png" alt="" />
+          <img src="/logo-cmm-mark.png" alt="" />
           <span><strong>CIPTA</strong><small>MANUSKRIP MEDIA</small></span>
         </Link>
         <div className="admin-login-story-copy">
@@ -38,7 +38,7 @@ export default function Page() {
       <section className="admin-login-panel" aria-labelledby="admin-login-title">
         <div className="admin-login-mobile-brand">
           {/* eslint-disable-next-line @next/next/no-img-element -- local brand mark */}
-          <img src="/logo-cmm-trim.png" alt="" />
+          <img src="/logo-cmm-mark.png" alt="" />
           <span><strong>CIPTA</strong><small>MANUSKRIP MEDIA</small></span>
         </div>
         <div className="admin-login-card">

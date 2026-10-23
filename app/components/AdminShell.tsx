@@ -20,7 +20,7 @@ export function AdminShell({
       <aside className="admin-sidebar">
         <Link href={demo ? "/admin/preview" : "/admin"} className="admin-brand" aria-label="Panel Cipta Manuskrip Media">
           {/* eslint-disable-next-line @next/next/no-img-element -- local brand mark */}
-          <img src="/logo-cmm-trim.png" alt="" />
+          <img src="/logo-cmm-mark.png" alt="" />
           <span><strong>CIPTA</strong><small>MANUSKRIP MEDIA</small></span>
         </Link>
 

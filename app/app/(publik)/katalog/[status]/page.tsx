@@ -4,6 +4,7 @@ import {
   ChevronRight,
   Clock3,
   LibraryBig,
+  RefreshCw,
   ServerCrash,
   Sparkles,
 } from "lucide-react";
@@ -69,24 +70,25 @@ export default async function Page({
           <span aria-current="page">Katalog</span>
         </nav>
 
-        <header className="katalog-hero">
+        <header className="katalog-hero katalog-hero--plain">
           <div className="katalog-hero-copy">
             <p className="katalog-kicker">Katalog penerbitan</p>
             <h1>{kind.heading}</h1>
             <p className="katalog-lede">{PENGANTAR[status]}</p>
+
+            <nav className="katalog-tabs" aria-label="Pilih katalog">
+              {TAB.map((tab) => (
+                <Link
+                  key={tab.status}
+                  href={tab.href}
+                  className={`katalog-tab${tab.status === status ? " is-active" : ""}`}
+                  aria-current={tab.status === status ? "page" : undefined}
+                >
+                  {tab.label}
+                </Link>
+              ))}
+            </nav>
           </div>
-          <nav className="katalog-tabs" aria-label="Pilih katalog">
-            {TAB.map((tab) => (
-              <Link
-                key={tab.status}
-                href={tab.href}
-                className={`katalog-tab${tab.status === status ? " is-active" : ""}`}
-                aria-current={tab.status === status ? "page" : undefined}
-              >
-                {tab.label}
-              </Link>
-            ))}
-          </nav>
         </header>
 
         <div data-testid="db-error" className="katalog-error" role="status">
@@ -99,6 +101,9 @@ export default async function Page({
               Sambungan ke database belum tersedia. Silakan coba beberapa saat lagi —
               halaman lain di situs ini tetap dapat dibuka.
             </p>
+            <Link href={kind.status === "published" ? "/katalog/telah-terbit" : "/katalog/segera-terbit"} className="katalog-error-retry">
+              <RefreshCw aria-hidden="true" size={14} /> Muat ulang katalog
+            </Link>
           </div>
         </div>
       </div>

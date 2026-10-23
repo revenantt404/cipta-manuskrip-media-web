@@ -46,14 +46,14 @@ export default async function Page() {
         ) : (
           <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th scope="col">Buku</th><th scope="col">Status</th><th scope="col">Diperbarui</th><th scope="col"><span className="sr-only">Aksi</span></th></tr></thead><tbody>{latest.items.map((book) => (
             <tr key={book.id}>
-              <td><div className="admin-book-cell">
+              <td data-label="Buku"><div className="admin-book-cell">
                 {/* eslint-disable-next-line @next/next/no-img-element -- stored user cover */}
                 <img src={resolveCoverUrl(book.coverPath)} alt="" />
                 <div><strong>{book.title}</strong><span>{book.author}</span></div>
               </div></td>
-              <td><span className={`admin-status-badge ${book.status === "published" ? "is-published" : "is-upcoming"}`}><i />{STATUS[book.status] ?? book.status}</span></td>
-              <td className="admin-date-cell">{TANGGAL.format(book.updatedAt)}</td>
-              <td><Link href={`/admin/buku/${book.id}/edit`} className="admin-table-action">Sunting <ArrowRight size={14} /></Link></td>
+              <td data-label="Status"><span className={`admin-status-badge ${book.status === "published" ? "is-published" : "is-upcoming"}`}><i />{STATUS[book.status] ?? book.status}</span></td>
+              <td className="admin-date-cell" data-label="Diperbarui">{TANGGAL.format(book.updatedAt)}</td>
+              <td data-label="Aksi"><Link href={`/admin/buku/${book.id}/edit`} className="admin-table-action">Sunting <ArrowRight size={14} /></Link></td>
             </tr>
           ))}</tbody></table></div>
         )}

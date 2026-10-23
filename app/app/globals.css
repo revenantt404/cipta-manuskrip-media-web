@@ -8,8 +8,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
   /* Token warna brief §4 — nama membangkitkan utilitas Tailwind:
      `--color-teal` → `bg-teal` / `text-teal` / `border-teal`, dst. */
@@ -28,7 +29,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* Landing page — editorial minimalism with the client’s teal and warm-gold mark. */
@@ -1497,7 +1498,7 @@ body {
 
 /* --- Formulir asistensi -------------------------------------------------- */
 
-.assist-form-card .asistensi-form {
+.asistensi-form {
   display: grid;
   gap: 12px;
   margin-top: 0;
@@ -1531,7 +1532,7 @@ body {
   color: #4a776b;
 }
 
-.assist-form-card .assist-input-shell {
+.asistensi-form .assist-input-shell {
   display: flex;
   align-items: center;
   gap: 11px;
@@ -1543,12 +1544,12 @@ body {
   transition: border-color 0.18s, box-shadow 0.18s;
 }
 
-.assist-form-card .assist-input-shell:focus-within {
+.asistensi-form .assist-input-shell:focus-within {
   border-color: #6d9b8c;
   box-shadow: 0 0 0 3px rgba(9, 103, 125, 0.11);
 }
 
-.assist-form-card .assist-input-shell.has-error {
+.asistensi-form .assist-input-shell.has-error {
   border-color: #d9a89b;
   box-shadow: 0 0 0 3px rgba(163, 74, 51, 0.08);
 }
@@ -1558,7 +1559,7 @@ body {
   color: #8aa197;
 }
 
-.assist-form-card .assist-topic-input {
+.asistensi-form .assist-topic-input {
   width: 100%;
   min-width: 0;
   min-height: 48px;
@@ -1571,7 +1572,7 @@ body {
   outline: none;
 }
 
-.assist-form-card .assist-topic-input::placeholder {
+.asistensi-form .assist-topic-input::placeholder {
   color: #9fada6;
 }
 
@@ -1600,7 +1601,7 @@ body {
   margin-top: 2px;
 }
 
-.assist-form-card .asistensi-submit {
+.asistensi-form .asistensi-submit {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1619,7 +1620,7 @@ body {
   transition: transform 0.18s, background 0.18s, border-color 0.18s;
 }
 
-.assist-form-card .asistensi-submit:hover {
+.asistensi-form .asistensi-submit:hover {
   transform: translateY(-1px);
   border-color: var(--cmm-teal);
   background: var(--cmm-teal);
@@ -2392,7 +2393,7 @@ body {
   .preview-link,
   .notfound-button,
   .footer-link,
-  .assist-form-card .asistensi-submit {
+  .asistensi-form .asistensi-submit {
     transition: none;
   }
 
@@ -2401,7 +2402,7 @@ body {
   .detail-button:hover,
   .preview-link:hover,
   .notfound-button:hover,
-  .assist-form-card .asistensi-submit:hover {
+  .asistensi-form .asistensi-submit:hover {
     transform: none;
   }
 
@@ -2579,4 +2580,820 @@ body {
 /* Footer: tautan kontak tidak boleh terpotong pada layar sempit. */
 .footer-contact-copy a {
   overflow-wrap: anywhere;
+}
+
+/* =========================================================================
+   REMASTER — panel admin: keterbacaan dan formulir buku
+   -------------------------------------------------------------------------
+   Lembar gaya admin sebelumnya memakai ukuran teks 8–10 px untuk label,
+   isian, tabel, dan tombol. Di layar biasa ukuran itu terbaca sebagai teks
+   yang "mengecil" dan membuat pemilik CV harus memperbesar halaman untuk
+   memastikan kolom mana yang ia isi. Blok ini menaikkan skala teks panel ke
+   ukuran baca normal tanpa mengubah susunan kolom, dan memberi formulir
+   buku pengelompokan bagian yang jelas.
+   ========================================================================= */
+
+.admin-shell {
+  font-size: 14px;
+}
+
+.admin-brand strong {
+  font-size: 13px;
+}
+
+.admin-brand small {
+  font-size: 8px;
+}
+
+.admin-sidebar-caption {
+  font-size: 9.5px;
+}
+
+.admin-nav-link {
+  min-height: 46px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.admin-user-details strong {
+  font-size: 11.5px;
+}
+
+.admin-user-details small {
+  font-size: 10px;
+}
+
+.admin-demo-badge {
+  font-size: 8.5px;
+}
+
+.admin-breadcrumb {
+  font-size: 11.5px;
+}
+
+.admin-view-site {
+  font-size: 11.5px;
+}
+
+.admin-preview-banner {
+  font-size: 11.5px;
+}
+
+.admin-preview-banner span {
+  font-size: 8.5px;
+}
+
+.admin-eyebrow {
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+}
+
+.admin-page-heading h1 {
+  font-size: clamp(26px, 3vw, 33px);
+  letter-spacing: -0.035em;
+}
+
+.admin-page-heading > div > p,
+.admin-page-heading p {
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.admin-primary-button,
+.admin-secondary-button {
+  min-height: 42px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.admin-stat-top {
+  font-size: 11px;
+}
+
+.admin-stat-card > small {
+  font-size: 10.5px;
+}
+
+.admin-panel-heading > div > p:last-child {
+  font-size: 11.5px;
+}
+
+.admin-panel-heading h2 {
+  font-size: 17px;
+}
+
+.admin-inline-link {
+  font-size: 11.5px;
+}
+
+/* --- Tabel daftar buku --------------------------------------------------- */
+
+.admin-table th {
+  font-size: 9.5px;
+  letter-spacing: 0.13em;
+}
+
+.admin-table td {
+  font-size: 12px;
+}
+
+.admin-book-cell strong {
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.admin-book-cell span,
+.admin-book-cell small {
+  font-size: 10.5px;
+}
+
+.admin-status-badge {
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.admin-date-cell {
+  font-size: 11.5px;
+}
+
+.admin-table-action {
+  font-size: 11px;
+}
+
+.admin-list-count strong {
+  font-size: 13px;
+}
+
+.admin-list-count small {
+  font-size: 10.5px;
+}
+
+.admin-search-hint {
+  font-size: 10.5px;
+}
+
+.admin-list-footer {
+  font-size: 11px;
+}
+
+.admin-empty-state p {
+  font-size: 12px;
+}
+
+.admin-quick-card strong {
+  font-size: 12.5px;
+}
+
+.admin-quick-card small {
+  font-size: 10.5px;
+}
+
+.admin-notice strong {
+  font-size: 12.5px;
+}
+
+.admin-notice p {
+  font-size: 11.5px;
+}
+
+.admin-back-link {
+  font-size: 11px;
+}
+
+/* --- Formulir buku ------------------------------------------------------- */
+
+.admin-form-panel-heading h2 {
+  font-size: 16px;
+}
+
+.admin-form-panel-heading p {
+  font-size: 11.5px;
+}
+
+.admin-form-panel-heading code {
+  font-size: 10.5px;
+}
+
+.admin-aside-note strong {
+  font-size: 12px;
+}
+
+.admin-aside-note p {
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.admin-book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 22px 22px;
+  border: 1px solid #e6ece6;
+  border-radius: 16px;
+  background: #fdfefd;
+}
+
+.admin-form-section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #edf1ec;
+}
+
+.admin-form-section-icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #e4eae4;
+  border-radius: 10px;
+  background: #f3f7f2;
+  color: #4a7263;
+}
+
+.admin-form-section-head h3 {
+  margin: 1px 0 0;
+  color: #22403d;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.admin-form-section-head p {
+  margin: 4px 0 0;
+  color: #86948b;
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.admin-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-book-form .admin-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-book-form label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #33544d;
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.admin-book-form label b {
+  color: #a8603f;
+  font-weight: 700;
+}
+
+.admin-control {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 13px !important;
+  border: 1px solid #dde6dd !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #213b3c !important;
+  font-family: inherit;
+  font-size: 13px !important;
+  line-height: 1.45;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+}
+
+.admin-control::placeholder {
+  color: #a9b5ac;
+  opacity: 1;
+}
+
+.admin-control:focus {
+  border-color: #5e9682 !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(9, 103, 125, 0.12) !important;
+}
+
+.admin-control:disabled {
+  border-color: #e8ece7 !important;
+  background: #f5f7f4 !important;
+  color: #8b978e !important;
+  cursor: not-allowed;
+}
+
+.admin-control[aria-invalid="true"],
+.admin-control.is-invalid {
+  border-color: #c8836f !important;
+  background: #fffbfa !important;
+}
+
+.admin-control.is-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px !important;
+}
+
+.admin-book-form select.admin-control {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #6f857a 50%),
+    linear-gradient(135deg, #6f857a 50%, transparent 50%);
+  background-position: calc(100% - 19px) 20px, calc(100% - 14px) 20px;
+  background-repeat: no-repeat;
+  background-size: 5px 5px, 5px 5px;
+  padding-right: 36px !important;
+}
+
+.admin-book-form textarea.admin-control {
+  min-height: 104px;
+  resize: vertical;
+}
+
+.admin-book-form input[type="file"].admin-control {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  padding: 9px 10px !important;
+  border-style: dashed !important;
+  color: #63766d !important;
+  cursor: pointer;
+}
+
+.admin-book-form input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 13px;
+  border: 1px solid #dbe5db;
+  border-radius: 8px;
+  background: #f4f9f4;
+  color: #3f6a5a;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.admin-book-form input[type="file"]::file-selector-button:hover {
+  background: #eaf3ec;
+}
+
+.admin-field-hint {
+  margin: 0;
+  color: #8b988f;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.admin-field-hint code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: #f1f5f0;
+  color: #4b6a5e;
+  font-size: 10.5px;
+}
+
+.admin-book-form small {
+  color: #8b988f;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.admin-book-form .admin-field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin: 0;
+  color: #a8503c !important;
+  font-size: 11.5px !important;
+  line-height: 1.5;
+}
+
+.admin-book-form .admin-field-error svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.admin-book-form .admin-form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #efd9d3 !important;
+  border-radius: 11px !important;
+  background: #fff8f5 !important;
+  color: #955542 !important;
+  font-size: 12.5px !important;
+  line-height: 1.55;
+}
+
+.admin-book-form .admin-form-error svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.admin-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 18px;
+  border: 1px solid #e6ece6;
+  border-radius: 14px;
+  background: linear-gradient(150deg, #f8fbf7, #f2f7f2);
+}
+
+.admin-form-actions-note {
+  margin: 0;
+  color: #7e8d84;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.admin-book-form .admin-form-submit {
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.admin-form-two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-demo-form-notice {
+  font-size: 11.5px;
+}
+
+.admin-demo-form .admin-field small {
+  font-size: 11px;
+}
+
+.admin-demo-form .admin-control {
+  cursor: not-allowed;
+}
+
+/* --- Pratinjau sampul & zona hapus -------------------------------------- */
+
+.admin-cover-preview > strong {
+  font-size: 12.5px;
+}
+
+.admin-cover-preview > small,
+.admin-cover-preview > p {
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.admin-cover-preview-head {
+  font-size: 11px;
+}
+
+.admin-cover-preview-status {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.admin-danger-heading strong {
+  font-size: 12.5px;
+}
+
+.admin-danger-zone > p {
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.admin-delete-button {
+  min-height: 40px;
+  font-size: 12px;
+}
+
+.admin-delete-error {
+  font-size: 11.5px;
+}
+
+.admin-demo-upload {
+  font-size: 11.5px;
+}
+
+/* --- Login admin --------------------------------------------------------- */
+
+.admin-login-field label {
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+.admin-login-input-wrap input {
+  font-size: 13px;
+}
+
+.admin-login-input-wrap {
+  min-height: 48px;
+}
+
+.admin-login-error {
+  font-size: 11.5px;
+}
+
+.admin-login-submit {
+  min-height: 48px;
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.admin-login-subtitle {
+  font-size: 12.5px;
+}
+
+.admin-login-overline {
+  font-size: 9px;
+}
+
+.admin-login-demo-note span {
+  font-size: 10.5px;
+}
+
+.admin-login-demo-note a {
+  font-size: 11.5px;
+}
+
+.admin-login-back {
+  font-size: 11px;
+}
+
+.admin-login-footnote {
+  font-size: 10.5px;
+}
+
+.admin-login-secure-note {
+  font-size: 10px;
+}
+
+/* --- Penyesuaian layar panel admin -------------------------------------- */
+
+@media (max-width: 860px) {
+  .admin-form-section {
+    padding: 17px 16px 18px;
+  }
+
+  .admin-field-grid,
+  .admin-form-two-col {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-book-form .admin-form-submit {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-control,
+  .admin-book-form .admin-form-submit {
+    transition: none;
+  }
+}
+
+/* Kolom utama formulir buku: kartu bagian langsung, tanpa panel pembungkus. */
+.admin-form-main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.admin-form-layout .admin-form-aside {
+  position: sticky;
+  top: 18px;
+}
+
+/* --- Panel admin di layar sempit ---------------------------------------- */
+
+/*
+  Tabel katalog punya empat kolom; pada lebar ponsel kolom aksi sebelumnya
+  terpotong di tengah labelnya. Memberi lebar minimum membuat tabel bergulir
+  mendatar di dalam bingkainya, bukan memaksa kolom berdesakan.
+*/
+@media (max-width: 760px) {
+  .admin-table {
+    min-width: 620px;
+  }
+
+  .admin-table-wrap {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .admin-nav-link {
+    font-size: 11.5px;
+  }
+
+  .admin-page-heading h1 {
+    font-size: 25px;
+  }
+
+  .admin-form-section {
+    border-radius: 14px;
+  }
+
+  .admin-form-section-head h3 {
+    font-size: 13.5px;
+  }
+}
+
+/*
+  Daftar buku admin di ponsel: tabel empat kolom tidak mungkin dibaca tanpa
+  menggeser ke samping. Di bawah 700 px barisnya berubah menjadi kartu —
+  tiap sel mendapat label dari `data-label`, sehingga status, tanggal, dan
+  aksi tetap terbaca menumpuk.
+*/
+@media (max-width: 700px) {
+  .admin-books-panel .admin-table,
+  .admin-recent-panel .admin-table {
+    min-width: 0;
+  }
+
+  .admin-books-panel .admin-table thead,
+  .admin-recent-panel .admin-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .admin-books-panel .admin-table,
+  .admin-recent-panel .admin-table,
+  .admin-books-panel .admin-table tbody,
+  .admin-recent-panel .admin-table tbody,
+  .admin-books-panel .admin-table tr,
+  .admin-recent-panel .admin-table tr,
+  .admin-books-panel .admin-table td,
+  .admin-recent-panel .admin-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-books-panel .admin-table tr,
+  .admin-recent-panel .admin-table tr {
+    margin-bottom: 10px;
+    padding: 13px 14px;
+    border: 1px solid #e6ece6;
+    border-radius: 13px;
+    background: #fff;
+  }
+
+  .admin-books-panel .admin-table td,
+  .admin-recent-panel .admin-table td {
+    padding: 0;
+    border: 0;
+  }
+
+  .admin-books-panel .admin-table td + td,
+  .admin-recent-panel .admin-table td + td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 9px;
+    padding-top: 9px;
+    border-top: 1px dashed #edf1ec;
+  }
+
+  .admin-books-panel .admin-table td + td::before,
+  .admin-recent-panel .admin-table td + td::before {
+    flex: 0 0 auto;
+    color: #93a097;
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    content: attr(data-label);
+  }
+
+  .admin-books-panel .admin-book-cell,
+  .admin-recent-panel .admin-book-cell {
+    min-width: 0;
+  }
+
+  .admin-row-actions {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .admin-table th:nth-child(3),
+  .admin-table td:nth-child(3) {
+    display: flex;
+  }
+}
+
+/*
+  Formulir asistensi dipakai di dua tempat: kartu asistensi halaman
+  penerbitan buku dan panel asistensi jurnal. Aturan di atas sengaja berlaku
+  untuk keduanya; blok ini hanya menyelaraskan sisa aturan lama yang masih
+  terikat pada satu halaman, plus placeholder panjang di layar sempit.
+*/
+.journal-assist-form-panel form.asistensi-form {
+  margin-top: 22px;
+}
+
+.asistensi-form .assist-topic-input {
+  text-overflow: ellipsis;
+}
+
+.asistensi-form .assist-input-icon {
+  color: #7d968b;
+}
+
+@media (max-width: 620px) {
+  .asistensi-form .asistensi-submit {
+    width: 100%;
+  }
+
+  .asistensi-form .asistensi-actions {
+    gap: 10px;
+  }
+
+  .asistensi-form .asistensi-label {
+    font-size: 12px;
+  }
+}
+
+/* Kepala katalog tanpa panel ringkasan (keadaan galat): satu kolom penuh. */
+.katalog-hero--plain {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.katalog-tab {
+  white-space: nowrap;
+}
+
+.katalog-error-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 7px 12px;
+  border: 1px solid #e6cfc7;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #8a4a37;
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.katalog-error-retry:hover {
+  border-color: #d8b6a9;
+  background: #fdf6f3;
+}
+
+.detail-error-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid #e6cfc7;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #8a4a37;
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.detail-error-retry:hover {
+  border-color: #d8b6a9;
+  background: #fdf6f3;
+}
+
+.detail-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.detail-error-actions .detail-error-link {
+  margin-top: 0;
 }

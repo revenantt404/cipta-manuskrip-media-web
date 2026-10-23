@@ -29,14 +29,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
         ) : (
           <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th scope="col">Judul &amp; penulis</th><th scope="col">Status</th><th scope="col">Terakhir diperbarui</th><th scope="col" className="admin-action-heading"><span className="sr-only">Aksi</span></th></tr></thead><tbody>{hasil.items.map((book) => (
             <tr key={book.id}>
-              <td><div className="admin-book-cell">
+              <td data-label="Buku"><div className="admin-book-cell">
                 {/* eslint-disable-next-line @next/next/no-img-element -- stored user cover */}
                 <img src={resolveCoverUrl(book.coverPath)} alt="" />
                 <div><strong>{book.title}</strong><span>{book.author}</span><small>/buku/{book.slug}</small></div>
               </div></td>
-              <td><span className={`admin-status-badge ${book.status === "published" ? "is-published" : "is-upcoming"}`}><i />{STATUS[book.status] ?? book.status}</span></td>
-              <td className="admin-date-cell">{TANGGAL.format(book.updatedAt)}</td>
-              <td><div className="admin-row-actions"><Link href={`/buku/${book.slug}`} target="_blank" rel="noreferrer" className="admin-table-action admin-view-action">Lihat <ArrowUpRightIcon /></Link><Link href={`/admin/buku/${book.id}/edit`} className="admin-table-action">Sunting <ArrowRight size={14} /></Link></div></td>
+              <td data-label="Status"><span className={`admin-status-badge ${book.status === "published" ? "is-published" : "is-upcoming"}`}><i />{STATUS[book.status] ?? book.status}</span></td>
+              <td className="admin-date-cell" data-label="Diperbarui">{TANGGAL.format(book.updatedAt)}</td>
+              <td data-label="Aksi"><div className="admin-row-actions"><Link href={`/buku/${book.slug}`} target="_blank" rel="noreferrer" className="admin-table-action admin-view-action">Lihat <ArrowUpRightIcon /></Link><Link href={`/admin/buku/${book.id}/edit`} className="admin-table-action">Sunting <ArrowRight size={14} /></Link></div></td>
             </tr>
           ))}</tbody></table></div>
         )}

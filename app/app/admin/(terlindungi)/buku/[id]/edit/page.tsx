@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Link href="/admin/buku" className="admin-back-link"><ArrowLeft size={15} /> Kembali ke daftar buku</Link>
       <div className="admin-page-heading admin-form-page-heading"><div><p className="admin-eyebrow">KATALOG / SUNTING</p><h1>Sunting buku</h1><p>Perbarui detail dan status entri katalog.</p></div><Link href={`/buku/${buku.slug}`} target="_blank" rel="noreferrer" className="admin-secondary-button"><ExternalLink size={15} /> Lihat halaman publik</Link></div>
       <div className="admin-form-layout admin-edit-layout">
-        <section className="admin-panel admin-form-panel"><div className="admin-form-panel-heading"><h2>Informasi buku</h2><p>Alamat publik: <code>/buku/{buku.slug}</code></p></div><FormBuku action={ubahBuku} awal={awal} mode="edit" /></section>
+        <div className="admin-form-main"><FormBuku action={ubahBuku} awal={awal} mode="edit" /></div>
         <aside className="admin-form-aside admin-edit-aside">
           <div className="admin-cover-preview">
             <div className="admin-cover-preview-head"><span><FileText size={15} /> Sampul saat ini</span><span className="admin-cover-preview-status">{buku.status === "published" ? "TERBIT" : "SEGERA"}</span></div>

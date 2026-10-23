@@ -44,6 +44,10 @@ export function BookCard({ book }: { book: Book }) {
       </Link>
 
       <div className="kat-card-body">
+        {/* Lencana status berada di dalam media yang disembunyikan dari pembaca
+            layar (tautannya duplikat dengan judul), jadi statusnya diulang di
+            sini sebagai teks yang hanya dibacakan. */}
+        <p className="sr-only">{sudahTerbit ? "Buku telah terbit." : "Buku segera terbit."}</p>
         <h3 className="kat-card-title">
           <Link href={href}>{book.title}</Link>
         </h3>

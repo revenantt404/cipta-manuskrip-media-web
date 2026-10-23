@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ServerCrash } from "lucide-react";
+import { RefreshCw, ServerCrash } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getBookBySlug } from "@/lib/books/repository";
 import { BookDetail } from "@/components/BookDetail";
@@ -55,9 +55,14 @@ export default async function Page({ params }: Props) {
               Silakan coba beberapa saat lagi atau buka kembali tautan ini nanti.
               Katalog lain di situs ini tetap dapat dibuka.
             </p>
-            <Link href="/publish-buku" className="detail-error-link">
-              Kembali ke halaman penerbitan buku
-            </Link>
+            <div className="detail-error-actions">
+              <Link href={`/buku/${slug}`} className="detail-error-retry">
+                <RefreshCw aria-hidden="true" size={14} /> Muat ulang halaman
+              </Link>
+              <Link href="/publish-buku" className="detail-error-link">
+                Kembali ke halaman penerbitan buku
+              </Link>
+            </div>
           </div>
         </div>
       </div>
