@@ -50,7 +50,8 @@ npm run build
 npm run start -- --hostname 0.0.0.0 --port 3000
 ```
 
-Pratinjau di lingkungan ini berjalan di dua alamat, `:3000` dan `:3005`.
+Pratinjau di lingkungan ini berjalan di tiga alamat, `:3000`, `:3005`, dan
+`:3006`.
 Alamat kedua disediakan karena peramban yang pernah membuka alamat pertama
 bisa masih memegang dokumen lama; origin berbeda berarti cache-nya kosong.
 
@@ -76,3 +77,22 @@ keempat pembentuk pesan:
 
 (`ini naskah artikel saya, admin.` tidak berubah.) Perbedaan huruf awal `S`,
 ejaan `ebook`, dan titik akhir hanya pada pesan asistensi tetap dipertahankan.
+
+## Rel lebar
+
+Navigasi, banner beranda, panel halaman dalam, dan grid bagian beranda berhenti
+di garis tepi yang sama. Sebelumnya banner beranda melebar sampai tepi jendela
+(`max-width: 1460px`) sementara navbar hanya `1120px`, jadi keduanya tidak
+pernah bertemu — paling kelihatan di layar 1440px.
+
+Aturannya sekarang satu: isi selebar `1120px`, ditambah jarak tepi yang
+mengikuti padding header (`24px`, `16px` di bawah 900px, `10px` di bawah
+700px). Blok "REL LEBAR" di akhir `app/globals.css` menuliskan itu untuk
+`.home-hero`, `.publish-page`, `.journal-page`, `.about-page`, `.katalog-page`,
+`.detail-page`, `.notfound`, dan seluruh bagian beranda. Angka `max-width`
+sengaja `1120 + 2 x jarak tepi`, supaya yang sejajar adalah tepi panel, bukan
+isi di dalamnya.
+
+Diverifikasi pada 1440, 1280, 1184, 1024, 900, 768, dan 390 piksel: tepi
+`.site-nav` dan tepi panel di bawahnya selalu sama persis (mis. 1440 →
+`160..1280`).

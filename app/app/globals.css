@@ -4537,3 +4537,93 @@ html {
     animation: none;
   }
 }
+
+/* ==========================================================================
+   REL LEBAR (RAIL)
+   --------------------------------------------------------------------------
+   Satu ukuran lebar untuk panel navigasi dan semua panel besar di halaman
+   publik. Sebelumnya banner beranda melebar sampai tepi jendela (1460px)
+   sementara navbar hanya 1120px, jadi tepi keduanya tidak pernah bertemu.
+
+   Angkanya ditulis sebagai `1120px` + jarak tepi, bukan `max-width` pada
+   panelnya, supaya yang sejajar adalah TEPI PANEL — bukan isi di dalamnya.
+   Jarak tepi mengikuti padding header di tiap titik henti (24 / 16 / 10px),
+   persis seperti `.site-header`, sehingga banner, navbar, dan grid bagian
+   bawah berhenti di garis yang sama pada semua lebar layar.
+   ========================================================================== */
+
+.home-hero {
+  width: min(1120px, 100% - 48px);
+  max-width: none;
+  margin: 16px auto 0;
+}
+
+/* Halaman dalam: jarak tepi 24px + isi 1120px. */
+.publish-page,
+.journal-page,
+.about-page,
+.katalog-page,
+.detail-page,
+.notfound {
+  max-width: 1168px;
+  padding-inline: 24px;
+}
+
+/* Grid beranda memakai padding Tailwind (px-5 / sm:px-8); jarak tepinya
+   disamakan dengan rel di atas agar tepi kartu jatuh tepat di tepi banner. */
+.services-section,
+.home-flow,
+.home-ground,
+.home-catalog,
+.home-faq,
+.home-contact,
+.home-closing {
+  max-width: 1168px;
+  padding-inline: 24px;
+}
+
+@media (max-width: 900px) {
+  .home-hero {
+    width: calc(100% - 32px);
+  }
+
+  .publish-page,
+  .journal-page,
+  .about-page,
+  .katalog-page,
+  .detail-page,
+  .notfound,
+  .services-section,
+  .home-flow,
+  .home-ground,
+  .home-catalog,
+  .home-faq,
+  .home-contact,
+  .home-closing {
+    max-width: none;
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 700px) {
+  .home-hero {
+    width: calc(100% - 20px);
+    margin-top: 10px;
+  }
+
+  .publish-page,
+  .journal-page,
+  .about-page,
+  .katalog-page,
+  .detail-page,
+  .notfound,
+  .services-section,
+  .home-flow,
+  .home-ground,
+  .home-catalog,
+  .home-faq,
+  .home-contact,
+  .home-closing {
+    padding-inline: 10px;
+  }
+}
