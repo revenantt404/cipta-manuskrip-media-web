@@ -66,6 +66,17 @@ const nextConfig = {
 
   generateBuildId: idBuild,
 
+  /**
+   * Origin yang boleh memuat aset pengembangan.
+   *
+   * Next 16 memblokir permintaan ke resource dev (`/_next/hmr`, dsb.) dari
+   * origin yang tidak terdaftar. Pratinjau berjalan di domain proxy
+   * platform, bukan localhost, jadi tanpa daftar ini konsol dipenuhi
+   * peringatan "Blocked cross-origin request" dan hot reload tidak jalan.
+   * Tidak berpengaruh pada build produksi.
+   */
+  allowedDevOrigins: ["127.0.0.1", "localhost", "*.e2b.app"],
+
   experimental: {
     serverActions: {
       bodySizeLimit: batasBodyAksi,

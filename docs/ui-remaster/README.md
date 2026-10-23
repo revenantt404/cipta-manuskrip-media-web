@@ -30,3 +30,21 @@ buku contoh.
 hero masuk berurutan, pita layanan berjalan pelan dan berhenti saat disorot,
 bagian-bagian muncul saat digulir, kartu terangkat saat hover, dan seluruh
 gerak dimatikan bila sistem pengguna meminta `prefers-reduced-motion`.
+
+## Menjalankan pratinjau
+
+Untuk melihat hasil seperti di gambar, jalankan mode produksi — bukan
+`next dev`:
+
+```bash
+cd app
+npm run build
+npm run start -- --hostname 0.0.0.0 --port 3000
+```
+
+Alasannya bukan selera: `next dev` menyajikan CSS dengan **nama berkas yang
+selalu sama** (`app_globals_css_<tetap>.css`) dan header cache `immutable`.
+Kalau berkas itu pernah termuat sebelum penyuntingan, peramban akan terus
+memakai salinan lamanya dan halaman tampil tanpa sebagian gaya. Build
+produksi memberi nama berkas berdasarkan isi (`css/c51bda….css`), jadi versi
+baru selalu punya URL baru.
