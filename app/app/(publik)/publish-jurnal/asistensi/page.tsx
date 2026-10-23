@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, FileText, MessageCircle, PenLine } from "lucide-react";
 import { KATEGORI_JURNAL } from "@/content/site";
+import type { Metadata } from "next";
 import { FormAsistensi } from "@/components/FormAsistensi";
+
+/** Judul tab halaman asistensi. */
+export const metadata: Metadata = {
+  title: "Asistensi Penulisan",
+  description:
+    "Tuliskan topik yang sedang Anda kerjakan, lalu lanjutkan ke admin lewat WhatsApp. Topik tidak disimpan di situs ini.",
+};
 
 /** Topik hanya pernah masuk ke teks WhatsApp; tidak disimpan ke database. */
 export default function Page() {

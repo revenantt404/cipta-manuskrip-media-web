@@ -11,6 +11,9 @@ ditinjau tanpa menyalakan server.
 | `06-katalog-390.png` | `/katalog/telah-terbit` | 390 |
 | `08-admin-form.png` | `/admin/preview/buku/tambah` | 1440 |
 | `09-admin-daftar-390.png` | `/admin/preview/buku` | 390 |
+| `11-beranda-hero.png` | beranda — hero | 1440 |
+| `12-beranda-alur.png` | beranda — alur kerja | 1440 |
+| `13-beranda-kontak.png` | beranda — kontak | 1440 |
 
 **Catatan penting soal isinya.** Tangkapan layar ini dibuat di mesin tanpa
 MySQL, memakai data dan sampul *sementara* yang hanya hidup selama proses
@@ -22,3 +25,8 @@ contoh yang dibuat untuk keperluan ini, bukan sampul terbitan sungguhan.
 Karena itu, saat aplikasi dijalankan dari repo ini tanpa database, halaman
 katalog menampilkan keadaan gagal-muat yang sudah dirancang — bukan kartu
 buku contoh.
+
+**Soal gerak.** Animasi tidak terlihat pada tangkapan layar diam. Ringkasnya:
+hero masuk berurutan, pita layanan berjalan pelan dan berhenti saat disorot,
+bagian-bagian muncul saat digulir, kartu terangkat saat hover, dan seluruh
+gerak dimatikan bila sistem pengguna meminta `prefers-reduced-motion`.

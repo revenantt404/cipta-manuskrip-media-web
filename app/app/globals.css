@@ -3397,3 +3397,1092 @@ body {
 .detail-error-actions .detail-error-link {
   margin-top: 0;
 }
+
+/* Tautan lompat konten: hanya tampak saat menerima fokus keyboard. */
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  z-index: 200;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #102a31;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 650;
+  text-decoration: none;
+  transform: translate(-50%, -160%);
+  transition: transform 0.18s ease;
+}
+
+.skip-link:focus-visible {
+  outline: 3px solid #c2cc08;
+  outline-offset: 3px;
+  transform: translate(-50%, 0);
+}
+
+main#konten-utama:focus {
+  outline: none;
+}
+
+/* ==========================================================================
+   BERANDA — lapisan gerak & bagian tambahan
+   --------------------------------------------------------------------------
+   Semua gerakan di blok ini murni dekoratif: tidak ada informasi yang hanya
+   tersedia lewat animasi, dan seluruhnya dimatikan pada
+   `prefers-reduced-motion: reduce` di bagian bawah berkas ini.
+   ========================================================================== */
+
+/* Gulir halus untuk tautan jangkar (#pilih-layanan, #paket, dst). */
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes cmm-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes cmm-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes cmm-step-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes cmm-faq-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes cmm-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+}
+
+/* Masuk berurutan di hero, supaya halaman tidak "muncul" sekaligus. */
+.home-hero .eyebrow-pill {
+  animation: cmm-rise 0.62s cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.home-hero .hero-title {
+  animation: cmm-rise 0.72s 0.06s cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.home-hero .hero-title .headline-accent::after {
+  transform-origin: left center;
+  animation: cmm-step-line 0.7s 0.62s cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.home-hero .hero-description {
+  animation: cmm-rise 0.72s 0.14s cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.home-hero .button-primary,
+.home-hero .button-secondary {
+  animation: cmm-rise 0.72s 0.2s cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.home-hero .scroll-cue svg {
+  animation: cmm-cue 2.6s ease-in-out infinite;
+}
+
+/* Buku hero sedikit mengikuti kursor sebagai isyarat bahwa ia objek, bukan
+   gambar datar. Hanya pada perangkat berpenunjuk presisi. */
+@media (hover: hover) and (min-width: 701px) {
+  .home-hero .book {
+    transition: transform 0.65s cubic-bezier(0.2, 0.7, 0.25, 1);
+  }
+
+  .home-hero .book-scene:hover .book-front {
+    transform: translateX(-35%) rotateY(-6deg) rotateZ(2deg) translateY(-4px);
+  }
+
+  .home-hero .book-scene:hover .book-back {
+    transform: translateX(-50%) rotateY(-15deg) rotateZ(-5deg) translateY(-2px);
+  }
+}
+
+/* --- Pita layanan berjalan --------------------------------------------- */
+
+.home-marquee {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid #e7ece2;
+  border-bottom: 1px solid #e7ece2;
+  background: linear-gradient(90deg, #f8faf3, #f2f7ef 48%, #f8faf3);
+}
+
+.home-marquee::before,
+.home-marquee::after {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: 68px;
+  content: "";
+  pointer-events: none;
+}
+
+.home-marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, #f8faf3, rgba(248, 250, 243, 0));
+}
+
+.home-marquee::after {
+  right: 0;
+  background: linear-gradient(270deg, #f8faf3, rgba(248, 250, 243, 0));
+}
+
+.home-marquee-viewport {
+  display: flex;
+  overflow: hidden;
+}
+
+.home-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: cmm-marquee 44s linear infinite;
+}
+
+.home-marquee:hover .home-marquee-track,
+.home-marquee:focus-within .home-marquee-track {
+  animation-play-state: paused;
+}
+
+.home-marquee-list {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-marquee-list li {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 15px 26px 15px 0;
+  margin-left: 26px;
+  color: #55705f;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.home-marquee-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c2cc08;
+  box-shadow: 0 0 0 3px rgba(194, 204, 8, 0.16);
+}
+
+/* --- Kepala bagian ------------------------------------------------------ */
+
+.home-section-head {
+  display: grid;
+  gap: 14px;
+  max-width: 660px;
+  margin-bottom: 34px;
+}
+
+.home-section-head-row {
+  display: flex;
+  max-width: none;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.home-section-head-row > div {
+  max-width: 640px;
+}
+
+.home-section-lede {
+  color: #5f736b;
+  font-size: 13.5px;
+  line-height: 1.78;
+}
+
+.home-section-head-row .home-section-lede {
+  max-width: 300px;
+  padding-bottom: 4px;
+  font-size: 12.5px;
+}
+
+/* --- Empat langkah ------------------------------------------------------ */
+
+.home-flow {
+  scroll-margin-top: 100px;
+}
+
+.home-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-step {
+  position: relative;
+  padding: 24px 20px 22px;
+  border: 1px solid #e5ece5;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #ffffff, #fbfcf8);
+  box-shadow: 0 8px 22px rgba(16, 42, 49, 0.03);
+  transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.25, 1), box-shadow 0.32s,
+    border-color 0.32s;
+}
+
+.home-step::before {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  left: 20px;
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #09677d, #c2cc08);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.home-step.motion-visible::before {
+  animation: cmm-step-line 0.85s 0.1s cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.home-step:hover {
+  transform: translateY(-4px);
+  border-color: #cfe0d3;
+  box-shadow: 0 18px 34px rgba(16, 42, 49, 0.075);
+}
+
+.home-step-index {
+  color: #9bab9f;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+}
+
+.home-step-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  margin: 12px 0 16px;
+  place-items: center;
+  border: 1px solid #e3ebe3;
+  border-radius: 11px;
+  background: #f3f7f1;
+  color: #3d7a66;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.25, 1), background 0.3s,
+    color 0.3s;
+}
+
+.home-step:hover .home-step-icon {
+  transform: rotate(-6deg) scale(1.06);
+  background: #09677d;
+  color: #f4f9f5;
+}
+
+.home-step h3 {
+  color: #17343a;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.home-step p {
+  margin-top: 8px;
+  color: #64776f;
+  font-size: 12.5px;
+  line-height: 1.72;
+}
+
+/* --- Pegangan kerja ----------------------------------------------------- */
+
+.home-ground-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.home-ground-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 22px 20px;
+  overflow: hidden;
+  border: 1px solid #e6ece3;
+  border-radius: 16px;
+  background: #ffffff;
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.25, 1), box-shadow 0.3s,
+    border-color 0.3s;
+}
+
+.home-ground-card::after {
+  position: absolute;
+  right: -40px;
+  bottom: -46px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(194, 204, 8, 0.16), transparent 68%);
+  content: "";
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+
+.home-ground-card:hover {
+  transform: translateY(-4px);
+  border-color: #d3e3d6;
+  box-shadow: 0 16px 32px rgba(16, 42, 49, 0.07);
+}
+
+.home-ground-card:hover::after {
+  opacity: 1;
+}
+
+.home-ground-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid #e3ebe3;
+  border-radius: 12px;
+  background: #f4f8f2;
+  color: #357566;
+}
+
+.home-ground-card h3 {
+  margin-top: 16px;
+  color: #17343a;
+  font-size: 15.5px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.home-ground-card p {
+  margin-top: 8px;
+  color: #64776f;
+  font-size: 12.5px;
+  line-height: 1.72;
+}
+
+.home-ground-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 18px;
+  color: #276d67;
+  font-size: 11.5px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.home-ground-link svg {
+  transition: transform 0.24s;
+}
+
+.home-ground-link:hover {
+  color: #09677d;
+}
+
+.home-ground-link:hover svg {
+  transform: translateX(3px);
+}
+
+/* --- Pintasan katalog --------------------------------------------------- */
+
+.home-catalog-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 40px;
+  padding: 42px 44px;
+  border-radius: 22px;
+  background: radial-gradient(circle at 12% 18%, rgba(194, 204, 8, 0.18), transparent 46%),
+    linear-gradient(140deg, #123b3f, #0e3030 60%, #10352f);
+  color: #eef4ee;
+  box-shadow: 0 26px 60px rgba(12, 38, 38, 0.2);
+}
+
+.home-catalog-copy .section-kicker {
+  color: #c7d39a;
+}
+
+.home-catalog-copy .section-kicker::before {
+  background: #c2cc08;
+}
+
+.home-catalog-copy .section-title {
+  margin-top: 12px;
+  color: #ffffff;
+}
+
+.home-catalog-copy .section-title em {
+  color: #d5df83;
+  font-style: italic;
+}
+
+.home-catalog-copy .home-section-lede {
+  margin-top: 12px;
+  max-width: 420px;
+  color: #b3c6bd;
+}
+
+.home-catalog-links {
+  display: grid;
+  gap: 11px;
+}
+
+.home-catalog-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 17px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f2f7f0;
+  text-decoration: none;
+  transition: transform 0.26s cubic-bezier(0.2, 0.7, 0.25, 1), background 0.26s,
+    border-color 0.26s;
+}
+
+.home-catalog-card:hover {
+  transform: translateX(4px);
+  border-color: rgba(213, 223, 131, 0.45);
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.home-catalog-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(9, 103, 125, 0.5);
+  color: #dff0ef;
+}
+
+.home-catalog-icon-lime {
+  background: rgba(194, 204, 8, 0.18);
+  color: #dfe78f;
+}
+
+.home-catalog-card span:nth-child(2) {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.home-catalog-card strong {
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
+.home-catalog-card small {
+  color: #a9bfb5;
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.home-catalog-arrow {
+  margin-left: auto;
+  flex: 0 0 auto;
+  color: #cbd6ce;
+  transition: transform 0.24s, color 0.24s;
+}
+
+.home-catalog-card:hover .home-catalog-arrow {
+  transform: translate(2px, -2px);
+  color: #d5df83;
+}
+
+/* --- Tanya jawab -------------------------------------------------------- */
+
+.home-faq-list {
+  display: grid;
+  gap: 9px;
+  max-width: 900px;
+}
+
+.home-faq-item {
+  overflow: hidden;
+  border: 1px solid #e5ece5;
+  border-radius: 13px;
+  background: #ffffff;
+  transition: border-color 0.24s, box-shadow 0.24s;
+}
+
+.home-faq-item:hover {
+  border-color: #d6e4d8;
+}
+
+.home-faq-item[open] {
+  border-color: #cbdfd0;
+  box-shadow: 0 12px 28px rgba(16, 42, 49, 0.055);
+}
+
+.home-faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 17px 20px;
+  color: #1d3c3f;
+  font-size: 13.5px;
+  font-weight: 620;
+  cursor: pointer;
+  list-style: none;
+}
+
+.home-faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.home-faq-question:focus-visible {
+  outline: 3px solid #c2cc08;
+  outline-offset: -3px;
+  border-radius: 13px;
+}
+
+.home-faq-chevron {
+  flex: 0 0 auto;
+  color: #7d9187;
+  transition: transform 0.26s cubic-bezier(0.2, 0.7, 0.25, 1), color 0.24s;
+}
+
+.home-faq-item[open] .home-faq-chevron {
+  transform: rotate(180deg);
+  color: #276d67;
+}
+
+.home-faq-answer {
+  padding: 0 20px 19px;
+  animation: cmm-faq-in 0.26s ease both;
+}
+
+.home-faq-answer p {
+  max-width: 760px;
+  color: #64776f;
+  font-size: 12.75px;
+  line-height: 1.78;
+}
+
+/* --- Kontak ------------------------------------------------------------- */
+
+.home-contact-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 40px;
+  padding: 42px 44px;
+  border: 1px solid #dfe9e1;
+  border-radius: 22px;
+  background: linear-gradient(160deg, #f7faf4, #ffffff 58%, #f6f9f2);
+  box-shadow: 0 16px 40px rgba(16, 42, 49, 0.04);
+}
+
+.home-contact-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #8a7a45;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home-contact-kicker span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c2cc08;
+  box-shadow: 0 0 0 4px rgba(194, 204, 8, 0.18);
+}
+
+.home-contact-copy h2 {
+  margin-top: 14px;
+  color: #16383c;
+  font-size: clamp(24px, 2.7vw, 32px);
+  font-weight: 650;
+  line-height: 1.16;
+  letter-spacing: -0.04em;
+}
+
+.home-contact-copy h2 em {
+  color: #276d67;
+  font-style: italic;
+}
+
+.home-contact-copy > p {
+  margin-top: 12px;
+  max-width: 460px;
+  color: #5f736b;
+  font-size: 13px;
+  line-height: 1.78;
+}
+
+.home-contact-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.home-contact-points li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #4f6c5e;
+  font-size: 11.5px;
+}
+
+.home-contact-points svg {
+  color: #3f8a63;
+}
+
+.home-contact-cards {
+  display: grid;
+  gap: 11px;
+  align-content: center;
+}
+
+.home-contact-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 17px;
+  border: 1px solid #e2eae1;
+  border-radius: 13px;
+  background: #ffffff;
+  color: #16383c;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(16, 42, 49, 0.035);
+  transition: transform 0.26s cubic-bezier(0.2, 0.7, 0.25, 1), border-color 0.26s,
+    box-shadow 0.26s;
+}
+
+.home-contact-card:hover {
+  transform: translateY(-3px);
+  border-color: #c6dccc;
+  box-shadow: 0 16px 30px rgba(16, 42, 49, 0.09);
+}
+
+.home-contact-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border-radius: 10px;
+  background: #eaf3f4;
+  color: #0d6b7e;
+}
+
+.home-contact-icon-lime {
+  background: #f4f6de;
+  color: #7d8531;
+}
+
+.home-contact-body {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.home-contact-body small {
+  color: #8b988f;
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.home-contact-body strong {
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.home-contact-body b {
+  color: #276d67;
+  font-size: 14.5px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.home-contact-arrow {
+  margin-left: auto;
+  flex: 0 0 auto;
+  color: #93a49a;
+  transition: transform 0.24s, color 0.24s;
+}
+
+.home-contact-card:hover .home-contact-arrow {
+  transform: translate(2px, -2px);
+  color: #276d67;
+}
+
+/* --- Penutup ------------------------------------------------------------ */
+
+.home-closing .closing-note {
+  margin-top: 0;
+}
+
+/* Jarak bawah halaman dirapatkan supaya penutup tidak melayang jauh dari
+   footer — paragraf terakhir sudah memberi ruang napas sendiri. */
+.home-closing {
+  padding-bottom: 56px;
+}
+
+/* --- Responsif ---------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .home-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-ground-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-catalog-panel,
+  .home-contact-panel {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 32px 28px;
+  }
+
+  .home-section-head-row {
+    display: grid;
+    gap: 14px;
+  }
+
+  .home-section-head-row .home-section-lede {
+    max-width: 520px;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .home-marquee-list li {
+    padding: 12px 18px 12px 0;
+    margin-left: 18px;
+    gap: 18px;
+    font-size: 10px;
+  }
+
+  .home-steps {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .home-step {
+    padding: 20px 18px;
+  }
+
+  .home-step-icon {
+    margin: 10px 0 13px;
+  }
+
+  .home-catalog-panel,
+  .home-contact-panel {
+    padding: 26px 20px;
+    border-radius: 18px;
+  }
+
+  .home-faq-question {
+    padding: 15px 16px;
+    font-size: 12.5px;
+  }
+
+  .home-faq-answer {
+    padding: 0 16px 16px;
+  }
+
+  .home-marquee::before,
+  .home-marquee::after {
+    width: 34px;
+  }
+}
+
+/* Gerak mati total saat pengguna memintanya. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .home-marquee-track,
+  .home-hero .eyebrow-pill,
+  .home-hero .hero-title,
+  .home-hero .hero-title .headline-accent::after,
+  .home-hero .hero-description,
+  .home-hero .button-primary,
+  .home-hero .button-secondary,
+  .home-hero .scroll-cue svg,
+  .home-step.motion-visible::before,
+  .home-faq-answer {
+    animation: none;
+  }
+
+  .home-marquee-track {
+    transform: none;
+  }
+
+  .home-step:hover,
+  .home-ground-card:hover,
+  .home-catalog-card:hover,
+  .home-contact-card:hover,
+  .home-step:hover .home-step-icon,
+  .home-hero .book {
+    transform: none;
+  }
+}
+
+/* --- Sentuhan gerak lintas halaman ------------------------------------- */
+
+/* Panah di dalam tombol bergeser sedikit saat tombol disorot; memberi isyarat
+   arah tanpa mengubah ukuran atau tata letak tombol. */
+.button-primary svg,
+.button-secondary svg,
+.publish-button svg,
+.journal-hero-actions svg,
+.about-button svg {
+  transition: transform 0.24s cubic-bezier(0.2, 0.7, 0.25, 1);
+}
+
+.button-primary:hover svg,
+.button-secondary:hover svg,
+.publish-button:hover svg,
+.journal-hero-actions a:hover svg,
+.about-button:hover svg {
+  transform: translate(2px, -2px);
+}
+
+/* Cahaya di belakang buku berdenyut sangat pelan. */
+.home-hero .scene-glow {
+  animation: cmm-soft-pulse 9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button-primary svg,
+  .button-secondary svg,
+  .publish-button svg,
+  .journal-hero-actions svg,
+  .about-button svg,
+  .home-hero .scene-glow {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+/* --- Kemunculan saat digulir, tanpa JavaScript --------------------------
+   `animation-timeline: view()` mengikat animasi ke posisi elemen di dalam
+   viewport. Hanya opacity dan `translate` yang dianimasikan — bukan
+   `transform` — supaya efek hover (yang memakai transform) tetap bekerja
+   setelah elemen selesai muncul. Peramban tanpa dukungan cukup menampilkan
+   elemen apa adanya, dan `components/ScrollReveal.tsx` mengambil alih.
+   ---------------------------------------------------------------------- */
+
+@keyframes cmm-view-reveal {
+  from {
+    opacity: 0;
+    translate: 0 22px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .home-step,
+    .home-ground .home-section-head,
+    .home-ground-card,
+    .home-catalog-panel,
+    .home-faq .home-section-head,
+    .home-faq-item,
+    .home-contact-panel,
+    .home-closing,
+    .service-card,
+    .section-heading,
+    .closing-note,
+    .package-card,
+    .package-heading,
+    .journal-facility,
+    .journal-asset-card,
+    .journal-next-step,
+    .journal-category-card,
+    .about-value-card,
+    .about-steps li,
+    .about-pending-card,
+    .kat-card {
+      animation: cmm-view-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 20%;
+    }
+  }
+}
+
+/* --- Latar hero yang bergerak sangat pelan ------------------------------ */
+
+@keyframes cmm-grid-drift {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 60px 60px;
+  }
+}
+
+@keyframes cmm-dot-drift {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 0.85;
+  }
+  50% {
+    translate: 0 -5px;
+    opacity: 1;
+  }
+}
+
+/* Kisi digeser sebagai lapisan tersendiri (bukan lewat background-position)
+   agar animasinya cukup dikomposit dan tidak memicu repaint tiap bingkai.
+   `inset` negatif memberi ruang supaya tepinya tidak terlihat saat bergeser. */
+.home-hero .hero-grid {
+  inset: -60px;
+  animation: cmm-grid-drift 34s linear infinite;
+}
+
+.home-hero .orbit-dot-a {
+  animation: cmm-dot-drift 6.4s ease-in-out infinite;
+}
+
+.home-hero .orbit-dot-b {
+  animation: cmm-dot-drift 7.6s ease-in-out -2s infinite;
+}
+
+.home-hero .orbit-dot-c {
+  animation: cmm-dot-drift 8.4s ease-in-out -3.4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero .hero-grid,
+  .home-hero .orbit-dot-a,
+  .home-hero .orbit-dot-b,
+  .home-hero .orbit-dot-c {
+    animation: none;
+  }
+}
+
+/* Saat dicetak atau dirender sebagai satu halaman panjang (mis. pratinjau
+   cetak), animasi gulir tidak punya posisi viewport yang masuk akal —
+   paksa semuanya tampil penuh supaya tidak ada bagian yang kosong. */
+@media print {
+  .home-step,
+  .home-ground .home-section-head,
+  .home-ground-card,
+  .home-catalog-panel,
+  .home-faq .home-section-head,
+  .home-faq-item,
+  .home-contact-panel,
+  .home-closing,
+  .service-card,
+  .section-heading,
+  .closing-note,
+  .package-card,
+  .package-heading,
+  .journal-facility,
+  .journal-asset-card,
+  .journal-next-step,
+  .journal-category-card,
+  .about-value-card,
+  .about-steps li,
+  .about-pending-card,
+  .kat-card,
+  .motion-pending {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+    transform: none !important;
+  }
+
+  .home-marquee-track,
+  .home-hero .hero-grid,
+  .home-hero .orbit-dot,
+  .home-hero .scene-glow {
+    animation: none !important;
+  }
+}
+
+/* --- Hero di layar kecil ------------------------------------------------ */
+
+/* Ikon orbit dekoratif bertabrakan dengan judul pada layar sempit; karena
+   murni hiasan (aria-hidden), cukup disembunyikan di bawah 560 px. */
+@media (max-width: 560px) {
+  .home-hero .orbit-note {
+    display: none;
+  }
+}
+
+/* Di ponsel, dua tombol utama dibuat setumpuk selebar kolom supaya tidak
+   pecah menjadi baris yang tidak rata. */
+@media (max-width: 430px) {
+  .home-hero .hero-actions {
+    width: 100%;
+    max-width: 300px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-hero .hero-actions .button-primary,
+  .home-hero .hero-actions .button-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowDown,
@@ -15,6 +16,13 @@ import {
   Sparkles,
 } from "lucide-react";
 import { KONTAK } from "@/content/site";
+
+/** Judul tab halaman profil. */
+export const metadata: Metadata = {
+  title: "Tentang Kami",
+  description:
+    "CV Cipta Manuskrip Media membantu penulis merapikan perjalanan naskah, dari gagasan awal hingga menjadi karya yang siap dibagikan.",
+};
 
 /**
  * Halaman profil sementara. Narasi pengenalan dan nilai kerja di sini adalah

@@ -13,9 +13,20 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <>
+      {/*
+        Tautan lompat: pengguna keyboard tidak perlu menekan Tab melewati
+        seluruh navigasi di setiap halaman. Tersembunyi sampai menerima
+        fokus, dan mengarah ke `<main>` yang memang satu-satunya landmark
+        utama dokumen.
+      */}
+      <a href="#konten-utama" className="skip-link">
+        Lompat ke konten utama
+      </a>
       <SiteHeader />
       <ScrollReveal />
-      <main className="flex-1">{children}</main>
+      <main id="konten-utama" tabIndex={-1} className="flex-1">
+        {children}
+      </main>
       <SiteFooter />
     </>
   );

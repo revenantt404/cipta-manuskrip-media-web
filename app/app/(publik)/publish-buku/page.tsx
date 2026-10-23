@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ArrowDown, ArrowUpRight, BookOpen, Feather, PenLine, ServerCrash } from "lucide-react";
 import { listBooks } from "@/lib/books/repository";
 import { catalogueKind } from "@/lib/books/status";
@@ -10,6 +11,13 @@ import { PAKET_BUKU, PREVIEW_LIMIT } from "@/content/site";
 // Wajib: halaman membaca database. Tanpa ini Next.js membekukan hasil query
 // saat build dan previewnya tidak melihat buku yang baru ditambahkan admin —
 // kelas bug yang sama dengan katalog.
+/** Judul tab halaman layanan buku. */
+export const metadata: Metadata = {
+  title: "Publish Buku",
+  description:
+    "Layanan penerbitan buku dan pendampingan penulisan untuk membantu naskah Anda melangkah menuju publikasi, lengkap dengan ISBN.",
+};
+
 export const dynamic = "force-dynamic";
 
 /**

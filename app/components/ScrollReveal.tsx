@@ -32,6 +32,15 @@ const MOTION_TARGETS = [
   ".about-steps li",
   ".about-contact",
   ".about-pending-card",
+  ".home-flow .home-section-head",
+  ".home-step",
+  ".home-ground .home-section-head",
+  ".home-ground-card",
+  ".home-catalog-panel",
+  ".home-faq .home-section-head",
+  ".home-faq-item",
+  ".home-contact-panel",
+  ".home-closing",
 ].join(",");
 
 /** Lightweight, one-time scroll reveals for the redesigned public pages. */
@@ -41,6 +50,11 @@ export function ScrollReveal() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!("IntersectionObserver" in window)) return;
+    // Peramban modern sudah punya animasi gulir deklaratif
+    // (`animation-timeline: view()`). Kalau didukung, biarkan CSS yang
+    // mengurus kemunculan bagian — hasilnya sama, tanpa perlu JavaScript
+    // dan tanpa risiko isi tersembunyi saat hidrasi belum selesai.
+    if (typeof CSS !== "undefined" && CSS.supports?.("animation-timeline: view()")) return;
 
     const elements = Array.from(document.querySelectorAll<HTMLElement>(MOTION_TARGETS));
     const sequence = new Map<Element, number>();

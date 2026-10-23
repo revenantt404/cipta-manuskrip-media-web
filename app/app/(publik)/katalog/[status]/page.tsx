@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -22,6 +23,29 @@ const TAB = [
   { label: "Telah terbit", href: "/katalog/telah-terbit", status: "telah-terbit" },
   { label: "Segera terbit", href: "/katalog/segera-terbit", status: "segera-terbit" },
 ] as const;
+
+/**
+ * Judul tab per katalog. Tanpa ini kedua halaman katalog berbagi judul
+ * bawaan situs, dan pengunjung yang membuka keduanya tidak bisa membedakan
+ * tabnya — termasuk saat menyimpan tautan atau membagikannya.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ status: string }>;
+}): Promise<Metadata> {
+  const { status } = await params;
+  const kind = catalogueKind(status);
+  if (kind === null) return {};
+
+  return {
+    title: kind.heading,
+    description:
+      kind.status === "published"
+        ? "Katalog buku CV Cipta Manuskrip Media yang telah terbit, lengkap dengan ISBN, harga cetak, dan sewa ebook."
+        : "Daftar buku CV Cipta Manuskrip Media yang sedang disiapkan menuju terbit beserta estimasi waktunya.",
+  };
+}
 
 const PENGANTAR: Record<string, string> = {
   "telah-terbit":

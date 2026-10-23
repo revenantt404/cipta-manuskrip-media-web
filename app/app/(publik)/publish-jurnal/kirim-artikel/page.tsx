@@ -1,7 +1,15 @@
 import { ArrowLeft, ArrowUpRight, FileUp, Landmark, Network, Orbit } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { KATEGORI_JURNAL } from "@/content/site";
 import { buildJournalSubmitUrl } from "@/lib/whatsapp";
+
+/** Judul tab halaman pengiriman naskah jurnal. */
+export const metadata: Metadata = {
+  title: "Kirim Artikel Jurnal",
+  description:
+    "Pilih kategori jurnal tujuan, lalu kirimkan naskah Anda langsung ke admin lewat WhatsApp.",
+};
 
 const IKON_KATEGORI = [Landmark, Orbit, Network] as const;
 

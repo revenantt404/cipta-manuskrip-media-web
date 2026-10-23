@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight, BadgeCheck, Eye, FileText, Fingerprint, GraduationCap, Languages, Layers3, LayoutTemplate, Link2, MessageSquareText, MessagesSquare, PanelsTopLeft, PenLine, ScanSearch, ShieldCheck, Timer } from "lucide-react";
+import type { Metadata } from "next";
 import { FASILITAS_JURNAL } from "@/content/site";
+
+/** Judul tab halaman layanan jurnal. */
+export const metadata: Metadata = {
+  title: "Publish Jurnal",
+  description:
+    "Fasilitas publikasi, dokumentasi, dan pilihan layanan artikel ilmiah dari CV Cipta Manuskrip Media.",
+};
 
 const IKON_FASILITAS = [
   Timer,
