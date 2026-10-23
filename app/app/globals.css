@@ -4816,3 +4816,178 @@ html {
     );
   }
 }
+
+/* ==========================================================================
+   KEHALUSAN ANTARHALAMAN & KERANGKA MUAT
+   --------------------------------------------------------------------------
+   Dua hal yang membuat perpindahan halaman terasa "nyambung":
+
+   1. `template.tsx` memasang ulang bingkainya pada setiap navigasi, jadi
+      animasi masuk di `.route-transition` diputar lagi tanpa JavaScript
+      tambahan. Hanya isi halaman yang bergerak — header, footer, dan panel
+      samping admin ada di layout dan tetap diam.
+   2. Tiap segmen rute punya `loading.tsx` sendiri, sehingga selama data
+      diambil yang tampil adalah kerangka berbentuk halaman itu, bukan area
+      kosong. Kerangka memakai kelas `.skeleton-*` yang sudah ada.
+
+   Semua gerak berhenti di `prefers-reduced-motion: reduce`.
+   ========================================================================== */
+
+@keyframes cmm-halaman-masuk {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.route-transition {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  /* Meneruskan rantai tinggi `body` (flex column) ke isi halaman, supaya
+     footer tetap menempel di bawah pada halaman pendek seperti halaman
+     asistensi. Tanpa ini, bingkai template memutus `flex-1` milik <main>. */
+  min-height: 0;
+  animation: cmm-halaman-masuk 0.34s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Umpan balik tekan: tombol terasa "masuk" sedikit saat ditekan, dan
+   kembali pada :hover. Sengaja kecil supaya tidak menggeser tata letak. */
+.button-primary:active,
+.button-secondary:active,
+.nav-cta:active,
+.scroll-cue:active,
+.package-action:active,
+.journal-button:active,
+.publish-button:active,
+.about-button:active,
+.asistensi-submit:active,
+.admin-primary-button:active,
+.admin-secondary-button:active,
+.admin-quick-card:active {
+  transform: translateY(1px) scale(0.988);
+}
+
+/* --- Potongan tata letak untuk kerangka muat ----------------------------- */
+
+.home-hero-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 84px 20px;
+}
+
+.home-skeleton-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.home-skeleton-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 26px;
+}
+
+.home-skeleton-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.home-skeleton-section {
+  padding-top: 72px;
+}
+
+.journal-skeleton-card {
+  display: flex;
+  min-height: 210px;
+  flex-direction: column;
+  padding: 22px;
+  border: 1px solid #e6ece6;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.admin-skeleton-rows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-skeleton-row {
+  display: grid;
+  grid-template-columns: 39px minmax(0, 1fr) 96px 84px;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f2ef;
+}
+
+.admin-skeleton-thumb {
+  width: 39px;
+  height: 52px;
+  border-radius: 5px;
+}
+
+.admin-skeleton-text {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .home-skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-skeleton-section {
+    padding-top: 54px;
+  }
+
+  .admin-skeleton-row {
+    grid-template-columns: 39px minmax(0, 1fr);
+  }
+
+  .admin-skeleton-row > :nth-child(n + 3) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-transition {
+    animation: none;
+  }
+
+  .button-primary:active,
+  .button-secondary:active,
+  .nav-cta:active,
+  .scroll-cue:active,
+  .package-action:active,
+  .journal-button:active,
+  .publish-button:active,
+  .about-button:active,
+  .asistensi-submit:active,
+  .admin-primary-button:active,
+  .admin-secondary-button:active,
+  .admin-quick-card:active {
+    transform: none;
+  }
+}

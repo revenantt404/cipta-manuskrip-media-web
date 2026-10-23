@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { SmoothAnchors } from "@/components/SmoothAnchors";
 
 /**
  * Layout semua halaman publik (route group `(publik)` — grupnya tidak ikut
@@ -24,6 +25,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
       </a>
       <SiteHeader />
       <ScrollReveal />
+      <SmoothAnchors />
       <main id="konten-utama" tabIndex={-1} className="flex-1">
         {children}
       </main>

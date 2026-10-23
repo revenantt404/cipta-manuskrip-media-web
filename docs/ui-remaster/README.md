@@ -15,6 +15,7 @@ ditinjau tanpa menyalakan server.
 | `12-beranda-alur.png` | beranda — alur kerja | 1440 |
 | `13-beranda-kontak.png` | beranda — kontak | 1440 |
 | `14-navbar-kaca.png` | navbar kaca saat halaman digulir | 1440 |
+| `15-kerangka-muat.png` | kerangka muat `/publish-buku` saat data ditunda | 1280 |
 
 **Navbar.** Bentuknya tetap pita membulat yang mengambang di tengah seperti
 desain awal; yang berubah bahannya. Header menempel di atas
@@ -50,8 +51,8 @@ npm run build
 npm run start -- --hostname 0.0.0.0 --port 3000
 ```
 
-Pratinjau di lingkungan ini berjalan di tiga alamat, `:3000`, `:3005`, dan
-`:3006`.
+Pratinjau di lingkungan ini biasanya berjalan di beberapa alamat sekaligus
+(mis. `:3000` dan satu port lain yang lebih baru).
 Alamat kedua disediakan karena peramban yang pernah membuka alamat pertama
 bisa masih memegang dokumen lama; origin berbeda berarti cache-nya kosong.
 
@@ -162,3 +163,42 @@ dan tetap tampil sebelum JavaScript jalan.
 
 Dengan `prefers-reduced-motion: reduce`, semua animasi mati dan cincin diganti
 gradien diam yang tetap terlihat.
+
+## Kehalusan antarhalaman
+
+**Transisi.** `app/app/template.tsx` membungkus isi halaman dengan
+`.route-transition`. `template` dipasang ulang Next pada setiap navigasi,
+jadi animasi masuk 0,34 detik (naik 12px sambil memudar) berulang sendiri
+tanpa JavaScript tambahan. Header, footer, dan panel samping admin berada di
+`layout`, jadi diam saja — hanya isi halaman yang bergerak. Bingkainya
+diberi `flex: 1 0 auto` supaya rantai tinggi `body` tidak terputus dan footer
+tetap di bawah pada halaman pendek.
+
+**Kerangka muat.** Setiap segmen rute punya `loading.tsx` sendiri, semua
+memakai kelas `.skeleton-*` yang sudah ada:
+
+| Berkas | Bentuk yang ditiru |
+|---|---|
+| `(publik)/loading.tsx` | banner beranda + dua kartu layanan |
+| `(publik)/publish-buku/loading.tsx` | banner, tiga kartu paket, blok asistensi |
+| `(publik)/publish-jurnal/loading.tsx` | banner gelap, kartu dokumentasi, daftar fasilitas |
+| `(publik)/publish-jurnal/asistensi/loading.tsx` | banner ringkas + kartu formulir |
+| `(publik)/publish-jurnal/kirim-artikel/loading.tsx` | banner ringkas + tiga kartu kategori |
+| `(publik)/tentang-kami/loading.tsx` | banner profil + dua blok narasi |
+| `admin/(terlindungi)/loading.tsx` | judul, tiga kartu statistik, panel daftar |
+| `admin/preview/loading.tsx` | sama, tanpa bilah alat |
+
+Kerangka hanya muncul kalau isinya memang belum siap. Pada halaman yang
+sudah di-prefetch Next, perpindahan terjadi seketika sehingga tidak ada
+kerangka yang berkedip — memaksakan kerangka di sana justru memperlambat.
+Untuk melihatnya: buka DevTools → Network → pilih "Slow 4G", lalu klik menu.
+
+**Gulir jangkar.** `components/SmoothAnchors.tsx` membuat tautan `#paket`,
+`#asistensi`, dan `#pilih-layanan` menggulir halus, menghormati
+`scroll-margin-top` (judul berhenti di bawah navbar), memindahkan fokus ke
+bagian tujuan, dan memperbarui alamat lewat `replaceState` supaya bisa
+disalin tanpa menambah entri riwayat.
+
+**Umpan balik tekan.** Tombol turun 1px dan mengecil 1,2% saat ditekan.
+
+Seluruh gerak di atas berhenti di `prefers-reduced-motion: reduce`.
