@@ -3533,83 +3533,6 @@ html {
   }
 }
 
-/* --- Pita layanan berjalan --------------------------------------------- */
-
-.home-marquee {
-  position: relative;
-  overflow: hidden;
-  border-top: 1px solid #e7ece2;
-  border-bottom: 1px solid #e7ece2;
-  background: linear-gradient(90deg, #f8faf3, #f2f7ef 48%, #f8faf3);
-}
-
-.home-marquee::before,
-.home-marquee::after {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  bottom: 0;
-  width: 68px;
-  content: "";
-  pointer-events: none;
-}
-
-.home-marquee::before {
-  left: 0;
-  background: linear-gradient(90deg, #f8faf3, rgba(248, 250, 243, 0));
-}
-
-.home-marquee::after {
-  right: 0;
-  background: linear-gradient(270deg, #f8faf3, rgba(248, 250, 243, 0));
-}
-
-.home-marquee-viewport {
-  display: flex;
-  overflow: hidden;
-}
-
-.home-marquee-track {
-  display: flex;
-  width: max-content;
-  animation: cmm-marquee 44s linear infinite;
-}
-
-.home-marquee:hover .home-marquee-track,
-.home-marquee:focus-within .home-marquee-track {
-  animation-play-state: paused;
-}
-
-.home-marquee-list {
-  display: flex;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.home-marquee-list li {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  padding: 15px 26px 15px 0;
-  margin-left: 26px;
-  color: #55705f;
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.home-marquee-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #c2cc08;
-  box-shadow: 0 0 0 3px rgba(194, 204, 8, 0.16);
-}
-
 /* --- Kepala bagian ------------------------------------------------------ */
 
 .home-section-head {
@@ -4207,13 +4130,6 @@ html {
 }
 
 @media (max-width: 700px) {
-  .home-marquee-list li {
-    padding: 12px 18px 12px 0;
-    margin-left: 18px;
-    gap: 18px;
-    font-size: 10px;
-  }
-
   .home-steps {
     grid-template-columns: 1fr;
     gap: 11px;
@@ -4241,11 +4157,6 @@ html {
   .home-faq-answer {
     padding: 0 16px 16px;
   }
-
-  .home-marquee::before,
-  .home-marquee::after {
-    width: 34px;
-  }
 }
 
 /* Gerak mati total saat pengguna memintanya. */
@@ -4254,7 +4165,6 @@ html {
     scroll-behavior: auto;
   }
 
-  .home-marquee-track,
   .home-hero .eyebrow-pill,
   .home-hero .hero-title,
   .home-hero .hero-title .headline-accent::after,
@@ -4265,10 +4175,6 @@ html {
   .home-step.motion-visible::before,
   .home-faq-answer {
     animation: none;
-  }
-
-  .home-marquee-track {
-    transform: none;
   }
 
   .home-step:hover,
@@ -4379,18 +4285,6 @@ html {
   }
 }
 
-@keyframes cmm-dot-drift {
-  0%,
-  100% {
-    translate: 0 0;
-    opacity: 0.85;
-  }
-  50% {
-    translate: 0 -5px;
-    opacity: 1;
-  }
-}
-
 /* Kisi digeser sebagai lapisan tersendiri (bukan lewat background-position)
    agar animasinya cukup dikomposit dan tidak memicu repaint tiap bingkai.
    `inset` negatif memberi ruang supaya tepinya tidak terlihat saat bergeser. */
@@ -4399,23 +4293,8 @@ html {
   animation: cmm-grid-drift 34s linear infinite;
 }
 
-.home-hero .orbit-dot-a {
-  animation: cmm-dot-drift 6.4s ease-in-out infinite;
-}
-
-.home-hero .orbit-dot-b {
-  animation: cmm-dot-drift 7.6s ease-in-out -2s infinite;
-}
-
-.home-hero .orbit-dot-c {
-  animation: cmm-dot-drift 8.4s ease-in-out -3.4s infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .home-hero .hero-grid,
-  .home-hero .orbit-dot-a,
-  .home-hero .orbit-dot-b,
-  .home-hero .orbit-dot-c {
+  .home-hero .hero-grid {
     animation: none;
   }
 }
@@ -4452,9 +4331,7 @@ html {
     transform: none !important;
   }
 
-  .home-marquee-track,
   .home-hero .hero-grid,
-  .home-hero .orbit-dot,
   .home-hero .scene-glow {
     animation: none !important;
   }
@@ -4485,4 +4362,193 @@ html {
     width: 100%;
     justify-content: center;
   }
+}
+
+/* ==========================================================================
+   NAVBAR KACA (sticky)
+   --------------------------------------------------------------------------
+   Header menempel di atas supaya isi halaman benar-benar lewat di belakang
+   panel navigasi — tanpa itu `backdrop-filter` tidak ada yang bisa diburamkan.
+   Panelnya dibuat lebih bening agar efek kaca terlihat, dengan latar cadangan
+   pekat untuk peramban yang tidak mendukung `backdrop-filter`.
+   ========================================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 12px 24px 10px;
+}
+
+.site-nav {
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(16, 42, 49, 0.1);
+  box-shadow:
+    0 10px 34px rgba(16, 42, 49, 0.06),
+    inset 0 1px rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(26px) saturate(180%);
+}
+
+/* Tanpa dukungan backdrop-filter, panel harus cukup pekat agar teks nav
+   tetap terbaca saat ada konten lewat di belakangnya.
+
+   Prefiks `-webkit-backdrop-filter` sengaja tidak ditulis tangan: Lightning
+   CSS menambahkannya sendiri sesuai target peramban. Menuliskannya manual
+   dengan nilai yang sama membuat properti standarnya ikut dibuang saat
+   build, dan efek kaca hilang di peramban yang hanya menerima bentuk
+   standar. */
+@supports not (backdrop-filter: blur(1px)) {
+  .site-nav {
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+/* Bayangan panel sedikit menguat saat halaman digulir. Murni dekoratif dan
+   hanya berjalan di peramban yang mendukung animasi berbasis gulir. */
+@keyframes cmm-nav-glass {
+  from {
+    box-shadow:
+      0 10px 34px rgba(16, 42, 49, 0.06),
+      inset 0 1px rgba(255, 255, 255, 0.72);
+  }
+  to {
+    box-shadow:
+      0 16px 44px rgba(16, 42, 49, 0.11),
+      inset 0 1px rgba(255, 255, 255, 0.82);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .site-nav {
+      animation: cmm-nav-glass linear both;
+      animation-timeline: scroll();
+      animation-range: 0 140px;
+    }
+  }
+}
+
+/* ==========================================================================
+   ORBIT HERO
+   --------------------------------------------------------------------------
+   Cincin konsentris di belakang judul diputar pelan. Garisnya sendiri nyaris
+   tak terlihat saat berputar (lingkaran simetris), jadi tiap cincin membawa
+   satu titik satelit sebagai penanda arah dan kecepatan.
+   ========================================================================== */
+
+@keyframes cmm-orbit-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.home-hero .orbit {
+  will-change: transform;
+  animation: cmm-orbit-spin 68s linear infinite;
+}
+
+.home-hero .orbit-middle {
+  border-style: dashed;
+  border-color: rgba(16, 42, 49, 0.1);
+  animation-duration: 46s;
+  animation-direction: reverse;
+}
+
+.home-hero .orbit-inner {
+  animation:
+    cmm-soft-pulse 11s ease-in-out infinite,
+    cmm-orbit-spin 32s linear infinite;
+}
+
+.home-hero .orbit::before {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: #c2cc08;
+  box-shadow: 0 0 0 5px rgba(194, 204, 8, 0.13);
+  content: "";
+}
+
+.home-hero .orbit::after {
+  position: absolute;
+  top: 50%;
+  right: -2.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(9, 103, 125, 0.42);
+  content: "";
+}
+
+.home-hero .orbit-middle::before {
+  background: #09677d;
+  box-shadow: 0 0 0 5px rgba(9, 103, 125, 0.1);
+}
+
+.home-hero .orbit-inner::before {
+  background: #b18a39;
+  box-shadow: 0 0 0 4px rgba(177, 138, 57, 0.12);
+}
+
+.home-hero .orbit-inner::after {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero .orbit,
+  .home-hero .orbit-middle,
+  .site-nav {
+    animation: none;
+  }
+}
+
+/* --- Penyesuaian navbar kaca ------------------------------------------- */
+
+/* Jangkar dalam halaman berhenti di bawah navbar yang menempel, bukan
+   tertutup olehnya. */
+html {
+  scroll-padding-top: 96px;
+}
+
+@media (max-width: 700px) {
+  html {
+    scroll-padding-top: 116px;
+  }
+
+  .site-header {
+    padding: 8px 10px 6px;
+  }
+}
+
+/* Sedikit lebih pekat di layar kecil supaya teks nav tetap terbaca saat
+   konten lewat di belakangnya. */
+@media (max-width: 700px) {
+  .site-nav {
+    background: rgba(255, 255, 255, 0.72);
+  }
+}
+
+/* Selaput tipis di belakang navbar: tanpa ini, tepi atas viewport
+   memperlihatkan konten yang lewat dengan tajam di atas panel kaca, dan
+   efeknya terlihat seperti potongan, bukan lapisan. */
+.site-header {
+  background: linear-gradient(
+    180deg,
+    rgba(251, 252, 251, 0.94) 0%,
+    rgba(251, 252, 251, 0.72) 62%,
+    rgba(251, 252, 251, 0) 100%
+  );
+}
+
+/* Panel kaca tidak perlu lagi menutupi tepi atas; selaput di atas sudah
+   mengurusnya, jadi latarnya bisa lebih bening. */
+.site-nav {
+  background: rgba(255, 255, 255, 0.52);
 }

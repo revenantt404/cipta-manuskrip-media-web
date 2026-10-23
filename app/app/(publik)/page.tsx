@@ -39,24 +39,6 @@ const orbitNotes = [
 ];
 
 /**
- * Pita berjalan di bawah hero. Isinya hanya istilah layanan yang memang
- * sudah tercantum di halaman paket buku dan fasilitas jurnal — tidak ada
- * angka, capaian, atau janji baru di sini.
- */
-const PITA_LAYANAN = [
-  "Penerbitan buku",
-  "Pendampingan ISBN",
-  "Proofreading",
-  "Desain sampul",
-  "Tata letak isi",
-  "Publikasi jurnal",
-  "Asistensi penulisan",
-  "Template artikel",
-  "Turnitin",
-  "DOI aktif",
-];
-
-/**
  * Empat langkah ini merangkum alur yang sudah tertulis di halaman Tentang
  * Kami dan halaman layanan: percakapan, pemetaan kebutuhan, proses
  * editorial, lalu terbit. Tidak menambah tahapan atau jangka waktu baru.
@@ -176,9 +158,6 @@ export default function Home() {
 
           <div className="book-scene" aria-label="Ilustrasi buku dan naskah">
             <div className="scene-glow" />
-            <div className="orbit-dot orbit-dot-a" />
-            <div className="orbit-dot orbit-dot-b" />
-            <div className="orbit-dot orbit-dot-c" />
             <div className="scene-caption scene-caption-left"><span className="caption-rule" /> NASKAH</div>
             <div className="scene-caption scene-caption-right">GAGASAN <span className="caption-rule" /></div>
             <div className="book book-back"><div className="book-spine" /><div className="book-cover-lines" /></div>
@@ -191,29 +170,6 @@ export default function Home() {
             <div className="floating-note"><span className="note-icon"><Feather size={15} /></span><span><strong>Dari ide menjadi karya</strong><small>Mulai perjalanan publikasi</small></span></div>
           </div>
           <Link href="#pilih-layanan" className="scroll-cue"><span>Jelajahi layanan</span><ArrowDown size={15} /></Link>
-        </div>
-      </section>
-
-      {/*
-        Pita berjalan. Salinan kedua ditandai aria-hidden dan dibuat oleh
-        CSS, jadi pembaca layar hanya membacanya sekali. Gerak berhenti
-        saat kursor berhenti di atas pita, dan mati total saat pengguna
-        meminta gerak dikurangi.
-      */}
-      <section className="home-marquee" aria-label="Lingkup layanan">
-        <div className="home-marquee-viewport">
-          <div className="home-marquee-track">
-            {[0, 1].map((salinan) => (
-              <ul key={salinan} className="home-marquee-list" aria-hidden={salinan === 1 ? true : undefined}>
-                {PITA_LAYANAN.map((label) => (
-                  <li key={label}>
-                    <span className="home-marquee-dot" aria-hidden="true" />
-                    {label}
-                  </li>
-                ))}
-              </ul>
-            ))}
-          </div>
         </div>
       </section>
 

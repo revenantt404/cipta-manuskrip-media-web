@@ -14,6 +14,11 @@ ditinjau tanpa menyalakan server.
 | `11-beranda-hero.png` | beranda — hero | 1440 |
 | `12-beranda-alur.png` | beranda — alur kerja | 1440 |
 | `13-beranda-kontak.png` | beranda — kontak | 1440 |
+| `14-navbar-kaca.png` | navbar kaca saat halaman digulir | 1440 |
+
+**Navbar.** Header kini menempel di atas (`position: sticky`) dengan panel kaca
+(`backdrop-filter: blur(26px) saturate(180%)`) di atas selaput gradien tipis,
+supaya konten yang lewat di belakangnya benar-benar terlihat diburamkan.
 
 **Catatan penting soal isinya.** Tangkapan layar ini dibuat di mesin tanpa
 MySQL, memakai data dan sampul *sementara* yang hanya hidup selama proses
@@ -27,9 +32,11 @@ katalog menampilkan keadaan gagal-muat yang sudah dirancang — bukan kartu
 buku contoh.
 
 **Soal gerak.** Animasi tidak terlihat pada tangkapan layar diam. Ringkasnya:
-hero masuk berurutan, pita layanan berjalan pelan dan berhenti saat disorot,
-bagian-bagian muncul saat digulir, kartu terangkat saat hover, dan seluruh
-gerak dimatikan bila sistem pengguna meminta `prefers-reduced-motion`.
+hero masuk berurutan, cincin orbit di belakang judul berputar pelan (cincin
+tengah putus-putus dan berputar ke arah sebaliknya), bagian-bagian muncul saat
+digulir, kartu terangkat saat hover, navbar kaca ikut menebal bayangannya saat
+halaman digulir, dan seluruh gerak dimatikan bila sistem pengguna meminta
+`prefers-reduced-motion`.
 
 ## Menjalankan pratinjau
 
