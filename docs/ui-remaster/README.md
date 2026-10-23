@@ -16,9 +16,10 @@ ditinjau tanpa menyalakan server.
 | `13-beranda-kontak.png` | beranda — kontak | 1440 |
 | `14-navbar-kaca.png` | navbar kaca saat halaman digulir | 1440 |
 
-**Navbar.** Header kini menempel di atas (`position: sticky`) dengan panel kaca
-(`backdrop-filter: blur(26px) saturate(180%)`) di atas selaput gradien tipis,
-supaya konten yang lewat di belakangnya benar-benar terlihat diburamkan.
+**Navbar.** Bentuknya tetap pita membulat yang mengambang di tengah seperti
+desain awal; yang berubah bahannya. Header menempel di atas
+(`position: sticky`) dan panelnya ber-`backdrop-filter: blur(18px)
+saturate(165%)`, jadi konten yang lewat di belakangnya terlihat diburamkan.
 
 **Catatan penting soal isinya.** Tangkapan layar ini dibuat di mesin tanpa
 MySQL, memakai data dan sampul *sementara* yang hanya hidup selama proses

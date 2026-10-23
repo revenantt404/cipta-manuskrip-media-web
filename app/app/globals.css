@@ -4365,66 +4365,90 @@ html {
 }
 
 /* ==========================================================================
-   NAVBAR KACA (sticky)
+   NAVBAR KACA
    --------------------------------------------------------------------------
-   Header menempel di atas supaya isi halaman benar-benar lewat di belakang
-   panel navigasi — tanpa itu `backdrop-filter` tidak ada yang bisa diburamkan.
-   Panelnya dibuat lebih bening agar efek kaca terlihat, dengan latar cadangan
-   pekat untuk peramban yang tidak mendukung `backdrop-filter`.
+   Bentuknya tetap pita membulat yang mengambang di tengah seperti semula;
+   yang berubah hanya bahannya: kaca. Header dibuat `sticky` supaya ada isi
+   yang benar-benar lewat di belakang panel — tanpa itu `backdrop-filter`
+   tidak punya apa pun untuk diburamkan.
+
+   Seluruh properti bentuk ditulis ulang di sini. Aturan navbar sebelumnya
+   membuat panel selebar layar tanpa sudut (`border-radius: 0`), jadi kalau
+   hanya warna latar yang ditimpa, hasilnya pita bening rata tepi layar —
+   bukan pita kaca yang membulat.
    ========================================================================== */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 40;
-  padding: 12px 24px 10px;
+  width: 100%;
+  padding: 14px 24px 12px;
+  border: 0;
+  /* Tanpa selaput latar. Konten di belakang hanya boleh terlihat lewat panel
+     kacanya sendiri; selaput gradien sebelumnya berhenti di tengah header
+     dan terlihat seperti potongan panel yang rusak. */
+  background: transparent;
 }
 
 .site-nav {
-  background: rgba(255, 255, 255, 0.58);
-  border-color: rgba(16, 42, 49, 0.1);
+  width: 100%;
+  max-width: 1120px;
+  min-height: 66px;
+  margin: 0 auto;
+  padding: 8px 13px 8px 18px;
+  border: 1px solid rgba(16, 42, 49, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.74);
   box-shadow:
-    0 10px 34px rgba(16, 42, 49, 0.06),
-    inset 0 1px rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(26px) saturate(180%);
+    0 10px 30px rgba(16, 42, 49, 0.07),
+    inset 0 1px rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(18px) saturate(165%);
 }
 
-/* Tanpa dukungan backdrop-filter, panel harus cukup pekat agar teks nav
-   tetap terbaca saat ada konten lewat di belakangnya.
-
-   Prefiks `-webkit-backdrop-filter` sengaja tidak ditulis tangan: Lightning
-   CSS menambahkannya sendiri sesuai target peramban. Menuliskannya manual
-   dengan nilai yang sama membuat properti standarnya ikut dibuang saat
-   build, dan efek kaca hilang di peramban yang hanya menerima bentuk
-   standar. */
+/* Peramban tanpa backdrop-filter: latar dinaikkan supaya teks navigasi tetap
+   terbaca saat ada konten lewat di belakang panel. */
 @supports not (backdrop-filter: blur(1px)) {
   .site-nav {
-    background: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.95);
   }
 }
 
-/* Bayangan panel sedikit menguat saat halaman digulir. Murni dekoratif dan
-   hanya berjalan di peramban yang mendukung animasi berbasis gulir. */
-@keyframes cmm-nav-glass {
-  from {
-    box-shadow:
-      0 10px 34px rgba(16, 42, 49, 0.06),
-      inset 0 1px rgba(255, 255, 255, 0.72);
+@media (max-width: 900px) {
+  .site-header {
+    padding: 10px 16px 8px;
   }
-  to {
-    box-shadow:
-      0 16px 44px rgba(16, 42, 49, 0.11),
-      inset 0 1px rgba(255, 255, 255, 0.82);
+
+  .site-nav {
+    padding: 6px 12px;
   }
 }
 
-@supports (animation-timeline: scroll()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .site-nav {
-      animation: cmm-nav-glass linear both;
-      animation-timeline: scroll();
-      animation-range: 0 140px;
-    }
+@media (max-width: 700px) {
+  .site-header {
+    padding: 8px 10px 6px;
+  }
+
+  .site-nav {
+    min-height: 0;
+    padding: 6px 13px 4px;
+    border-radius: 16px;
+    /* Baris kedua nav (Beranda / Tentang Kami) bertumpuk di atas latar
+       halaman, jadi panel di ponsel dibuat lebih pekat daripada di desktop
+       agar teksnya tetap terbaca saat melewati bagian gelap. */
+    background: rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* Jangkar dalam halaman berhenti di bawah navbar menempel, bukan tertutup.
+   Nilainya mengikuti tinggi header: padding + tinggi panel + padding. */
+html {
+  scroll-padding-top: 104px;
+}
+
+@media (max-width: 700px) {
+  html {
+    scroll-padding-top: 112px;
   }
 }
 
@@ -4503,52 +4527,7 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .home-hero .orbit,
-  .home-hero .orbit-middle,
-  .site-nav {
+  .home-hero .orbit-middle {
     animation: none;
   }
-}
-
-/* --- Penyesuaian navbar kaca ------------------------------------------- */
-
-/* Jangkar dalam halaman berhenti di bawah navbar yang menempel, bukan
-   tertutup olehnya. */
-html {
-  scroll-padding-top: 96px;
-}
-
-@media (max-width: 700px) {
-  html {
-    scroll-padding-top: 116px;
-  }
-
-  .site-header {
-    padding: 8px 10px 6px;
-  }
-}
-
-/* Sedikit lebih pekat di layar kecil supaya teks nav tetap terbaca saat
-   konten lewat di belakangnya. */
-@media (max-width: 700px) {
-  .site-nav {
-    background: rgba(255, 255, 255, 0.72);
-  }
-}
-
-/* Selaput tipis di belakang navbar: tanpa ini, tepi atas viewport
-   memperlihatkan konten yang lewat dengan tajam di atas panel kaca, dan
-   efeknya terlihat seperti potongan, bukan lapisan. */
-.site-header {
-  background: linear-gradient(
-    180deg,
-    rgba(251, 252, 251, 0.94) 0%,
-    rgba(251, 252, 251, 0.72) 62%,
-    rgba(251, 252, 251, 0) 100%
-  );
-}
-
-/* Panel kaca tidak perlu lagi menutupi tepi atas; selaput di atas sudah
-   mengurusnya, jadi latarnya bisa lebih bening. */
-.site-nav {
-  background: rgba(255, 255, 255, 0.52);
 }
