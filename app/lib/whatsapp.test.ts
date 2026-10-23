@@ -12,14 +12,14 @@ describe("buildBookOrderUrl", () => {
   it("membentuk tautan pemesanan buku cetak dengan format persis", () => {
     const url = buildBookOrderUrl("Filsafat Ilmu", "cetak");
     expect(url).toBe(
-      "https://wa.me/6289671894900?text=Mau%20pesan%20buku%20cetak%20judul%20Filsafat%20Ilmu"
+      "https://wa.me/6289671894900?text=Mau%20pesan%20buku%20cetak%20judul%20%22Filsafat%20Ilmu%22"
     );
   });
 
   it("membentuk tautan sewa ebook dengan penulisan ebook tetap persis", () => {
     const url = buildBookOrderUrl("Panduan Menulis 'Karya Ilmiah'", "ebook");
     expect(url).toBe(
-      "https://wa.me/6289671894900?text=Mau%20sewa%20ebook%20judul%20Panduan%20Menulis%20'Karya%20Ilmiah'"
+      "https://wa.me/6289671894900?text=Mau%20sewa%20ebook%20judul%20%22Panduan%20Menulis%20'Karya%20Ilmiah'%22"
     );
   });
 
@@ -28,7 +28,7 @@ describe("buildBookOrderUrl", () => {
     const url = buildBookOrderUrl(judul, "cetak");
 
     expect(decodeURIComponent(new URL(url).searchParams.get("text") ?? "")).toBe(
-      `Mau pesan buku cetak judul ${judul}`
+      `Mau pesan buku cetak judul "${judul}"`
     );
   });
 });
@@ -43,7 +43,7 @@ describe("whatsapp jurnal", () => {
   it("membentuk tautan asistensi dengan topik dan titik akhir", () => {
     const url = buildJournalAssistUrl("analisis wacana kritis");
     expect(url).toBe(
-      "https://wa.me/62895629203142?text=saya%20mau%20dibantu%20asistensi%20artikel%20topik%20analisis%20wacana%20kritis."
+      "https://wa.me/62895629203142?text=saya%20mau%20dibantu%20asistensi%20artikel%20topik%20%22analisis%20wacana%20kritis%22."
     );
   });
 
@@ -52,7 +52,7 @@ describe("whatsapp jurnal", () => {
     expect(hasil.ok).toBe(true);
     if (hasil.ok) {
       expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
-        "saya mau dibantu asistensi artikel topik literasi digital."
+        "saya mau dibantu asistensi artikel topik \"literasi digital\"."
       );
     }
   });
@@ -70,7 +70,7 @@ describe("whatsapp jurnal", () => {
     expect(hasil.ok).toBe(true);
     if (hasil.ok) {
       expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
-        `saya mau dibantu asistensi artikel topik ${topik}.`
+        `saya mau dibantu asistensi artikel topik "${topik}".`
       );
     }
   });
@@ -84,7 +84,7 @@ describe("whatsapp jurnal", () => {
 describe("whatsapp asistensi buku", () => {
   it("membentuk tautan asistensi buku dengan nomor admin buku", () => {
     expect(buildBookAssistUrl("Metodologi Penelitian")).toBe(
-      "https://wa.me/6289671894900?text=Saya%20mau%20dibantu%20asistensi%20buku%20topik%20Metodologi%20Penelitian."
+      "https://wa.me/6289671894900?text=Saya%20mau%20dibantu%20asistensi%20buku%20topik%20%22Metodologi%20Penelitian%22."
     );
   });
 
@@ -93,10 +93,10 @@ describe("whatsapp asistensi buku", () => {
     const jurnal = buildJournalAssistUrl("literasi");
 
     expect(new URL(buku).searchParams.get("text")).toBe(
-      "Saya mau dibantu asistensi buku topik literasi."
+      "Saya mau dibantu asistensi buku topik \"literasi\"."
     );
     expect(new URL(jurnal).searchParams.get("text")).toBe(
-      "saya mau dibantu asistensi artikel topik literasi."
+      "saya mau dibantu asistensi artikel topik \"literasi\"."
     );
   });
 
@@ -105,7 +105,7 @@ describe("whatsapp asistensi buku", () => {
     expect(hasil.ok).toBe(true);
     if (hasil.ok) {
       expect(decodeURIComponent(new URL(hasil.url).searchParams.get("text") ?? "")).toBe(
-        "Saya mau dibantu asistensi buku topik Kurikulum Merdeka."
+        "Saya mau dibantu asistensi buku topik \"Kurikulum Merdeka\"."
       );
     }
   });

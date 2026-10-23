@@ -36,13 +36,13 @@ describe("BookDetail — buku telah terbit", () => {
 
   it("menautkan pemesanan buku cetak ke nomor dan pesan yang ditentukan brief", () => {
     expect(html).toContain(
-      'href="https://wa.me/6289671894900?text=Mau%20pesan%20buku%20cetak%20judul%20Filsafat%20Ilmu"'
+      'href="https://wa.me/6289671894900?text=Mau%20pesan%20buku%20cetak%20judul%20%22Filsafat%20Ilmu%22"'
     );
   });
 
   it("menautkan sewa ebook dengan penulisan ebook yang dipertahankan", () => {
     expect(html).toContain(
-      'href="https://wa.me/6289671894900?text=Mau%20sewa%20ebook%20judul%20Filsafat%20Ilmu"'
+      'href="https://wa.me/6289671894900?text=Mau%20sewa%20ebook%20judul%20%22Filsafat%20Ilmu%22"'
     );
   });
 

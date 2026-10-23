@@ -470,7 +470,7 @@ describe("§13.13 tautan WhatsApp", () => {
       decodeURIComponent(new URL(raw.replace(/&amp;/g, "&")).searchParams.get("text") ?? "")
     );
 
-    expect(pesan).toContain("Mau pesan buku cetak judul Kiat Menulis Cepat & Efektif");
-    expect(pesan).toContain("Mau sewa ebook judul Kiat Menulis Cepat & Efektif");
+    expect(pesan).toContain('Mau pesan buku cetak judul "Kiat Menulis Cepat & Efektif"');
+    expect(pesan).toContain('Mau sewa ebook judul "Kiat Menulis Cepat & Efektif"');
   });
 });

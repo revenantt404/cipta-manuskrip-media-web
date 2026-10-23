@@ -85,10 +85,10 @@ describe("BookCard — buku telah terbit", () => {
 
   it("menautkan beli cetak dan sewa ebook ke pesan WhatsApp yang ditentukan brief", () => {
     expect(html).toContain(
-      'href="https://wa.me/6289671894900?text=Mau%20pesan%20buku%20cetak%20judul%20Metodologi%20Penelitian"'
+      'href="https://wa.me/6289671894900?text=Mau%20pesan%20buku%20cetak%20judul%20%22Metodologi%20Penelitian%22"'
     );
     expect(html).toContain(
-      'href="https://wa.me/6289671894900?text=Mau%20sewa%20ebook%20judul%20Metodologi%20Penelitian"'
+      'href="https://wa.me/6289671894900?text=Mau%20sewa%20ebook%20judul%20%22Metodologi%20Penelitian%22"'
     );
     expect(html).toContain("Beli Buku Cetak");
     expect(html).toContain("Sewa Ebook");

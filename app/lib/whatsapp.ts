@@ -4,14 +4,20 @@ export const NOMOR_JURNAL = "62895629203142";
 export type JenisPesanan = "cetak" | "ebook";
 
 /**
- * Nomor dan kalimat pesan dikunci persis oleh brief bagian 10 — jangan
- * "memperbaiki" ejaan `ebook`, menambah salam, atau mengubah nomornya.
+ * Nomor dan kalimat pesan dikunci brief bagian 10 — jangan "memperbaiki"
+ * ejaan `ebook`, menambah salam, atau mengubah nomornya.
+ *
+ * Satu penyesuaian dari pemilik proyek (23 Oktober 2026): nilai yang
+ * berubah-ubah (judul, topik) diapit tanda petik dua. Alasannya bukan
+ * selera — judul buku kerap sudah memuat tanda petik tunggal, mis.
+ * `Panduan Menulis 'Karya Ilmiah'`, sehingga tanpa pengapit batas judul
+ * dan kalimat pengantarnya kabur saat dibaca admin di WhatsApp.
  */
 export function buildBookOrderUrl(judul: string, jenis: JenisPesanan): string {
   const pesan =
     jenis === "cetak"
-      ? `Mau pesan buku cetak judul ${judul}`
-      : `Mau sewa ebook judul ${judul}`;
+      ? `Mau pesan buku cetak judul "${judul}"`
+      : `Mau sewa ebook judul "${judul}"`;
 
   return `https://wa.me/${NOMOR_BUKU}?text=${encodeURIComponent(pesan)}`;
 }
@@ -30,10 +36,10 @@ export function buildJournalSubmitUrl(): string {
   )}`;
 }
 
-/** Pesan asistensi artikel dengan topik — persis: "saya mau dibantu asistensi artikel topik <topik>." */
+/** Pesan asistensi artikel dengan topik — persis: `saya mau dibantu asistensi artikel topik "<topik>".` */
 export function buildJournalAssistUrl(topik: string): string {
   return `https://wa.me/${NOMOR_JURNAL}?text=${encodeURIComponent(
-    `saya mau dibantu asistensi artikel topik ${topik}.`
+    `saya mau dibantu asistensi artikel topik "${topik}".`
   )}`;
 }
 
@@ -45,10 +51,13 @@ export function buildJournalAssistUrl(topik: string): string {
  * (20 Oktober 2026) dan sengaja berbeda dari versi artikel pada dua hal:
  * huruf awal `S` besar, dan kata `buku` menggantikan `artikel`. Jangan
  * "menyeragamkan" keduanya — perbedaan itu keputusan, bukan kelalaian.
+ *
+ * Sejak 23 Oktober 2026 topik diapit tanda petik dua, sama seperti judul
+ * pada pesan pemesanan buku.
  */
 export function buildBookAssistUrl(topik: string): string {
   return `https://wa.me/${NOMOR_BUKU}?text=${encodeURIComponent(
-    `Saya mau dibantu asistensi buku topik ${topik}.`
+    `Saya mau dibantu asistensi buku topik "${topik}".`
   )}`;
 }
 

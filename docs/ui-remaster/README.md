@@ -60,3 +60,19 @@ Kalau berkas itu pernah termuat sebelum penyuntingan, peramban akan terus
 memakai salinan lamanya dan halaman tampil tanpa sebagian gaya. Build
 produksi memberi nama berkas berdasarkan isi (`css/c51bda….css`), jadi versi
 baru selalu punya URL baru.
+
+## Pesan WhatsApp
+
+Semua tautan `wa.me` dibuat di satu tempat, `app/lib/whatsapp.ts`. Nilai yang
+berubah-ubah — judul buku dan topik asistensi — diapit **tanda petik dua**,
+supaya batas antara nilai dan kalimat pengantar tetap terbaca oleh admin.
+Keputusan ini diambil pemilik proyek pada 23 Oktober 2026 dan berlaku untuk
+keempat pembentuk pesan:
+
+- `Mau pesan buku cetak judul "<judul>"`
+- `Mau sewa ebook judul "<judul>"`
+- `Saya mau dibantu asistensi buku topik "<topik>".`
+- `saya mau dibantu asistensi artikel topik "<topik>".`
+
+(`ini naskah artikel saya, admin.` tidak berubah.) Perbedaan huruf awal `S`,
+ejaan `ebook`, dan titik akhir hanya pada pesan asistensi tetap dipertahankan.
