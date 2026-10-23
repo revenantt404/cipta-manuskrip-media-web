@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowUpRight, LibraryBig } from "lucide-react";
 import { BookCard } from "./BookCard";
 import type { Book } from "@/lib/books/types";
 
@@ -23,23 +24,29 @@ export function CataloguePreview({
   lihatSemuaHref: string;
 }) {
   return (
-    <section className="mt-12">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold text-teks sm:text-2xl">{heading}</h2>
-        <Link
-          href={lihatSemuaHref}
-          className="rounded-md bg-teal px-4 py-2 text-sm font-medium text-white hover:bg-teal-hover"
-        >
-          Lihat Semua
+    <section className="preview-block">
+      <div className="preview-head">
+        <div className="preview-heading">
+          <p className="preview-kicker">Katalog buku</p>
+          <h2>{heading}</h2>
+        </div>
+        <Link href={lihatSemuaHref} className="preview-link">
+          Lihat Semua <ArrowUpRight aria-hidden="true" size={15} />
         </Link>
       </div>
 
       {items.length === 0 ? (
-        <p data-testid="empty" className="mt-4 text-teks-sec">
-          {emptyMessage}
-        </p>
+        <div data-testid="empty" className="preview-empty">
+          <span className="preview-empty-icon" aria-hidden="true">
+            <LibraryBig size={20} strokeWidth={1.6} />
+          </span>
+          <div>
+            <strong>{emptyMessage}</strong>
+            <p>Daftar ini akan diperbarui begitu buku pertama siap ditampilkan.</p>
+          </div>
+        </div>
       ) : (
-        <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <ul className="kat-grid">
           {items.map((buku) => (
             <li key={buku.id}>
               <BookCard book={buku} />

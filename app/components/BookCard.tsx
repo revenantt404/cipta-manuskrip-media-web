@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { resolveCoverUrl } from "@/lib/storage/path";
 import { formatRupiah } from "@/lib/books/price";
 import { buildBookOrderUrl } from "@/lib/whatsapp";
+import { BookCover } from "./BookCover";
 import type { Book } from "@/lib/books/types";
 
 /**
@@ -24,78 +26,88 @@ import type { Book } from "@/lib/books/types";
  *   harga dan tanpa tombol apa pun. Katalog ini dipakai untuk pengajuan ke
  *   Perpusnas, dan buku yang belum terbit memang belum dijual.
  */
-
-const KELAS_TOMBOL =
-  "block rounded border px-3 py-1.5 text-center text-sm hover:bg-zinc-50";
-
-function BarisHarga({ label, nilai }: { label: string; nilai: number | null }) {
-  return (
-    <div className="flex items-baseline justify-between gap-2">
-      <dt className="text-sm text-zinc-600">{label}</dt>
-      <dd className="text-sm font-medium">{formatRupiah(nilai)}</dd>
-    </div>
-  );
-}
-
 export function BookCard({ book }: { book: Book }) {
   const sudahTerbit = book.status === "published";
+  const href = `/buku/${book.slug}`;
 
   return (
-    <article className="flex flex-col rounded border p-3">
-      <Link href={`/buku/${book.slug}`} className="block">
-        {/* eslint-disable-next-line @next/next/no-img-element -- sampul sudah
-            diperkecil dan dikompres sharp saat diunggah; next/image belum
-            dikonfigurasi. */}
-        <img
+    <article className={`kat-card${sudahTerbit ? " kat-card--published" : " kat-card--upcoming"}`}>
+      <Link href={href} className="kat-card-media" tabIndex={-1} aria-hidden="true">
+        <BookCover
           src={resolveCoverUrl(book.coverPath)}
           alt={`Sampul buku ${book.title}`}
-          className="mb-3 aspect-[2/3] w-full rounded object-cover"
+          title={book.title}
+          className="kat-card-cover"
+          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 260px"
         />
-        <p className="font-medium leading-snug">{book.title}</p>
-        <p className="mt-1 text-sm text-zinc-600">{book.author}</p>
+        <span className="kat-card-badge">{sudahTerbit ? "Telah terbit" : "Segera terbit"}</span>
       </Link>
 
-      <dl className="mt-2 flex flex-col gap-1 border-t border-garis pt-2">
-        <div className="flex items-baseline justify-between gap-2">
-          <dt className="text-sm text-zinc-600">ISBN</dt>
-          <dd className="text-sm font-medium">
-            {sudahTerbit ? (book.isbn ?? "-") : "Segera terbit"}
-          </dd>
-        </div>
+      <div className="kat-card-body">
+        <h3 className="kat-card-title">
+          <Link href={href}>{book.title}</Link>
+        </h3>
+        <p className="kat-card-author">{book.author}</p>
 
+        <dl className="kat-card-meta">
+          <div className="kat-card-row">
+            <dt>ISBN</dt>
+            <dd>{sudahTerbit ? (book.isbn ?? "-") : "Segera terbit"}</dd>
+          </div>
+
+          {sudahTerbit ? (
+            <>
+              <div className="kat-card-row">
+                <dt>Harga cetak</dt>
+                <dd>{formatRupiah(book.pricePrint)}</dd>
+              </div>
+              <div className="kat-card-row">
+                <dt>Sewa ebook</dt>
+                <dd>{formatRupiah(book.priceEbook)}</dd>
+              </div>
+            </>
+          ) : book.estimatedRelease ? (
+            <div className="kat-card-row">
+              <dt>Estimasi terbit</dt>
+              <dd>{book.estimatedRelease}</dd>
+            </div>
+          ) : null}
+        </dl>
+
+        {/*
+          Tombol hanya untuk buku yang sudah terbit. Buku yang belum terbit
+          tidak boleh punya tautan `wa.me` sama sekali — itu janji penjualan
+          untuk buku yang belum ada, dan aturan ini dikunci tes.
+        */}
         {sudahTerbit ? (
-          <>
-            <BarisHarga label="Harga cetak" nilai={book.pricePrint} />
-            <BarisHarga label="Sewa ebook" nilai={book.priceEbook} />
-          </>
-        ) : null}
-      </dl>
+          <div className="kat-card-actions">
+            <a
+              href={buildBookOrderUrl(book.title, "cetak")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="kat-card-cta kat-card-cta--primary"
+            >
+              Beli Buku Cetak
+            </a>
+            <a
+              href={buildBookOrderUrl(book.title, "ebook")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="kat-card-cta"
+            >
+              Sewa Ebook
+            </a>
+          </div>
+        ) : (
+          <p className="kat-card-note">
+            Buku ini sedang disiapkan dan belum dapat dipesan.
+          </p>
+        )}
 
-      {/*
-        Tombol hanya untuk buku yang sudah terbit. Buku yang belum terbit
-        tidak boleh punya tautan `wa.me` sama sekali — itu janji penjualan
-        untuk buku yang belum ada, dan aturan ini dikunci tes.
-      */}
-      {sudahTerbit ? (
-        <div className="mt-3 flex flex-col gap-2">
-          <a
-            href={buildBookOrderUrl(book.title, "cetak")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={KELAS_TOMBOL}
-          >
-            Beli Buku Cetak
-          </a>
-          <a
-            href={buildBookOrderUrl(book.title, "ebook")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={KELAS_TOMBOL}
-          >
-            Sewa Ebook
-          </a>
-        </div>
-      ) : null}
+        <Link href={href} className="kat-card-detail">
+          Lihat detail buku <ArrowUpRight aria-hidden="true" size={14} />
+        </Link>
+      </div>
     </article>
   );
 }

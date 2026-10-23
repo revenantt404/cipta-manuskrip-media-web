@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUpRight, BookOpen, Feather, PenLine } from "lucide-react";
+import { ArrowDown, ArrowUpRight, BookOpen, Feather, PenLine, ServerCrash } from "lucide-react";
 import { listBooks } from "@/lib/books/repository";
 import { catalogueKind } from "@/lib/books/status";
 import { CataloguePreview } from "@/components/CataloguePreview";
@@ -65,8 +65,25 @@ export default async function Page() {
       </section>
 
       <section className="book-preview-section">
+        <div className="preview-intro">
+          <p className="publish-section-kicker">KATALOG</p>
+          <h2>Sebagian buku kami</h2>
+          <p>
+            Pratinjau singkat dari katalog. Seluruh judul tersedia di halaman katalog,
+            terurut A–Z.
+          </p>
+        </div>
+
         {sudahTerbit === null || hasil === null ? (
-          <p data-testid="db-error" className="text-red-700">Preview katalog sedang tidak dapat dimuat. Silakan coba beberapa saat lagi.</p>
+          <div data-testid="db-error" className="preview-error" role="status">
+            <span className="preview-error-icon" aria-hidden="true">
+              <ServerCrash size={19} strokeWidth={1.6} />
+            </span>
+            <div>
+              <strong>Preview katalog sedang tidak dapat dimuat</strong>
+              <p>Silakan coba beberapa saat lagi. Bagian lain halaman ini tetap dapat digunakan.</p>
+            </div>
+          </div>
         ) : (
           <>
             <div data-testid="preview-telah-terbit">

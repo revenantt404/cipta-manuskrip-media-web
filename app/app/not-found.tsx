@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight, BookOpen, Compass, FileText, Home } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -22,29 +23,49 @@ export default function NotFound() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 py-16 sm:px-6">
-        <p className="text-sm font-medium text-teks-sec">404</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-teks">
-          Halaman tidak ditemukan
-        </h1>
-        <p className="text-teks-sec">
-          Alamat yang Anda buka tidak tersedia. Mungkin tautannya salah ketik,
-          atau buku yang Anda cari sudah tidak ditampilkan.
-        </p>
+      <main className="notfound">
+        <div className="notfound-card">
+          <p className="notfound-code" aria-hidden="true">
+            404
+          </p>
+          <p className="notfound-kicker">
+            <Compass aria-hidden="true" size={13} /> Alamat tidak ditemukan
+          </p>
+          <h1>Halaman tidak ditemukan</h1>
+          <p className="notfound-lede">
+            Alamat yang Anda buka tidak tersedia. Mungkin tautannya salah ketik, atau buku
+            yang Anda cari sudah tidak ditampilkan di katalog.
+          </p>
 
-        <div className="mt-2 flex flex-wrap gap-3">
-          <Link
-            href="/"
-            className="rounded-md bg-teal px-5 py-2.5 font-medium text-white hover:bg-teal-hover"
-          >
-            Kembali ke Beranda
-          </Link>
-          <Link
-            href="/katalog/telah-terbit"
-            className="rounded-md border border-garis px-5 py-2.5 font-medium text-teks hover:bg-latar-alt"
-          >
-            Lihat Katalog
-          </Link>
+          <div className="notfound-actions">
+            <Link href="/" className="notfound-button notfound-button--primary">
+              <Home aria-hidden="true" size={16} /> Kembali ke Beranda
+            </Link>
+            <Link href="/katalog/telah-terbit" className="notfound-button">
+              <BookOpen aria-hidden="true" size={16} /> Lihat Katalog
+            </Link>
+          </div>
+
+          <div className="notfound-shortcuts">
+            <p>Atau menuju halaman lain</p>
+            <ul>
+              <li>
+                <Link href="/publish-buku">
+                  Penerbitan buku <ArrowRight aria-hidden="true" size={14} />
+                </Link>
+              </li>
+              <li>
+                <Link href="/publish-jurnal">
+                  Publikasi jurnal <FileText aria-hidden="true" size={14} />
+                </Link>
+              </li>
+              <li>
+                <Link href="/tentang-kami">
+                  Tentang kami <ArrowRight aria-hidden="true" size={14} />
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </main>
       <SiteFooter />

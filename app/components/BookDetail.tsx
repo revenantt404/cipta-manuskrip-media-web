@@ -1,9 +1,10 @@
+import Link from "next/link";
+import { ArrowLeft, ArrowUpRight, CalendarClock, ChevronRight, Hash, ShieldCheck } from "lucide-react";
 import { buildBookOrderUrl } from "@/lib/whatsapp";
 import { resolveCoverUrl } from "@/lib/storage/path";
 import { formatRupiah } from "@/lib/books/price";
+import { BookCover } from "./BookCover";
 import type { Book } from "@/lib/books/types";
-
-const KELAS_TOMBOL = "rounded border px-4 py-2 hover:bg-zinc-50";
 
 /**
  * Halaman detail buku — komponen presentasi murni.
@@ -17,84 +18,134 @@ const KELAS_TOMBOL = "rounded border px-4 py-2 hover:bg-zinc-50";
  * terbit" pada baris ISBN dan **tidak** menawarkan harga maupun pesanan.
  */
 export function BookDetail({ book }: { book: Book }) {
-  const sampul = resolveCoverUrl(book.coverPath);
   const sudahTerbit = book.status === "published";
+  const katalogHref = sudahTerbit ? "/katalog/telah-terbit" : "/katalog/segera-terbit";
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <article className="flex flex-col gap-6 sm:flex-row">
-        {/* eslint-disable-next-line @next/next/no-img-element -- sampul sudah
-            diperkecil dan dikompres sharp saat diunggah; next/image belum
-            dikonfigurasi. */}
-        <img
-          src={sampul}
-          alt={`Sampul buku ${book.title}`}
-          className="aspect-[2/3] w-full max-w-[200px] rounded border object-cover"
-        />
+    <div className="detail-page">
+      <nav className="detail-crumbs" aria-label="Navigasi remah roti">
+        <Link href="/">Beranda</Link>
+        <ChevronRight aria-hidden="true" size={13} />
+        <Link href="/publish-buku">Penerbitan Buku</Link>
+        <ChevronRight aria-hidden="true" size={13} />
+        <span aria-current="page">{book.title}</span>
+      </nav>
 
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">{book.title}</h1>
-          <p className="mt-1 text-zinc-600">{book.author}</p>
+      <article className="detail-shell">
+        <div className="detail-media">
+          <div className="detail-cover-frame">
+            <BookCover
+              src={resolveCoverUrl(book.coverPath)}
+              alt={`Sampul buku ${book.title}`}
+              title={book.title}
+              className="detail-cover-image"
+              sizes="(max-width: 760px) 60vw, 290px"
+            />
+          </div>
 
-          <dl className="mt-4 flex flex-col gap-1 border-y border-garis py-3">
-            <div className="flex items-baseline justify-between gap-2">
-              <dt className="text-sm text-zinc-600">ISBN</dt>
-              <dd className="text-sm font-medium">
-                {sudahTerbit ? (book.isbn ?? "-") : "Segera terbit"}
-              </dd>
+          <div className="detail-media-caption">
+            <span className={`detail-status${sudahTerbit ? " is-published" : " is-upcoming"}`}>
+              <i aria-hidden="true" />
+              {sudahTerbit ? "Telah terbit" : "Segera terbit"}
+            </span>
+            <span className="detail-publisher">{book.publisherInfo}</span>
+          </div>
+        </div>
+
+        <div className="detail-content">
+          <p className="detail-kicker">{sudahTerbit ? "KATALOG BUKU TERBIT" : "DALAM PERSIAPAN TERBIT"}</p>
+          <h1 className="detail-title">{book.title}</h1>
+          <p className="detail-author">{book.author}</p>
+
+          <dl className="detail-facts">
+            <div className="detail-fact">
+              <dt>
+                <Hash aria-hidden="true" size={14} /> ISBN
+              </dt>
+              <dd>{sudahTerbit ? (book.isbn ?? "-") : "Segera terbit"}</dd>
             </div>
+
             {sudahTerbit ? (
               <>
-                <div className="flex items-baseline justify-between gap-2">
-                  <dt className="text-sm text-zinc-600">Harga buku cetak</dt>
-                  <dd className="text-sm font-medium">{formatRupiah(book.pricePrint)}</dd>
+                <div className="detail-fact">
+                  <dt>Harga buku cetak</dt>
+                  <dd>{formatRupiah(book.pricePrint)}</dd>
                 </div>
-                <div className="flex items-baseline justify-between gap-2">
-                  <dt className="text-sm text-zinc-600">Sewa ebook</dt>
-                  <dd className="text-sm font-medium">{formatRupiah(book.priceEbook)}</dd>
+                <div className="detail-fact">
+                  <dt>Sewa ebook</dt>
+                  <dd>{formatRupiah(book.priceEbook)}</dd>
                 </div>
               </>
-            ) : null}
+            ) : (
+              <div className="detail-fact">
+                <dt>
+                  <CalendarClock aria-hidden="true" size={14} /> Estimasi terbit
+                </dt>
+                <dd>{book.estimatedRelease ?? "Belum ditentukan"}</dd>
+              </div>
+            )}
           </dl>
 
           {sudahTerbit ? (
             <>
-              <h2 className="mt-6 text-lg font-medium">Sinopsis</h2>
-              <p className="mt-2 whitespace-pre-line">{book.synopsis}</p>
+              <section className="detail-section">
+                <h2>Sinopsis</h2>
+                <p className="detail-body">{book.synopsis}</p>
+              </section>
 
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a
-                  href={buildBookOrderUrl(book.title, "cetak")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={KELAS_TOMBOL}
-                >
-                  Beli Buku Cetak
-                </a>
-                <a
-                  href={buildBookOrderUrl(book.title, "ebook")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={KELAS_TOMBOL}
-                >
-                  Sewa Ebook
-                </a>
+              <div className="detail-order">
+                <div className="detail-order-copy">
+                  <span className="detail-order-icon">
+                    <ShieldCheck aria-hidden="true" size={17} />
+                  </span>
+                  <div>
+                    <strong>Pesan langsung ke admin</strong>
+                    <p>Pesan otomatis terisi judul buku ini saat Anda membuka WhatsApp.</p>
+                  </div>
+                </div>
+
+                <div className="detail-order-actions">
+                  <a
+                    href={buildBookOrderUrl(book.title, "cetak")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="detail-button detail-button--primary"
+                  >
+                    Beli Buku Cetak <ArrowUpRight aria-hidden="true" size={15} />
+                  </a>
+                  <a
+                    href={buildBookOrderUrl(book.title, "ebook")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="detail-button"
+                  >
+                    Sewa Ebook <ArrowUpRight aria-hidden="true" size={15} />
+                  </a>
+                </div>
               </div>
             </>
           ) : (
             <>
-              <h2 className="mt-6 text-lg font-medium">Informasi Buku</h2>
-              <p className="mt-2 whitespace-pre-line">{book.bookInfo}</p>
-              <p className="mt-4">
-                <span className="font-medium">Estimasi terbit:</span>{" "}
-                {book.estimatedRelease}
+              <section className="detail-section">
+                <h2>Informasi Buku</h2>
+                <p className="detail-body">{book.bookInfo}</p>
+              </section>
+
+              <p className="detail-coming-note">
+                <CalendarClock aria-hidden="true" size={16} />
+                Buku ini sedang disiapkan dan belum dapat dipesan.
               </p>
             </>
           )}
-
-          <p className="mt-8 text-sm text-zinc-600">{book.publisherInfo}</p>
         </div>
       </article>
+
+      <div className="detail-back">
+        <Link href={katalogHref} className="detail-back-link">
+          <ArrowLeft aria-hidden="true" size={15} /> Kembali ke katalog
+        </Link>
+        <span className="detail-back-hint">Urutan katalog mengikuti judul A–Z.</span>
+      </div>
     </div>
   );
 }

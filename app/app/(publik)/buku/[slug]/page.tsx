@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ServerCrash } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getBookBySlug } from "@/lib/books/repository";
 import { BookDetail } from "@/components/BookDetail";
@@ -42,11 +44,22 @@ export default async function Page({ params }: Props) {
     book = await getBookBySlug(slug);
   } catch {
     return (
-      <div className="mx-auto max-w-3xl p-6">
-        <h1 className="text-2xl font-semibold">Buku sedang tidak dapat dimuat</h1>
-        <p data-testid="db-error" className="mt-3 text-zinc-700">
-          Silakan coba beberapa saat lagi atau buka kembali tautan ini nanti.
-        </p>
+      <div className="detail-page">
+        <div data-testid="db-error" className="detail-error" role="status">
+          <span className="detail-error-icon" aria-hidden="true">
+            <ServerCrash size={20} strokeWidth={1.6} />
+          </span>
+          <div>
+            <h1>Buku sedang tidak dapat dimuat</h1>
+            <p>
+              Silakan coba beberapa saat lagi atau buka kembali tautan ini nanti.
+              Katalog lain di situs ini tetap dapat dibuka.
+            </p>
+            <Link href="/publish-buku" className="detail-error-link">
+              Kembali ke halaman penerbitan buku
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
