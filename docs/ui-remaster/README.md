@@ -50,6 +50,10 @@ npm run build
 npm run start -- --hostname 0.0.0.0 --port 3000
 ```
 
+Pratinjau di lingkungan ini berjalan di dua alamat, `:3000` dan `:3005`.
+Alamat kedua disediakan karena peramban yang pernah membuka alamat pertama
+bisa masih memegang dokumen lama; origin berbeda berarti cache-nya kosong.
+
 Alasannya bukan selera: `next dev` menyajikan CSS dengan **nama berkas yang
 selalu sama** (`app_globals_css_<tetap>.css`) dan header cache `immutable`.
 Kalau berkas itu pernah termuat sebelum penyuntingan, peramban akan terus
