@@ -67,6 +67,14 @@ const nextConfig = {
   generateBuildId: idBuild,
 
   /**
+   * Penanda dev (lingkaran "N" di pojok kiri bawah) disembunyikan.
+   *
+   * Halaman ini dipakai sebagai pratinjau desain; penanda tersebut menutupi
+   * sudut konten dan mudah disalahartikan sebagai tombol yang rusak.
+   */
+  devIndicators: false,
+
+  /**
    * Origin yang boleh memuat aset pengembangan.
    *
    * Next 16 memblokir permintaan ke resource dev (`/_next/hmr`, dsb.) dari
