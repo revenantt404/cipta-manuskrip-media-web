@@ -83,6 +83,41 @@ const nextConfig = {
     },
   },
 
+  /**
+   * Halaman HTML tidak boleh di-cache panjang.
+   *
+   * Next.js menyajikan halaman hasil prerender dengan
+   * `Cache-Control: s-maxage=31536000` — satu tahun. Peramban mengabaikan
+   * `s-maxage`, tetapi proxy/CDN di depan aplikasi mematuhinya, dan itu
+   * berbahaya untuk dokumen HTML: HTML memuat hash berkas CSS/JS. Begitu
+   * build baru terbit, HTML lama yang masih tersimpan di cache akan terus
+   * menunjuk aset lama, sementara peramban sudah menyimpan aset itu dengan
+   * `immutable` setahun. Hasilnya halaman terus menampilkan versi lama
+   * meski server sudah menyajikan yang baru — persis yang terjadi saat
+   * pratinjau tidak mau berubah setelah reload.
+   *
+   * Aset di `/_next/static` tidak terpengaruh aturan ini; namanya berisi
+   * hash isi, jadi tetap aman di-cache selamanya.
+   */
+  async headers() {
+    return [
+      {
+        source: "/:path((?!_next/static|_next/image|covers).*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=0, must-revalidate",
+          },
+          // Dua header berikut tidak standar, tetapi dihormati oleh sebagian
+          // CDN/proxy dan memberi jalan keluar bila Cache-Control di atas
+          // diabaikan karena entri lama sudah tersimpan.
+          { key: "CDN-Cache-Control", value: "no-store" },
+          { key: "Surrogate-Control", value: "no-store" },
+        ],
+      },
+    ];
+  },
+
   turbopack: {
     rules: {
       "*.css": {
