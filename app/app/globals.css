@@ -4627,3 +4627,192 @@ html {
     padding-inline: 10px;
   }
 }
+
+/* ==========================================================================
+   EFEK KARTU PAKET TERPILIH
+   --------------------------------------------------------------------------
+   Saat satu tier ditekan, kartu itu diberi cincin cahaya yang berputar
+   mengelilingi tepinya, ditambah halo yang berdenyut pelan dan satu "pop"
+   kecil ketika baru dipilih.
+
+   Kenapa bukan WebGL/three.js: yang dibutuhkan hanya garis tepi beberapa
+   piksel. WebGL menambah ±170 KB JavaScript, satu konteks GPU per kartu,
+   dan kanvas yang harus ditumpuk di atas kartu — bebannya jauh melebihi
+   hasilnya, terutama di ponsel. Gradien conic di bawah ini dilukis oleh
+   compositor yang sama dengan sisa halaman: nol dependensi, nol permintaan
+   jaringan, dan tetap tampil walau JavaScript belum/tidak jalan.
+
+   Cincin dibuat dari dua lapis latar pada satu elemen semu:
+     1. gradien conic yang berputar — "komet" dengan ekor memudar;
+     2. gradien diam sebagai alas, supaya tepi kartu tetap terbaca di
+        bagian yang tidak sedang dilewati komet.
+   Keduanya dipotong `mask-composite: exclude` sehingga hanya cincin 3px di
+   tepi yang terlihat. Peramban tanpa mask masih mendapat garis tepi dari
+   `border-color` dan `box-shadow` di kartu — tidak ada keadaan "tanpa
+   penanda" sama sekali.
+   ========================================================================== */
+
+/* Sudut yang bisa dianimasikan; tanpa ini gradien conic melompat-lompat. */
+@property --cmm-paket-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes cmm-paket-putar {
+  to {
+    --cmm-paket-angle: 360deg;
+  }
+}
+
+@keyframes cmm-paket-halo {
+  0%,
+  100% {
+    box-shadow:
+      0 22px 44px rgba(16, 42, 49, 0.1),
+      0 0 0 1px rgba(194, 204, 8, 0.55),
+      0 0 18px 0 rgba(194, 204, 8, 0.12);
+  }
+
+  50% {
+    box-shadow:
+      0 26px 56px rgba(16, 42, 49, 0.15),
+      0 0 0 1px rgba(194, 204, 8, 0.9),
+      0 0 34px 4px rgba(194, 204, 8, 0.3);
+  }
+}
+
+/* `scale` dipakai terpisah dari `transform` supaya pop tidak menimpa
+   translateY(-3px) milik keadaan terpilih. */
+@keyframes cmm-paket-pop {
+  0% {
+    scale: 1;
+  }
+
+  45% {
+    scale: 1.016;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+.package-card.is-selected {
+  /* Outline 3px yang lama diganti cincin gradien: garisnya kaku dan tidak
+     bisa menampung animasi. */
+  outline: none;
+  border-color: rgba(194, 204, 8, 0.75);
+  transform: translateY(-3px);
+  animation:
+    cmm-paket-pop 0.55s cubic-bezier(0.22, 0.9, 0.24, 1) 1,
+    cmm-paket-halo 4.6s ease-in-out 0.55s infinite;
+}
+
+.package-card.is-selected::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  padding: 3px;
+  border-radius: inherit;
+  background:
+    /* 1. komet: kepala terang di 300°, ekor memudar ke arah 190° */
+    conic-gradient(
+      from var(--cmm-paket-angle),
+      rgba(194, 204, 8, 0) 0deg,
+      rgba(194, 204, 8, 0) 190deg,
+      rgba(194, 204, 8, 0.12) 225deg,
+      rgba(194, 204, 8, 0.6) 268deg,
+      rgba(233, 240, 140, 1) 300deg,
+      rgba(9, 103, 125, 0.6) 320deg,
+      rgba(194, 204, 8, 0) 344deg,
+      rgba(194, 204, 8, 0) 360deg
+    ),
+    /* 2. alas diam: tepi selalu terlihat, termasuk saat komet di sisi lain */
+      linear-gradient(
+        135deg,
+        rgba(194, 204, 8, 0.6),
+        rgba(9, 103, 125, 0.34) 52%,
+        rgba(177, 138, 57, 0.5)
+      );
+  content: "";
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: cmm-paket-putar 5.4s linear infinite;
+}
+
+/* Kartu gelap (tier 1) butuh cincin lebih terang agar kontrasnya setara
+   dengan dua kartu putih. */
+.package-card-1.is-selected {
+  border-color: rgba(226, 236, 130, 0.7);
+}
+
+.package-card-1.is-selected::after {
+  background:
+    conic-gradient(
+      from var(--cmm-paket-angle),
+      rgba(226, 236, 130, 0) 0deg,
+      rgba(226, 236, 130, 0) 190deg,
+      rgba(226, 236, 130, 0.16) 225deg,
+      rgba(236, 210, 126, 0.7) 268deg,
+      rgba(247, 233, 176, 1) 300deg,
+      rgba(194, 204, 8, 0.75) 320deg,
+      rgba(226, 236, 130, 0) 344deg,
+      rgba(226, 236, 130, 0) 360deg
+    ),
+    linear-gradient(
+      135deg,
+      rgba(236, 210, 126, 0.55),
+      rgba(194, 204, 8, 0.36) 52%,
+      rgba(236, 210, 126, 0.5)
+    );
+}
+
+/* Tombol yang sudah menandai pilihannya ikut diberi glow tipis. */
+.package-card.is-selected .package-action {
+  box-shadow: 0 10px 22px rgba(16, 42, 49, 0.18);
+}
+
+/* Tetap terbaca di mode kontras tinggi, di mana gradien dan bayangan
+   biasanya dibuang peramban. */
+@media (forced-colors: active) {
+  .package-card.is-selected {
+    outline: 3px solid Highlight;
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .package-card.is-selected {
+    animation: none;
+    box-shadow:
+      0 22px 44px rgba(16, 42, 49, 0.1),
+      0 0 0 1px rgba(194, 204, 8, 0.85);
+  }
+
+  .package-card.is-selected::after {
+    animation: none;
+    background: linear-gradient(
+      135deg,
+      rgba(194, 204, 8, 0.9),
+      rgba(9, 103, 125, 0.5) 52%,
+      rgba(177, 138, 57, 0.8)
+    );
+  }
+
+  .package-card-1.is-selected::after {
+    background: linear-gradient(
+      135deg,
+      rgba(236, 210, 126, 0.9),
+      rgba(194, 204, 8, 0.6) 52%,
+      rgba(236, 210, 126, 0.85)
+    );
+  }
+}

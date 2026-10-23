@@ -126,3 +126,28 @@ itu kini berdiri sendiri di `app/components/admin-nav-state.ts` dengan tes
 
 Nomor `08-admin-form.png` di atas sudah diperbarui dengan keadaan setelah
 perbaikan.
+
+## Efek kartu paket terpilih
+
+Kartu tier yang ditekan diberi tiga lapis umpan balik, semuanya CSS:
+
+1. **cincin komet** — gradien conic 3px yang berputar 5,4 detik sekali di
+   tepi kartu, dengan ekor memudar supaya arah putarannya terbaca;
+2. **alas diam** — gradien kedua di bawah komet, jadi tepi kartu tetap
+   terbaca di bagian yang tidak sedang dilewati cahaya;
+3. **halo** — bayangan lime yang berdenyut 4,6 detik, ditambah "pop" 0,55
+   detik saat kartu baru dipilih.
+
+Cincin dibuat dengan `mask-composite: exclude` pada elemen semu, dan sudutnya
+dianimasikan lewat `@property --cmm-paket-angle` agar gradien conic bisa
+berputar mulus. Bila mask tidak didukung, `border-color` dan `box-shadow`
+tetap memberi garis tepi; `forced-colors` mendapat `outline` sistem.
+
+**Kenapa bukan three.js.** Yang diperlukan cuma garis tepi beberapa piksel.
+WebGL menambah sekitar 170 KB JavaScript, satu konteks GPU per kartu, dan
+kanvas yang harus ditumpuk di atas kartu — bebannya jauh melebihi hasilnya,
+terutama di ponsel. Versi CSS ini nol dependensi, nol permintaan jaringan,
+dan tetap tampil sebelum JavaScript jalan.
+
+Dengan `prefers-reduced-motion: reduce`, semua animasi mati dan cincin diganti
+gradien diam yang tetap terlihat.
