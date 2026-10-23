@@ -7,12 +7,12 @@ import {
   LibraryBig,
   RefreshCw,
   ServerCrash,
-  Sparkles,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { listBooks } from "@/lib/books/repository";
 import { catalogueKind } from "@/lib/books/status";
 import { BookCard } from "@/components/BookCard";
+import { KatalogStat } from "@/components/KatalogStat";
 
 // Wajib: tanpa ini Next.js membekukan hasil query saat build dan katalog
 // berhenti menampilkan buku yang baru ditambahkan. `/admin` juga bergantung
@@ -136,7 +136,6 @@ export default async function Page({
 
   const sudahTerbit = kind.status === "published";
   const halaman = nomorHalaman(hasil.page, hasil.totalPages);
-  const labelJumlah = hasil.total === 1 ? "1 buku" : `${hasil.total} buku`;
 
   return (
     <div className="katalog-page">
@@ -171,18 +170,13 @@ export default async function Page({
           </nav>
         </div>
 
-        <aside className="katalog-stat" aria-label="Ringkasan katalog">
-          <span className="katalog-stat-icon" aria-hidden="true">
-            <Sparkles size={16} strokeWidth={1.7} />
-          </span>
-          <strong>{labelJumlah}</strong>
-          <p>Urutan judul A–Z, tanpa filter, agar mudah dirujuk.</p>
-          {hasil.totalPages > 1 ? (
-            <span className="katalog-stat-page">
-              Halaman {hasil.page} dari {hasil.totalPages}
-            </span>
-          ) : null}
-        </aside>
+        <KatalogStat
+          total={hasil.total}
+          page={hasil.page}
+          totalPages={hasil.totalPages}
+          pageSize={hasil.pageSize}
+          sudahTerbit={sudahTerbit}
+        />
       </header>
 
       {hasil.items.length === 0 ? (

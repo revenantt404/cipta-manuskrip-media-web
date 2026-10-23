@@ -4991,3 +4991,246 @@ html {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   RINGKASAN KATALOG (`.katalog-stat`)
+   --------------------------------------------------------------------------
+   Panel kecil di kepala halaman katalog ini sebelumnya hanya berisi satu
+   kalimat "1 buku" dan satu baris keterangan — informasinya benar, tetapi
+   tampilannya tidak memberi apa pun untuk dipindai mata.
+
+   Sekarang panelnya dibentuk ulang sebagai "plat katalog": jumlah buku
+   sebagai angka besar (dengan kata "buku" sebagai satuan kecil), status
+   terbit sebagai penanda berwarna, aturan urutan tetap ditulis apa adanya,
+   ukuran halaman dan posisi halaman sebagai chip, meter kemajuan saat
+   halamannya lebih dari satu, dan deretan punggung buku di kaki panel
+   sebagai penanda bahwa halaman ini adalah rak.
+
+   Semua angka berasal dari data halaman itu sendiri — tidak ada statistik
+   karangan. Hiasan (glow, punggung buku) ditandai `aria-hidden`.
+   ========================================================================== */
+
+.katalog-stat {
+  position: relative;
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  padding: 18px 20px 16px;
+  border: 1px solid #e2e9e2;
+  border-radius: 20px;
+  background:
+    radial-gradient(ellipse at 100% 0, rgba(194, 204, 8, 0.16), transparent 46%),
+    radial-gradient(ellipse at 0 100%, rgba(9, 103, 125, 0.09), transparent 54%),
+    linear-gradient(162deg, #ffffff, #fbfcf7 60%, #f6f9f3);
+  box-shadow:
+    0 16px 34px rgba(16, 42, 49, 0.06),
+    inset 0 1px rgba(255, 255, 255, 0.9);
+  isolation: isolate;
+}
+
+/* Tab emas kecil di tepi atas — penanda identitas yang sama dengan kartu
+   layanan di beranda, tanpa menarik perhatian seperti garis penuh. */
+.katalog-stat::before {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  width: 44px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(90deg, #c2cc08, #2f8d7c);
+  content: "";
+  opacity: 0.9;
+}
+
+.katalog-stat-glow {
+  position: absolute;
+  top: -46px;
+  right: -34px;
+  z-index: -1;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(194, 204, 8, 0.16);
+  filter: blur(34px);
+  pointer-events: none;
+}
+
+.katalog-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.katalog-stat-kicker {
+  margin: 0;
+  color: #7b8a82;
+  font-size: 8.5px;
+  font-weight: 750;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.katalog-stat-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  margin: 0;
+  place-items: center;
+  border: 1px solid #ece5cd;
+  border-radius: 9px;
+  background: linear-gradient(150deg, #fdfbf1, #f7f3e2);
+  color: #a8863d;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+.katalog-stat-count {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 14px 0 0;
+}
+
+.katalog-stat-count strong {
+  color: #0e2c33;
+  font-size: 47px;
+  font-weight: 640;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.06em;
+  line-height: 0.92;
+}
+
+.katalog-stat-count span {
+  padding-bottom: 4px;
+  color: #6f8179;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.katalog-stat-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 0 0;
+  color: #4c6a60;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.katalog-stat-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #6aa87b;
+  box-shadow: 0 0 0 3px rgba(106, 168, 123, 0.16);
+}
+
+.katalog-stat-dot.is-soon {
+  background: #c0a24c;
+  box-shadow: 0 0 0 3px rgba(192, 162, 76, 0.16);
+}
+
+.katalog-stat-note {
+  margin: 9px 0 0;
+  color: #78877f;
+  font-size: 10.5px;
+  line-height: 1.65;
+}
+
+.katalog-stat-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.katalog-stat-chip {
+  padding: 5px 9px;
+  border: 1px solid #e6ece6;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #5a7168;
+  font-size: 8.5px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.katalog-stat-meter {
+  display: block;
+  height: 4px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: #eaf0e9;
+  overflow: hidden;
+}
+
+.katalog-stat-meter i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #09677d, #8fae76 62%, #c2cc08);
+}
+
+/* Rak mini di kaki panel: punggung buku berdiri sejajar di atas garis.
+   Semua sama tinggi — kalau tingginya berbeda-beda, deretan ini terbaca
+   sebagai diagram batang dan angkanya seolah punya arti. */
+.katalog-stat-shelf {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 24px;
+  margin-top: 16px;
+  padding: 5px 7px 0;
+  border-bottom: 1px solid rgba(16, 42, 49, 0.1);
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, rgba(16, 42, 49, 0), rgba(16, 42, 49, 0.035));
+  opacity: 0.85;
+}
+
+.katalog-stat-shelf i {
+  width: 7px;
+  height: 100%;
+  border-radius: 1.5px 1.5px 0 0;
+  background: linear-gradient(180deg, #17685f, #0b3b37);
+  box-shadow: inset -1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.katalog-stat-shelf i:nth-child(1) {
+  width: 9px;
+  background: linear-gradient(180deg, #b18a39, #8b6b2b);
+}
+
+.katalog-stat-shelf i:nth-child(2) {
+  height: 88%;
+}
+
+.katalog-stat-shelf i:nth-child(3) {
+  width: 10px;
+  background: linear-gradient(180deg, #96a049, #6f7a2c);
+}
+
+.katalog-stat-shelf i:nth-child(4) {
+  height: 94%;
+}
+
+.katalog-stat-shelf i:nth-child(5) {
+  width: 8px;
+  background: linear-gradient(180deg, #2b8b7d, #14584f);
+}
+
+@media (max-width: 620px) {
+  .katalog-stat {
+    padding: 16px 17px 14px;
+    border-radius: 17px;
+  }
+
+  .katalog-stat-count strong {
+    font-size: 38px;
+  }
+}

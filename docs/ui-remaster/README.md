@@ -16,6 +16,7 @@ ditinjau tanpa menyalakan server.
 | `13-beranda-kontak.png` | beranda — kontak | 1440 |
 | `14-navbar-kaca.png` | navbar kaca saat halaman digulir | 1440 |
 | `15-kerangka-muat.png` | kerangka muat `/publish-buku` saat data ditunda | 1280 |
+| `16-ringkasan-katalog.png` | panel ringkasan katalog (tiga keadaan data) | 1200 |
 
 **Navbar.** Bentuknya tetap pita membulat yang mengambang di tengah seperti
 desain awal; yang berubah bahannya. Header menempel di atas
@@ -202,3 +203,25 @@ disalin tanpa menambah entri riwayat.
 **Umpan balik tekan.** Tombol turun 1px dan mengecil 1,2% saat ditekan.
 
 Seluruh gerak di atas berhenti di `prefers-reduced-motion: reduce`.
+
+## Panel ringkasan katalog
+
+Panel kecil di kepala `/katalog/[status]` dulu hanya satu kalimat "1 buku"
+ditambah keterangan urutan — benar, tetapi tidak ada yang bisa dipindai mata.
+Sekarang `components/KatalogStat.tsx` membentuknya sebagai plat katalog:
+
+- **angka besar** dengan satuan "buku" kecil di sampingnya (pemisah ribuan
+  mengikuti `id-ID`);
+- **penanda status** — titik hijau "Sudah terbit dan bisa dipesan", atau titik
+  emas "Sedang disiapkan menuju terbit";
+- **keterangan urutan** yang sudah ada, tidak diubah kalimatnya;
+- **chip** `12 per halaman` dan `Halaman 2 dari 4`, plus meter kemajuan yang
+  hanya muncul bila halamannya memang lebih dari satu;
+- **rak mini** di kaki panel — punggung buku yang tingginya sengaja dibuat
+  hampir sama, karena deretan bertinggi acak terbaca sebagai diagram batang
+  dan angkanya seolah punya arti.
+
+Semua angka berasal dari data halaman itu sendiri; hiasan (glow, rak) ditandai
+`aria-hidden` agar tidak dibacakan pembaca layar. Tangkapan layarnya dibuat
+dari komponen yang sama dengan tiga keadaan data, karena mesin ini tidak punya
+MySQL untuk membuka katalog sungguhan.
