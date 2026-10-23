@@ -4244,8 +4244,14 @@ html {
   }
 }
 
+/* Syarat tambahan `@media (scripting: enabled)`: bila JavaScript mati —
+   atau dokumen dibuka tanpa sempat menjalankan skrip, mis. dibuka sebagai
+   berkas, dipotret mesin, atau dibaca pembaca layar mode teks — animasi
+   yang bergantung pada posisi gulir tidak punya acuan yang masuk akal, dan
+   sebagian elemen bisa berhenti di bingkai awal (opacity 0). Tanpa skrip,
+   seluruh isi ditampilkan apa adanya. */
 @supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
     .home-step,
     .home-ground .home-section-head,
     .home-ground-card,
