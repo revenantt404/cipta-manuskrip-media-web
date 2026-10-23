@@ -7,9 +7,9 @@ import { KATEGORI_JURNAL } from "@/content/site";
 /**
  * Halaman `/publish-jurnal/kirim-artikel` — brief §10, halaman statis
  * tanpa database. Tepat tiga kategori dan tepat tiga tautan WhatsApp
- * (nomor jurnal + pesan persis `ini naskah artikel saya, admin.`);
- * naskah tidak pernah diunggah ke server, jadi tidak ada `<form>` dan
- * tidak ada `input type="file"` di halaman.
+ * (nomor jurnal + pesan `ini naskah artikel saya, admin.` + kategori
+ * kartunya masing-masing); naskah tidak pernah diunggah ke server, jadi
+ * tidak ada `<form>` dan tidak ada `input type="file"` di halaman.
  */
 describe("kirim-artikel", () => {
   const html = renderToStaticMarkup(<Page />);
@@ -20,12 +20,28 @@ describe("kirim-artikel", () => {
     expect(KATEGORI_JURNAL).toHaveLength(3);
   });
 
-  it("setiap tautan WhatsApp memakai nomor jurnal dan pesan persis", () => {
+  it("setiap tautan WhatsApp memakai nomor jurnal dan kalimat naskah yang dikunci", () => {
     const tautan = html.match(/href="https:\/\/wa\.me\/[^"]+"/g) ?? [];
     expect(tautan).toHaveLength(3);
     for (const t of tautan) {
-      expect(t).toContain("wa.me/62895629203142?text=ini%20naskah%20artikel%20saya%2C%20admin.");
+      expect(t).toContain(
+        "wa.me/62895629203142?text=ini%20naskah%20artikel%20saya%2C%20admin.%0AKategori%20jurnal%3A%20%22"
+      );
     }
+  });
+
+  it("tiap kartu membawa kategori jurnalnya sendiri, bukan kategori yang sama", () => {
+    const tautan = (html.match(/href="https:\/\/wa\.me\/[^"]+"/g) ?? []).map((t) =>
+      decodeURIComponent(new URL(t.slice(6, -1).replace(/&amp;/g, "&")).searchParams.get("text") ?? "")
+    );
+
+    expect(new Set(tautan).size).toBe(3);
+
+    KATEGORI_JURNAL.forEach((kategori, i) => {
+      expect(tautan[i]).toBe(
+        `ini naskah artikel saya, admin.\nKategori jurnal: "${kategori}"`
+      );
+    });
   });
 
   it("tidak ada form unggah artikel", () => {

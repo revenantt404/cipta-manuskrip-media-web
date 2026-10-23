@@ -40,6 +40,41 @@ describe("whatsapp jurnal", () => {
     );
   });
 
+  it("menambahkan kategori jurnal yang dipilih sebagai baris kedua", () => {
+    expect(buildJournalSubmitUrl("Jurnal Internasional Index Copernicus")).toBe(
+      "https://wa.me/62895629203142?text=ini%20naskah%20artikel%20saya%2C%20admin.%0AKategori%20jurnal%3A%20%22Jurnal%20Internasional%20Index%20Copernicus%22"
+    );
+  });
+
+  it("kalimat pertama tetap utuh saat kategori ditambahkan", () => {
+    const hasil = decodeURIComponent(
+      new URL(buildJournalSubmitUrl("Jurnal Internasional Scopus dan SCImago")).searchParams.get(
+        "text"
+      ) ?? ""
+    );
+    expect(hasil).toBe(
+      'ini naskah artikel saya, admin.\nKategori jurnal: "Jurnal Internasional Scopus dan SCImago"'
+    );
+    expect(hasil.split("\n")[0]).toBe("ini naskah artikel saya, admin.");
+  });
+
+  it("memangkas spasi tepi kategori, dan mengabaikan kategori kosong", () => {
+    const rapi = decodeURIComponent(
+      new URL(buildJournalSubmitUrl("  Jurnal Nasional Terakreditasi SINTA 1–4  ")).searchParams.get(
+        "text"
+      ) ?? ""
+    );
+    expect(rapi).toBe(
+      'ini naskah artikel saya, admin.\nKategori jurnal: "Jurnal Nasional Terakreditasi SINTA 1–4"'
+    );
+
+    for (const kosong of [undefined, null, "", "   "]) {
+      expect(new URL(buildJournalSubmitUrl(kosong)).searchParams.get("text")).toBe(
+        "ini naskah artikel saya, admin."
+      );
+    }
+  });
+
   it("membentuk tautan asistensi dengan topik dan titik akhir", () => {
     const url = buildJournalAssistUrl("analisis wacana kritis");
     expect(url).toBe(

@@ -32,11 +32,27 @@ export function buildBookOrderUrl(judul: string, jenis: JenisPesanan): string {
  * WhatsApp; ia tidak pernah dikirim ke server kita.
  */
 
-/** Pesan kirim naskah tanpa topik — persis: "ini naskah artikel saya, admin." */
-export function buildJournalSubmitUrl(): string {
-  return `https://wa.me/${NOMOR_JURNAL}?text=${encodeURIComponent(
-    "ini naskah artikel saya, admin."
-  )}`;
+/**
+ * Pesan kirim naskah — persis: `ini naskah artikel saya, admin.`
+ *
+ * Sejak 24 Oktober 2026 kategori jurnal yang dipilih pengunjung ikut
+ * dikirim. Permintaan pemilik proyek: tombol di kartu kategori dulu
+ * mengirim kalimat yang sama untuk ketiga kategori, jadi admin tidak tahu
+ * naskah itu ditujukan ke jurnal yang mana.
+ *
+ * Kalimat pertama dibiarkan utuh huruf demi huruf (huruf awal kecil,
+ * berakhir titik) dan kategori masuk sebagai baris KEDUA — pola yang sama
+ * dengan baris paket pada asistensi buku. Tanpa kategori, pesannya kembali
+ * persis seperti sebelumnya.
+ */
+export function buildJournalSubmitUrl(kategori?: string | null): string {
+  const tujuan = kategori?.trim() ?? "";
+  const pesan =
+    tujuan === ""
+      ? "ini naskah artikel saya, admin."
+      : `ini naskah artikel saya, admin.\nKategori jurnal: "${tujuan}"`;
+
+  return `https://wa.me/${NOMOR_JURNAL}?text=${encodeURIComponent(pesan)}`;
 }
 
 /** Pesan asistensi artikel dengan topik — persis: `saya mau dibantu asistensi artikel topik "<topik>".` */

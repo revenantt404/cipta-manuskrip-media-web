@@ -75,8 +75,19 @@ keempat pembentuk pesan:
 - `Saya mau dibantu asistensi buku topik "<topik>".`
 - `saya mau dibantu asistensi artikel topik "<topik>".`
 
-(`ini naskah artikel saya, admin.` tidak berubah.) Perbedaan huruf awal `S`,
-ejaan `ebook`, dan titik akhir hanya pada pesan asistensi tetap dipertahankan.
+Perbedaan huruf awal `S`, ejaan `ebook`, dan titik akhir hanya pada pesan
+asistensi tetap dipertahankan.
+
+Pesan kirim naskah di `/publish-jurnal/kirim-artikel` juga mendapat baris
+kedua berisi kategori kartu yang ditekan:
+
+```
+ini naskah artikel saya, admin.
+Kategori jurnal: "Jurnal Internasional Index Copernicus"
+```
+
+Kalimat `ini naskah artikel saya, admin.` tetap utuh huruf demi huruf (huruf
+awal kecil, berakhir titik) dan tanpa kategori ia kembali persis seperti dulu.
 
 Sejak 24 Oktober 2026 **paket yang dipilih** di halaman Publish Buku ikut
 dikirim sebagai baris kedua, dengan tanda petik dua yang sama:

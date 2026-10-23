@@ -47,7 +47,7 @@ export default function Page() {
                 <div className="category-card-top"><span>0{i + 1} <i>/ 03</i></span><span className="category-card-icon"><IkonKategori size={18} strokeWidth={1.7} /></span></div>
                 <h2>{kategori}</h2>
                 <div className="category-card-bottom"><span>PILIHAN KATEGORI</span><span className="category-arrow">↗</span></div>
-                <a href={buildJournalSubmitUrl()} target="_blank" rel="noopener noreferrer" className="journal-category-cta">
+                <a href={buildJournalSubmitUrl(kategori)} target="_blank" rel="noopener noreferrer" className="journal-category-cta">
                   Kirim naskah via WhatsApp <ArrowUpRight size={16} />
                 </a>
               </li>
